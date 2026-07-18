@@ -1,574 +1,435 @@
-# 论文算法学习路径
+# 化学与材料机器学习算法学习流程
 
-> 适用目标：只学习论文中涉及的算法，不展开化学背景。  
-> 建议周期：8 周。  
-> 建议投入：每天 2～3 小时，每周学习 6 天。  
-> 最终目标：能够解释论文中的主要算法、写出核心公式、使用 Python 完成基础实现，并说明各算法之间的关系。
+> 目标：结合真实化学或材料数据，学习论文中与课题最相关的算法。  
+> 原则：不单独安排数学预备；在具体算法中遇到不会的公式、概念或代码时再补。  
+> 核心要求：每学习一个算法，都必须在真实数据集上完成一次完整实验。
 
 ---
 
-# 一、总体学习路线
+# 一、总体路线
 
 ```text
-数学与机器学习基础
+化学数据库与公开数据集
         ↓
-线性回归与正则化
+SMILES 与分子结构
         ↓
-支持向量机与核方法
+RDKit 描述符与分子指纹
         ↓
-决策树与集成学习
+传统机器学习模型
         ↓
-神经网络基础
+分子图与 GNN
         ↓
-序列模型与自编码器
+混合物与双组分建模
         ↓
-图神经网络
+模型评价与解释
         ↓
-优化算法与混合模型
-        ↓
-特征选择、降维与模型解释
-        ↓
-主动学习、贝叶斯优化、PINN、VAE、GAN
+迁移到 DES / 离子液体 / 材料数据
 ```
 
-整个过程分成八个阶段：
+真正需要掌握的不是单独的模型名称，而是：
 
-1. 基础知识
-2. 线性模型
-3. 支持向量机
-4. 树模型与集成学习
-5. 神经网络
-6. 图神经网络
-7. 优化与混合模型
-8. 特征处理、解释与未来算法
+```text
+数据获取
+→ 分子表示
+→ 数据划分
+→ 模型训练
+→ 指标评价
+→ 模型解释
+→ 迁移到课题数据
+```
 
 ---
 
-# 二、第一阶段：基础知识
+# 二、第一阶段：建立完整分子机器学习流程
 
-## 学习时间
+## 推荐数据集
 
-3～5 天。
+优先使用：
 
-## 学习目标
+- ESOL / Delaney：水溶解度回归
+- Lipophilicity：脂溶性回归
+- FreeSolv：水合自由能回归
+- QM7 / QM8 / QM9：分子量子性质预测
 
-理解所有后续算法共同使用的概念。
+第一套任务建议使用：
 
-## 必须掌握的数学基础
-
-### 1. 线性代数
-
-- 向量
-- 矩阵
-- 矩阵乘法
-- 转置
-- 逆矩阵
-- 秩
-- 特征值
-- 特征向量
-- 正交
-- 二次型
-
-### 2. 微积分
-
-- 导数
-- 偏导数
-- 梯度
-- 链式法则
-- 泰勒展开
-- 极值问题
-
-### 3. 概率统计
-
-- 均值
-- 方差
-- 协方差
-- 正态分布
-- 条件概率
-- 最大似然估计
-- 偏差与方差
-- 过拟合
-
-## 必须掌握的机器学习概念
-
-- 监督学习
-- 回归
-- 分类
-- 特征
-- 标签
-- 模型参数
-- 超参数
-- 损失函数
-- 训练集
-- 验证集
-- 测试集
-- 插值
-- 外推
-- 泛化能力
-- 数据泄漏
-- 欠拟合
-- 过拟合
-
-## 代码任务
-
-使用 Python 完成：
-
-```python
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
+```text
+ESOL：根据分子结构预测水溶解度
 ```
 
-学习：
+## 需要完成
 
-- NumPy 数组
-- Pandas DataFrame
-- 数据读取
-- 缺失值检查
-- 列选择
-- 简单绘图
+1. 使用 DeepChem 加载数据集
+2. 查看样本数量
+3. 查看 SMILES
+4. 查看预测标签
+5. 查看训练集、验证集和测试集
+6. 建立一个最简单的基线模型
+7. 输出 RMSE、MAE 和 \(R^2\)
+8. 保存预测结果
+9. 画真实值—预测值散点图
+10. 画残差图
+
+## 必须理解
+
+- 一个样本是什么
+- 输入是什么
+- 标签是什么
+- 模型预测什么
+- 数据集如何划分
+- 指标如何评价模型
+- 训练集表现好但测试集表现差意味着什么
 
 ## 验收标准
 
-能够回答：
-
-1. 参数和超参数有什么区别？
-2. 训练集、验证集、测试集分别做什么？
-3. 什么是过拟合？
-4. 梯度是什么？
-5. 为什么要设置随机种子？
-
----
-
-# 三、第二阶段：线性模型
-
-## 学习时间
-
-1 周。
-
-## 学习顺序
+能够完整说清：
 
 ```text
-简单线性回归
-    ↓
-多元线性回归 MLR
-    ↓
-多项式回归 MPR
-    ↓
-Ridge
-    ↓
-Lasso
+数据集
+→ 输入表示
+→ 模型
+→ 损失函数
+→ 预测结果
+→ 评价指标
 ```
 
 ---
 
-## 3.1 多元线性回归 MLR
+# 三、第二阶段：学习分子数据表示
 
-### 核心公式
+分子机器学习的核心不是直接把分子名称送进模型，而是先把分子转成算法可以处理的表示。
+
+总路线：
+
+```text
+SMILES
+ ├── RDKit 分子描述符 → 传统表格模型
+ ├── Morgan / ECFP 指纹 → 传统机器学习
+ └── 分子图 → GNN
+```
+
+---
+
+## 1. SMILES
+
+### 需要学习
+
+- SMILES 是什么
+- 原子如何表示
+- 键如何表示
+- 支链如何表示
+- 环如何表示
+- 芳香原子如何表示
+- 离子、电荷和立体结构如何表示
+- Canonical SMILES
+- Isomeric SMILES
+
+### 需要完成
+
+- 使用 RDKit 读取 SMILES
+- 检查 SMILES 是否有效
+- 将 SMILES 转成分子对象
+- 将分子对象画出来
+- 从 PubChem 获取标准 SMILES
+
+### 最小代码接口
+
+```python
+from rdkit import Chem
+
+mol = Chem.MolFromSmiles(smiles)
+```
+
+---
+
+## 2. RDKit 分子描述符
+
+### 重点描述符
+
+- Molecular Weight
+- LogP
+- TPSA
+- H-bond Donor Count
+- H-bond Acceptor Count
+- Rotatable Bond Count
+- Ring Count
+- Aromatic Ring Count
+- Heavy Atom Count
+- Fraction Csp3
+- Formal Charge
+- Molar Refractivity
+
+### 数据形式
+
+```text
+SMILES
+  ↓
+RDKit
+  ↓
+数值描述符表格
+  ↓
+MLR / RF / XGBoost / MLP
+```
+
+示例：
+
+| MolWt | LogP | TPSA | HBD | HBA | RotBonds | Target |
+|---:|---:|---:|---:|---:|---:|---:|
+
+### 需要完成
+
+- 批量读取 SMILES
+- 批量生成描述符
+- 处理无效分子
+- 处理缺失值
+- 保存为 CSV
+- 查看描述符分布
+- 删除常数特征
+- 删除高度相关特征
+
+---
+
+## 3. Morgan Fingerprint / ECFP
+
+### 需要学习
+
+- 分子指纹是什么
+- Morgan Fingerprint
+- ECFP
+- Radius
+- Bit Vector
+- Fingerprint Size
+- 子结构编码
+- 稀疏向量
+- Tanimoto Similarity
+
+### 数据形式
 
 \[
-\hat y=\beta_0+\beta_1x_1+\cdots+\beta_px_p
+x\in\{0,1\}^{n}
 \]
 
-矩阵形式：
+常见设置：
 
-\[
-\hat y=X\beta
-\]
+```text
+radius = 2
+nBits = 1024 或 2048
+```
 
-最小二乘目标：
+### 需要完成
 
-\[
-\min_\beta \|y-X\beta\|_2^2
-\]
+- 从 SMILES 生成 Morgan 指纹
+- 比较 1024 位与 2048 位
+- 比较 radius=2 与 radius=3
+- 计算两个分子的 Tanimoto 相似度
+- 用指纹训练 Random Forest
+- 用指纹训练 XGBoost
 
-正规方程：
+### 最小代码接口
 
-\[
-\hat\beta=(X^\top X)^{-1}X^\top y
-\]
+```python
+from rdkit.Chem import AllChem
 
-### 必须掌握
+fp = AllChem.GetMorganFingerprintAsBitVect(
+    mol,
+    radius=2,
+    nBits=2048
+)
+```
 
-- 线性假设
-- 回归系数含义
+---
+
+## 4. 分子图
+
+### 图结构
+
+- 原子：节点
+- 化学键：边
+- 原子属性：节点特征
+- 化学键属性：边特征
+
+### 节点特征可以包括
+
+- 原子序数
+- 元素种类
+- 原子度
+- 形式电荷
+- 芳香性
+- 杂化方式
+- 是否在环中
+- 氢原子数
+
+### 边特征可以包括
+
+- 单键
+- 双键
+- 三键
+- 芳香键
+- 是否共轭
+- 是否在环中
+
+### 数据流程
+
+```text
+SMILES
+  ↓
+原子与化学键解析
+  ↓
+节点特征 + 边特征
+  ↓
+分子图
+  ↓
+GNN
+```
+
+---
+
+# 四、第三阶段：传统机器学习模型
+
+所有传统模型优先在同一个数据集上比较，避免因为数据不同导致无法判断算法差异。
+
+固定比较：
+
+```text
+ESOL 数据集
++ RDKit 描述符
++ Morgan 指纹
+```
+
+---
+
+## 1. 多元线性回归 MLR
+
+### 用途
+
+作为最基础的线性基线。
+
+### 需要理解
+
+- 多个特征的线性组合
+- 回归系数
 - 截距
 - 残差
-- 最小二乘法
-- 正规方程
-- 梯度下降
-- MSE
-- 多重共线性
+- 线性假设
+- 外推风险
 
-### 代码任务
+### 实验
 
-```python
-from sklearn.linear_model import LinearRegression
+```text
+RDKit 描述符 + MLR
 ```
 
-完成：
+### 需要记录
 
-- 训练模型
-- 输出系数
-- 输出截距
-- 计算预测值
-- 画真实值与预测值散点图
-- 画残差图
+- 训练集指标
+- 验证集指标
+- 测试集指标
+- 回归系数
+- 是否出现异常预测
 
 ---
 
-## 3.2 多项式回归 MPR
+## 2. Ridge
 
-### 核心思想
+### 用途
 
-将原始特征扩展为：
+缓解多重共线性和过拟合。
 
-\[
-x,\quad x^2,\quad x^3,\quad x_1x_2
-\]
+### 实验
 
-### 必须掌握
-
-- 多项式特征
-- 交互项
-- 阶数选择
-- 维度爆炸
-- 高阶模型过拟合
-- 多项式回归仍是线性参数模型
-
-### 代码任务
-
-```python
-from sklearn.preprocessing import PolynomialFeatures
+```text
+RDKit 描述符 + StandardScaler + Ridge
 ```
 
-比较：
+### 需要比较
 
-- 一阶模型
-- 二阶模型
-- 三阶模型
-
-观察训练误差和测试误差。
-
----
-
-## 3.3 Ridge Regression
-
-### 目标函数
-
-\[
-\min_\beta
-\left[
-\|y-X\beta\|_2^2+\lambda\|\beta\|_2^2
-\right]
-\]
-
-### 必须掌握
-
-- \(L_2\) 正则化
+- 不同 `alpha`
 - 系数收缩
-- 正则化强度
-- 偏差—方差权衡
-- 为什么 Ridge 通常不会将系数压到 0
+- 测试误差
+- 与 MLR 的差异
 
-### 代码任务
+---
 
-```python
-from sklearn.linear_model import Ridge
-```
+## 3. Lasso
 
-测试：
+### 用途
+
+正则化与特征选择。
+
+### 实验
 
 ```text
-alpha = 0
-alpha = 0.1
-alpha = 1
-alpha = 10
-alpha = 100
+RDKit 描述符 + StandardScaler + Lasso
 ```
 
-观察系数变化。
+### 需要比较
+
+- 不同 `alpha`
+- 非零系数数量
+- 被删除的特征
+- 与 Ridge 的差异
 
 ---
 
-## 3.4 Lasso Regression
+## 4. Decision Tree
 
-### 目标函数
+### 用途
 
-\[
-\min_\beta
-\left[
-\|y-X\beta\|_2^2+\lambda\|\beta\|_1
-\right]
-\]
+学习树模型的基础结构。
 
-### 必须掌握
+### 需要理解
 
-- \(L_1\) 正则化
-- 稀疏解
-- 自动特征选择
-- Ridge 与 Lasso 的差异
-
-### 代码任务
-
-```python
-from sklearn.linear_model import Lasso
-```
-
-观察不同 `alpha` 下有多少系数变为 0。
-
----
-
-## 本阶段验收标准
-
-能够清楚解释：
-
-1. MLR 为什么是线性模型？
-2. 多项式回归为什么可以拟合非线性？
-3. Ridge 和 Lasso 的正则项有什么区别？
-4. 为什么标准化会影响正则化模型？
-5. 为什么高阶多项式容易过拟合？
-
----
-
-# 四、第三阶段：支持向量机与核方法
-
-## 学习时间
-
-1 周。
-
-## 学习顺序
-
-```text
-最大间隔分类
-    ↓
-软间隔 SVM
-    ↓
-核技巧
-    ↓
-SVR
-    ↓
-LSSVM
-```
-
----
-
-## 4.1 SVM 基础
-
-### 必须掌握
-
-- 超平面
-- 函数间隔
-- 几何间隔
-- 最大间隔
-- 支持向量
-- 硬间隔
-- 软间隔
-- 松弛变量
-- 惩罚参数 \(C\)
-
-### 不要求
-
-暂时不需要完整推导 KKT 条件，但要理解：
-
-- 原始问题
-- 对偶问题
-- 为什么最终预测只依赖支持向量
-
----
-
-## 4.2 核技巧
-
-### 必须掌握
-
-核函数的意义：
-
-\[
-K(x_i,x_j)=\phi(x_i)^\top\phi(x_j)
-\]
-
-重点学习：
-
-- 线性核
-- 多项式核
-- RBF 核
-- Sigmoid 核
-
-RBF 核：
-
-\[
-K(x_i,x_j)=
-\exp\left(-\gamma\|x_i-x_j\|^2\right)
-\]
-
-理解：
-
-- \(\gamma\) 很大时模型更局部
-- \(\gamma\) 很小时模型更平滑
-
----
-
-## 4.3 SVR
-
-### 核心概念
-
-\[
-|y_i-f(x_i)|\leq \varepsilon
-\]
-
-误差落在 \(\varepsilon\)-tube 内时不惩罚。
-
-### 必须掌握
-
-- \(\varepsilon\)-不敏感损失
-- 参数 \(C\)
-- 参数 \(\varepsilon\)
-- 参数 \(\gamma\)
-- 支持向量
-- 核回归
-- 特征标准化
-
-### 代码任务
-
-```python
-from sklearn.svm import SVR
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler
-```
-
-比较：
-
-- Linear SVR
-- Polynomial SVR
-- RBF SVR
-
----
-
-## 4.4 LSSVM
-
-### 必须掌握
-
-- 平方损失
-- 等式约束
-- 线性方程求解
-- 与普通 SVM/SVR 的区别
-- 对异常值更敏感
-
-### 学习要求
-
-能够说清：
-
-> LSSVM 用平方误差和等式约束简化了优化问题，但失去了普通 SVM 的部分稀疏性和稳健性。
-
----
-
-## 本阶段验收标准
-
-能够回答：
-
-1. 什么是支持向量？
-2. 核技巧解决了什么问题？
-3. \(C\)、\(\varepsilon\)、\(\gamma\) 分别控制什么？
-4. 为什么 SVR 前通常要标准化？
-5. LSSVM 与 SVR 的主要区别是什么？
-
----
-
-# 五、第四阶段：决策树与集成学习
-
-## 学习时间
-
-2 周。
-
-## 学习顺序
-
-```text
-决策树
-   ↓
-Bagging
-   ↓
-Random Forest
-   ↓
-Boosting
-   ↓
-GBDT
-   ↓
-XGBoost
-   ↓
-LightGBM
-   ↓
-CatBoost
-```
-
-这是整篇论文最重要的算法部分之一。
-
----
-
-## 5.1 决策树 DT
-
-### 必须掌握
-
-- 根节点
-- 内部节点
-- 叶节点
-- 递归二分
-- 切分特征
+- 节点
+- 特征切分
 - 切分阈值
-- 回归树
-- MSE 切分准则
+- 叶节点
 - 树深
-- 剪枝
 - 过拟合
+- 剪枝
 
-### 代码任务
+### 实验
 
-```python
-from sklearn.tree import DecisionTreeRegressor
+```text
+RDKit 描述符 + Decision Tree
 ```
 
 比较：
 
-```text
-max_depth = 2
-max_depth = 5
-max_depth = 10
-max_depth = None
-```
+- `max_depth`
+- `min_samples_split`
+- `min_samples_leaf`
+
+### 必须观察
+
+- 训练集是否接近完美
+- 测试集是否明显变差
+- 树深对过拟合的影响
 
 ---
 
-## 5.2 Bagging
+## 5. Random Forest
 
-### 核心公式
+### 用途
 
-\[
-\hat y=
-\frac{1}{M}\sum_{m=1}^{M}f_m(x)
-\]
+论文和导师明确要求重点学习。
 
-### 必须掌握
+### 需要理解
 
 - Bootstrap
-- 有放回抽样
-- 基学习器
-- 多模型平均
-- 降低方差
-- OOB 样本
-
----
-
-## 5.3 Random Forest
-
-### 必须掌握
-
-- Bootstrap 样本
+- Bagging
 - 随机特征子集
 - 多棵树平均
-- OOB 误差
+- OOB Error
 - 特征重要性
-- 方差降低
 
-### 主要超参数
+### 两组实验
+
+```text
+RDKit 描述符 + Random Forest
+Morgan 指纹 + Random Forest
+```
+
+### 主要参数
 
 - `n_estimators`
 - `max_depth`
@@ -576,837 +437,723 @@ max_depth = None
 - `min_samples_split`
 - `min_samples_leaf`
 
-### 代码任务
+### 必须比较
 
-```python
-from sklearn.ensemble import RandomForestRegressor
-```
+- 单棵树与随机森林
+- 描述符与指纹
+- 训练误差与测试误差
+- 内置特征重要性与置换重要性
 
 ---
 
-## 5.4 Boosting
+## 6. GBDT
 
-### 核心思想
+### 用途
 
-串行训练多个弱学习器，后一个模型修正前一个模型的错误。
+学习 Boosting 的基本思想。
 
-### 必须掌握
+### 需要理解
 
-- 弱学习器
 - 串行训练
-- 前向加法模型
+- 弱学习器
 - 残差
-- 学习率
-- 降低偏差
-
----
-
-## 5.5 GBDT
-
-### 核心公式
-
-\[
-F_m(x)=F_{m-1}(x)+\eta h_m(x)
-\]
-
-负梯度：
-
-\[
-r_{im}
-=
--
-\left[
-\frac{\partial L(y_i,F(x_i))}
-{\partial F(x_i)}
-\right]
-\]
-
-### 必须掌握
-
-- 负梯度拟合
-- 残差拟合
+- 负梯度
 - 学习率
 - 树数量
-- 树深
-- Shrinkage
-- Subsample
+
+### 实验
+
+```text
+RDKit 描述符 + GBDT
+Morgan 指纹 + GBDT
+```
+
+### 主要参数
+
+- `n_estimators`
+- `learning_rate`
+- `max_depth`
+- `subsample`
 
 ---
 
-## 5.6 XGBoost
+## 7. XGBoost
 
-### 必须掌握
+### 用途
 
+材料和分子表格数据中的重要模型。
+
+### 需要理解
+
+- GBDT
 - 一阶梯度
 - 二阶梯度
-- 二阶泰勒展开
 - 正则化
-- 分裂增益
 - 行采样
 - 列采样
-- 缺失值处理
-- 学习率
-- 树复杂度
+- 分裂增益
+- 早停
 
-### 代码任务
+### 两组实验
 
-```python
-from xgboost import XGBRegressor
+```text
+RDKit 描述符 + XGBoost
+Morgan 指纹 + XGBoost
 ```
+
+### 主要参数
+
+- `n_estimators`
+- `learning_rate`
+- `max_depth`
+- `subsample`
+- `colsample_bytree`
+- `reg_alpha`
+- `reg_lambda`
 
 ---
 
-## 5.7 LightGBM
+## 8. LightGBM
 
-### 必须掌握
+### 需要理解
 
 - Histogram
-- Leaf-wise 生长
-- Level-wise 生长
+- Leaf-wise
+- Level-wise
 - GOSS
 - EFB
-- 大规模数据训练
-- 过拟合风险
+- 训练效率
+- 小数据过拟合风险
 
-### 代码任务
+### 实验
 
-```python
-from lightgbm import LGBMRegressor
+```text
+RDKit 描述符 + LightGBM
 ```
+
+### 重点比较
+
+- 与 XGBoost 的训练速度
+- 与 XGBoost 的预测性能
+- 叶子数对过拟合的影响
 
 ---
 
-## 5.8 CatBoost
+## 9. CatBoost
 
-### 必须掌握
+### 需要理解
 
 - 类别特征
 - Target Statistics
-- Ordered Target Statistics
+- Ordered Statistics
 - Ordered Boosting
 - Oblivious Tree
-- 防止目标泄漏
-- 类别特征组合
+- 目标泄漏
 
-### 代码任务
+### 适用场景
 
-```python
-from catboost import CatBoostRegressor
-```
+后续 DES 或离子液体数据可能包含：
 
----
+- HBA 类型
+- HBD 类型
+- 阳离子类型
+- 阴离子类型
+- 材料类别
 
-## 本阶段必须完成的对比表
+因此 CatBoost 优先级较高。
 
-| 模型 | 核心思想 | 并行或串行 | 主要降低 | 类别特征处理 |
-|---|---|---|---|---|
-| Decision Tree | 单棵递归树 | 单模型 | 无 | 需编码 |
-| Random Forest | Bagging | 并行 | 方差 | 需编码 |
-| GBDT | 梯度提升 | 串行 | 偏差 | 需编码 |
-| XGBoost | 正则化 GBDT | 串行 | 偏差 | 需编码 |
-| LightGBM | 高效 GBDT | 串行 | 偏差 | 部分支持 |
-| CatBoost | 类别特征 Boosting | 串行 | 偏差 | 原生支持 |
+### 实验
 
----
-
-## 本阶段验收标准
-
-能够回答：
-
-1. 决策树为什么容易过拟合？
-2. Bagging 为什么能降低方差？
-3. Random Forest 的两种随机性是什么？
-4. Boosting 与 Bagging 有什么区别？
-5. GBDT 为什么拟合负梯度？
-6. XGBoost 相比 GBDT 增加了什么？
-7. LightGBM 为什么训练快？
-8. CatBoost 如何避免类别特征目标泄漏？
-
----
-
-# 六、第五阶段：神经网络
-
-## 学习时间
-
-1～2 周。
-
-## 学习顺序
+在普通分子数据上完成基础实验后，再在包含类别变量的数据上比较：
 
 ```text
-神经元
-  ↓
-MLP
-  ↓
-反向传播
-  ↓
-优化器
-  ↓
-RNN
-  ↓
-LSTM
-  ↓
-Autoencoder
-  ↓
-Self-Attention
+One-Hot + XGBoost
+CatBoost 原生类别特征
 ```
 
 ---
 
-## 6.1 神经元与 MLP
+# 五、第四阶段：模型评价与数据划分
 
-### 核心公式
-
-\[
-z=Wx+b
-\]
-
-\[
-a=\sigma(z)
-\]
-
-多层网络：
-
-\[
-h^{(l)}=
-\sigma\left(W^{(l)}h^{(l-1)}+b^{(l)}\right)
-\]
-
-### 必须掌握
-
-- 权重
-- 偏置
-- 线性变换
-- 激活函数
-- 隐藏层
-- 输出层
-- 参数数量
-- 前向传播
-
-### 激活函数
-
-- Sigmoid
-- Tanh
-- ReLU
+化学机器学习中，数据划分往往比模型本身更重要。
 
 ---
 
-## 6.2 反向传播 BPNN
+## 1. Random Split
 
-### 必须掌握
+随机把样本分成：
 
-- 链式法则
-- 损失函数
-- 梯度
-- 输出层梯度
-- 隐藏层梯度
-- 权重更新
-- 学习率
+- 训练集
+- 验证集
+- 测试集
 
-### 必须手算
+### 用途
 
-至少手算一次：
+快速建立基线。
 
-- 单隐藏层网络
-- 单样本
-- MSE 损失
-- 一次前向传播
-- 一次反向传播
-- 一次参数更新
+### 局限
+
+相似分子可能同时出现在训练集和测试集，使测试结果偏乐观。
 
 ---
 
-## 6.3 优化器
+## 2. Scaffold Split
 
-建议学习：
+按照分子骨架划分。
 
-- Batch Gradient Descent
-- Stochastic Gradient Descent
-- Mini-batch Gradient Descent
-- Momentum
-- Adam
+### 需要理解
 
----
+- Bemis–Murcko Scaffold
+- 骨架相同的分子放在同一集合
+- 测试模型对新化学骨架的泛化能力
 
-## 6.4 RNN
+### 重要性
 
-### 核心公式
+对于分子性质预测，Scaffold Split 通常比 Random Split 更严格。
 
-\[
-h_t=\phi(W_xx_t+W_hh_{t-1}+b)
-\]
-
-### 必须掌握
-
-- 隐藏状态
-- 参数共享
-- 时间展开
-- BPTT
-- 梯度消失
-- 梯度爆炸
-
----
-
-## 6.5 LSTM
-
-### 必须掌握
-
-- 遗忘门
-- 输入门
-- 输出门
-- 细胞状态
-- 隐藏状态
-
-核心公式：
-
-\[
-f_t=\sigma(W_f[h_{t-1},x_t]+b_f)
-\]
-
-\[
-i_t=\sigma(W_i[h_{t-1},x_t]+b_i)
-\]
-
-\[
-C_t=f_t\odot C_{t-1}+i_t\odot\tilde C_t
-\]
-
-\[
-h_t=o_t\odot\tanh(C_t)
-\]
-
----
-
-## 6.6 Autoencoder
-
-### 结构
-
-\[
-x\rightarrow z\rightarrow \hat x
-\]
-
-### 必须掌握
-
-- Encoder
-- Latent Representation
-- Decoder
-- Reconstruction Loss
-- 非线性降维
-- 表示学习
-
----
-
-## 6.7 Self-Attention
-
-### 核心公式
-
-\[
-\operatorname{Attention}(Q,K,V)
-=
-\operatorname{softmax}
-\left(
-\frac{QK^\top}{\sqrt{d_k}}
-\right)V
-\]
-
-### 必须掌握
-
-- Query
-- Key
-- Value
-- 注意力分数
-- Softmax
-- 加权求和
-- 全局依赖
-
----
-
-## 代码路线
-
-先使用：
-
-```python
-from sklearn.neural_network import MLPRegressor
-```
-
-再学习 PyTorch：
-
-```python
-import torch
-import torch.nn as nn
-```
-
-建议实现：
-
-1. MLP 回归
-2. 简单 RNN
-3. LSTM
-4. Autoencoder
-5. Self-Attention 模块
-
----
-
-## 本阶段验收标准
-
-能够回答：
-
-1. MLP 为什么可以拟合非线性？
-2. 反向传播为什么需要链式法则？
-3. ReLU 与 Sigmoid 有什么区别？
-4. RNN 为什么会梯度消失？
-5. LSTM 如何缓解长期依赖问题？
-6. Autoencoder 学到的潜在变量是什么？
-7. Attention 中 Q、K、V 分别是什么？
-
----
-
-# 七、第六阶段：图神经网络
-
-## 学习时间
-
-1 周。
-
-## 学习顺序
+### 必须比较
 
 ```text
-图结构
-  ↓
-节点特征与边特征
-  ↓
-消息传递
-  ↓
-图卷积
-  ↓
-图级 Readout
-  ↓
-GNN-MG
+Random Split
+vs
+Scaffold Split
 ```
 
 ---
 
-## 7.1 图基础
+## 3. Group Split
 
-### 必须掌握
+后续双组分或混合物任务中使用。
 
-- 节点
-- 边
-- 邻接矩阵
-- 度矩阵
+例如：
+
+- 同一个 HBA 只能出现在一个集合
+- 同一个 HBD 只能出现在一个集合
+- 同一种 DES 配方只能出现在一个集合
+- 同一种离子液体只能出现在一个集合
+
+### 目的
+
+防止模型只记住材料身份。
+
+---
+
+## 4. 评价指标
+
+回归任务至少使用：
+
+- \(R^2\)
+- MAE
+- RMSE
+
+必要时增加：
+
+- MSE
+- AARD%
+- MAPE
+
+### 必须检查
+
+- 训练集指标
+- 验证集指标
+- 测试集指标
+- 多个随机种子
+- 交叉验证均值
+- 交叉验证标准差
+- 异常预测
+- 是否出现负值等物理不合理结果
+
+---
+
+# 六、第五阶段：图神经网络
+
+导师明确提到 GNN，因此必须与传统模型在同一任务上比较。
+
+总流程：
+
+```text
+SMILES
+  ↓
+分子图
+  ↓
+Message Passing
+  ↓
+Graph Pooling
+  ↓
+全连接层
+  ↓
+性质预测
+```
+
+---
+
+## 1. GraphConv / GCN
+
+### 需要理解
+
 - 节点特征
-- 边特征
-- 有向图
-- 无向图
-
----
-
-## 7.2 消息传递神经网络
-
-### 核心过程
-
-消息聚合：
-
-\[
-m_v^{(k)}
-=
-\operatorname{AGGREGATE}
-\left(
-\{h_u^{(k-1)}:u\in\mathcal N(v)\}
-\right)
-\]
-
-节点更新：
-
-\[
-h_v^{(k)}
-=
-\operatorname{UPDATE}
-\left(
-h_v^{(k-1)},m_v^{(k)}
-\right)
-\]
-
-图级输出：
-
-\[
-h_G=
-\operatorname{READOUT}
-\left(
-\{h_v^{(K)}\}
-\right)
-\]
-
-### 必须掌握
-
-- Message
-- Aggregate
-- Update
-- Readout
-- 节点级任务
-- 边级任务
-- 图级任务
-- 过平滑
-
----
-
-## 7.3 GNN-MG
-
-### 学习目标
-
-理解多个分子或组分如何组成混合物图。
-
-需要掌握：
-
-- 单分子图编码
-- 多组分表示
-- 组分嵌入融合
-- 条件变量拼接
+- 邻居节点
+- 消息传递
+- 聚合
+- 节点更新
+- 图级池化
 - 图级回归
 
----
-
-## 代码任务
-
-建议使用：
-
-```python
-import torch_geometric
-```
-
-完成：
-
-1. 构造简单图
-2. 实现 GCN
-3. 图分类示例
-4. 图回归示例
-5. 多图嵌入融合
-
----
-
-## 本阶段验收标准
-
-能够回答：
-
-1. 分子为什么适合表示成图？
-2. GNN 的消息传递是什么？
-3. 聚合函数为什么需要置换不变？
-4. 节点嵌入如何变成图嵌入？
-5. 多组分体系如何用 GNN 表示？
-
----
-
-# 八、第七阶段：优化算法与混合模型
-
-## 学习时间
-
-1 周。
-
----
-
-## 8.1 遗传算法 GA
-
-### 学习顺序
+### 实验
 
 ```text
-编码
- ↓
-初始化种群
- ↓
-适应度
- ↓
-选择
- ↓
-交叉
- ↓
-变异
- ↓
-新一代
+ESOL + GraphConv / GCN
 ```
 
-### 必须掌握
-
-- 染色体
-- 基因
-- 种群
-- 适应度
-- 选择
-- 交叉
-- 变异
-- 精英保留
-
-### 论文组合
+### 必须比较
 
 ```text
-GA + MLR
+RDKit 描述符 + Random Forest
+Morgan 指纹 + Random Forest
+分子图 + GCN
 ```
 
 ---
 
-## 8.2 粒子群优化 PSO
+## 2. MPNN
 
-### 核心公式
+### 需要理解
+
+- Message Function
+- Update Function
+- Readout Function
+- 边特征
+- 多轮消息传递
+
+### 实验
+
+```text
+ESOL + MPNN
+```
+
+### 重点比较
+
+- GCN 与 MPNN
+- 是否使用边特征
+- 消息传递层数
+- 图池化方式
+
+---
+
+## 3. GAT
+
+### 需要理解
+
+- 图注意力
+- 邻居权重
+- 多头注意力
+- 不同邻居贡献不同
+
+### 实验
+
+```text
+ESOL + GAT
+```
+
+GAT 不需要优先于 GCN 和 MPNN，但应了解其基本结构。
+
+---
+
+## 4. GNN 训练重点
+
+必须记录：
+
+- 节点特征
+- 边特征
+- 消息传递层数
+- Hidden Dimension
+- Pooling 方法
+- Batch Size
+- Learning Rate
+- Epoch
+- Early Stopping
+- 验证集最佳轮次
+
+---
+
+# 七、第六阶段：相似数据集复现
+
+导师明确要求：
+
+> 找类似的数据和任务跑一下算法。
+
+因此不能只完成一个 ESOL 示例。
+
+---
+
+## 任务 1：ESOL
+
+目标：
+
+```text
+分子结构 → 水溶解度
+```
+
+模型：
+
+- MLR
+- Random Forest
+- XGBoost
+- GCN
+- MPNN
+
+---
+
+## 任务 2：Lipophilicity
+
+目标：
+
+```text
+分子结构 → 脂溶性
+```
+
+模型：
+
+- Random Forest
+- XGBoost
+- GCN
+- MPNN
+
+目的：
+
+检验是否真正掌握完整流程，而不是只会复制 ESOL 代码。
+
+---
+
+## 任务 3：FreeSolv
+
+目标：
+
+```text
+分子结构 → 水合自由能
+```
+
+重点：
+
+- 小样本
+- 数据划分敏感
+- 模型稳定性
+- 多随机种子
+- 交叉验证
+
+---
+
+## 任务 4：QM 数据
+
+可选：
+
+- QM7
+- QM8
+- QM9
+
+目标：
+
+```text
+分子结构 → 量子化学性质
+```
+
+重点：
+
+- 多任务学习
+- GNN
+- 大规模分子数据
+- 图表示
+
+---
+
+# 八、第七阶段：从单分子迁移到双组分与混合物
+
+你们课题最终不是普通单分子预测，而更可能是：
+
+```text
+分子 A + 分子 B + 配比 + 实验条件 → 材料性质
+```
+
+因此需要从单分子模型迁移到双组分或混合物模型。
+
+---
+
+## 1. 描述符拼接
+
+对两个组分分别生成描述符：
 
 \[
-v_i^{t+1}
-=
-\omega v_i^t
-+c_1r_1(p_i-x_i^t)
-+c_2r_2(g-x_i^t)
+x_A,\quad x_B
 \]
+
+再拼接条件变量：
 
 \[
-x_i^{t+1}=x_i^t+v_i^{t+1}
+x=
+[x_A,x_B,r,T,P]
 \]
 
-### 必须掌握
+其中：
 
-- 粒子
-- 位置
-- 速度
-- 个体最优
-- 全局最优
-- 惯性权重
-- 探索
-- 开发
+- \(x_A\)：组分 A 描述符
+- \(x_B\)：组分 B 描述符
+- \(r\)：摩尔比
+- \(T\)：温度
+- \(P\)：压力
 
-### 论文组合
+可使用：
 
-```text
-PSO + ANN
-```
+- Random Forest
+- XGBoost
+- LightGBM
+- CatBoost
+- MLP
 
 ---
 
-## 8.3 模拟退火 SA
+## 2. 指纹拼接
 
-### 核心公式
+分别生成：
 
 \[
-P=\exp\left(-\frac{\Delta E}{T}\right)
+f_A,\quad f_B
 \]
 
-### 必须掌握
-
-- 邻域搜索
-- 温度
-- 降温
-- 接受较差解
-- 跳出局部最优
-
----
-
-## 8.4 耦合模拟退火 CSA
-
-### 必须掌握
-
-- 多条搜索链
-- 链之间耦合
-- 全局搜索
-- 接受概率
-
-### 论文组合
+组合方式：
 
 ```text
-CSA + LSSVM
+直接拼接
+按比例加权
+求和
+求平均
+加入交互项
 ```
 
+最终输入：
+
+\[
+x=[f_A,f_B,r,T,P]
+\]
+
+可用于：
+
+- Random Forest
+- XGBoost
+- MLP
+
 ---
 
-## 8.5 Stacking
+## 3. 双塔神经网络
 
-### 核心结构
+结构：
 
 ```text
-原始输入
-  ├── 模型 1
-  ├── 模型 2
-  └── 模型 3
+组分 A 表示 → Encoder A ┐
+                         ├→ Fusion → 回归器 → 预测
+组分 B 表示 → Encoder B ┘
+```
+
+输入可以是：
+
+- 描述符
+- 指纹
+- 图嵌入
+
+---
+
+## 4. 双 GNN / Mixture GNN
+
+结构：
+
+```text
+组分 A 分子图 → GNN A → 表示 A
+组分 B 分子图 → GNN B → 表示 B
+                            ↓
+                        表示融合
+                            ↓
+                   拼接配比和实验条件
+                            ↓
+                         回归网络
+                            ↓
+                          预测值
+```
+
+需要比较：
+
+- GNN 是否共享参数
+- 表示拼接
+- 表示求和
+- 注意力融合
+- 按摩尔比加权
+- 加入条件特征的位置
+
+---
+
+## 5. 顺序不变性
+
+对于某些混合物，组分顺序不应改变预测：
+
+\[
+f(A,B)=f(B,A)
+\]
+
+需要考虑：
+
+- 特征排序
+- 对称融合
+- 求和或平均
+- DeepSets
+- 共享编码器
+
+但对于具有明确 HBA/HBD 角色的体系，也可能保留角色顺序：
+
+```text
+HBA 编码器
+HBD 编码器
+```
+
+需根据任务定义决定。
+
+---
+
+# 九、第八阶段：迁移到 DES、离子液体或材料数据
+
+目标数据形式：
+
+| HBA | HBD | Ratio | Temperature | Pressure | Target |
+|---|---|---:|---:|---:|---:|
+
+或者：
+
+| Cation | Anion | Temperature | Pressure | Property |
+|---|---|---:|---:|---:|
+
+---
+
+## 数据获取流程
+
+```text
+论文正文与补充材料
         ↓
-   Meta Learner
+提取材料名称和实验条件
         ↓
-      最终预测
-```
-
-### 必须掌握
-
-- Base Learner
-- Meta Learner
-- Out-of-fold Prediction
-- 数据泄漏
-- 多模型互补
-
----
-
-## 8.6 Cascading
-
-### 核心结构
-
-```text
-输入
- ↓
-特征提取模型
- ↓
-新的表示
- ↓
-预测模型
- ↓
-输出
-```
-
-### 论文组合
-
-```text
-LSTM-AE + SVM
+统一名称
+        ↓
+PubChem 查询 SMILES
+        ↓
+RDKit 标准化
+        ↓
+生成描述符、指纹和分子图
+        ↓
+构建机器学习数据集
 ```
 
 ---
 
-## 8.7 Feature Fusion
+## 数据清洗重点
 
-### 必须掌握
-
-- Early Fusion
-- Intermediate Fusion
-- Late Fusion
-- 特征拼接
-- 多模态表示
-- 异质特征标准化
-
----
-
-## 本阶段验收标准
-
-能够回答：
-
-1. GA 和 PSO 有什么区别？
-2. SA 为什么会接受更差的解？
-3. PSO 如何平衡探索和开发？
-4. Stacking 为什么必须使用 OOF 预测？
-5. Cascading 与 Stacking 有什么区别？
-6. LSTM-AE + SVM 中各部分负责什么？
+- 同义名称
+- 缩写
+- 化学式与名称对应
+- SMILES 标准化
+- 盐与离子的表示
+- 重复实验
+- 单位统一
+- 温度单位
+- 压力单位
+- 目标值单位
+- 摩尔比表示
+- 缺失值
+- 异常值
+- 数据来源记录
 
 ---
 
-# 九、第八阶段：特征处理、解释与未来算法
+## 第一轮模型
 
-## 学习时间
+优先训练：
 
-1 周。
-
----
-
-## 9.1 特征选择
-
-### Filter
-
-学习：
-
-- Pearson
-- Spearman
-- 方差过滤
-- 相关性筛选
-
-### Wrapper
-
-学习：
-
-- Forward Selection
-- Backward Elimination
-- RFE
-
-### Embedded
-
-学习：
-
-- Lasso
-- Tree Importance
-- Boosting Importance
+1. MLR
+2. Random Forest
+3. XGBoost
+4. LightGBM
+5. CatBoost
+6. MLP
 
 ---
 
-## 9.2 PCA
+## 第二轮模型
 
-### 核心流程
+数据量和质量允许后训练：
 
-```text
-数据中心化
-    ↓
-协方差矩阵
-    ↓
-特征值与特征向量
-    ↓
-选取主成分
-    ↓
-投影
-```
-
-### 核心公式
-
-\[
-Z=XW
-\]
-
-### 必须掌握
-
-- 协方差矩阵
-- 特征值
-- 特征向量
-- 方差解释率
-- 降维
-- 信息损失
+1. GCN
+2. MPNN
+3. 双 GNN
+4. Mixture GNN
+5. Attention Fusion
 
 ---
 
-## 9.3 K 折交叉验证
-
-### 必须掌握
-
-- K-fold
-- 每折训练
-- 每折验证
-- 指标均值
-- 指标标准差
-- 超参数选择
-- Nested CV
+# 十、模型解释
 
 ---
 
-## 9.4 Early Stopping
+## 1. 传统特征重要性
 
-### 必须掌握
+适用于：
 
-- 验证损失
-- Patience
-- 最佳轮次
-- 过拟合控制
+- Decision Tree
+- Random Forest
+- XGBoost
+- LightGBM
+- CatBoost
 
----
+需要学习：
 
-## 9.5 特征重要性
-
-学习：
-
-- Impurity-based Importance
 - Split Importance
 - Gain Importance
-- Permutation Importance
+- Impurity Importance
+- 特征重要性偏差
 
 ---
 
-## 9.6 SHAP
+## 2. Permutation Importance
 
-### 核心公式
+流程：
 
-\[
-f(x)=\phi_0+\sum_{j=1}^{M}\phi_j
-\]
+```text
+训练完成的模型
+   ↓
+打乱某个特征
+   ↓
+重新计算性能
+   ↓
+性能下降越大，特征越重要
+```
+
+优点：
+
+- 模型无关
+- 解释直观
+
+问题：
+
+- 相关特征会影响结果
+- 计算量较大
+
+---
+
+## 3. SHAP
 
 ### 必须掌握
 
-- Shapley Value
-- 边际贡献
+- 基准预测
+- SHAP Value
+- 正贡献
+- 负贡献
 - 局部解释
 - 全局解释
 - TreeSHAP
-- Interaction Value
 
 ### 必须会看
 
@@ -1416,519 +1163,270 @@ f(x)=\phi_0+\sum_{j=1}^{M}\phi_j
 - Waterfall Plot
 - Force Plot
 
+### 必须能够回答
+
+- 哪些描述符最重要
+- 高值使预测增大还是减小
+- 是否存在阈值
+- 是否存在特征交互
+- 某个样本为什么得到当前预测
+
 ---
 
-## 9.7 GNNExplainer
+## 4. GNN 解释
 
-学习：
+可学习：
 
+- GNNExplainer
 - 节点掩码
 - 边掩码
 - 子图解释
-- 特征掩码
-- 互信息
+- 原子贡献
+- 化学键贡献
+
+需要注意：
+
+> 模型解释只能说明模型依赖了什么，不自动等于化学因果关系。
 
 ---
 
-## 9.8 LRP
+# 十一、统一实验设计
 
-学习：
+每个数据集都按同一模板执行。
 
-- Relevance
-- 逐层传播
-- 相关性守恒
-- 神经网络解释
+## 1. 数据说明
 
----
+记录：
 
-## 9.9 Active Learning
+- 数据集名称
+- 数据来源
+- 样本数量
+- 输入字段
+- 目标变量
+- 单位
+- 缺失值
+- 重复值
 
-### 核心流程
+## 2. 数据划分
 
-```text
-已有数据
-  ↓
-训练模型
-  ↓
-选择最有价值样本
-  ↓
-获取标签
-  ↓
-加入训练集
-  ↓
-重新训练
-```
+至少比较：
 
-学习：
+- Random Split
+- Scaffold Split 或 Group Split
 
-- Uncertainty Sampling
-- Query by Committee
-- Exploration–Exploitation
+## 3. 分子表示
 
----
+至少比较：
 
-## 9.10 Bayesian Optimization
+- RDKit 描述符
+- Morgan 指纹
+- 分子图
 
-### 核心结构
+## 4. 模型
 
-```text
-目标函数
-  ↓
-代理模型
-  ↓
-采集函数
-  ↓
-选择下一个点
-  ↓
-更新代理模型
-```
-
-学习：
-
-- Gaussian Process
-- Expected Improvement
-- Probability of Improvement
-- Upper Confidence Bound
-
----
-
-## 9.11 PINN
-
-### 核心损失
-
-\[
-L=
-L_{\text{data}}+\lambda L_{\text{physics}}
-\]
-
-学习：
-
-- 数据损失
-- 物理残差
-- 自动微分
-- 初始条件
-- 边界条件
-
----
-
-## 9.12 VAE
-
-### 核心损失
-
-\[
-L=
-L_{\text{reconstruction}}
-+
-D_{\mathrm{KL}}
-\left(
-q_\phi(z|x)\Vert p(z)
-\right)
-\]
-
-学习：
-
-- Encoder
-- Decoder
-- 潜变量分布
-- KL 散度
-- 重参数化技巧
-
----
-
-## 9.13 GAN
-
-### 核心目标
-
-\[
-\min_G\max_D
-\left[
-\mathbb E_{x\sim p_{\mathrm{data}}}\log D(x)
-+
-\mathbb E_{z\sim p(z)}
-\log(1-D(G(z)))
-\right]
-\]
-
-学习：
-
-- Generator
-- Discriminator
-- 对抗训练
-- 极小极大博弈
-- 模式崩溃
-
----
-
-# 十、八周执行安排
-
-## 第 1 周：基础与线性模型
-
-### 学习内容
-
-- 机器学习基本概念
-- MLR
-- MPR
-- Ridge
-- Lasso
-- 训练集、验证集、测试集
-- MSE、RMSE、MAE、\(R^2\)
-
-### 本周输出
-
-- 一个线性回归 Notebook
-- 一个 Ridge/Lasso 对比 Notebook
-- 一张线性模型总结表
-
----
-
-## 第 2 周：SVM 与 SVR
-
-### 学习内容
-
-- 最大间隔
-- 软间隔
-- 核技巧
-- SVR
-- LSSVM
-- 标准化
-- 网格搜索
-
-### 本周输出
-
-- Linear SVR
-- Polynomial SVR
-- RBF SVR
-- 参数 \(C,\varepsilon,\gamma\) 对比实验
-
----
-
-## 第 3 周：决策树与随机森林
-
-### 学习内容
-
-- 决策树
-- Bagging
-- Bootstrap
-- Random Forest
-- OOB
-- 特征重要性
-
-### 本周输出
-
-- 单棵树与随机森林对比
-- 不同树深实验
-- 不同树数量实验
-- 特征重要性图
-
----
-
-## 第 4 周：GBDT 系列
-
-### 学习内容
-
-- Boosting
-- GBDT
-- XGBoost
-- LightGBM
-- CatBoost
-
-### 本周输出
-
-- 五种树模型对比表
-- 训练时间对比
-- 测试指标对比
-- 超参数总结表
-
----
-
-## 第 5 周：神经网络
-
-### 学习内容
-
-- MLP
-- BPNN
-- 优化器
-- RNN
-- LSTM
-- Autoencoder
-- Self-Attention
-
-### 本周输出
-
-- MLP 回归
-- 手算一次反向传播
-- 简单 LSTM
-- Autoencoder
-- Attention 计算示例
-
----
-
-## 第 6 周：GNN
-
-### 学习内容
-
-- 图表示
-- Message Passing
-- Graph Convolution
-- Readout
-- GNN-MG
-
-### 本周输出
-
-- 简单图卷积实现
-- 图级回归模型
-- 一张 GNN 消息传递流程图
-
----
-
-## 第 7 周：优化与混合模型
-
-### 学习内容
-
-- GA
-- PSO
-- SA
-- CSA
-- Stacking
-- Cascading
-- Feature Fusion
-
-### 本周输出
-
-- GA 简单实现
-- PSO 简单实现
-- Stacking 回归
-- LSTM-AE + SVM 结构图
-
----
-
-## 第 8 周：特征处理与解释
-
-### 学习内容
-
-- Filter
-- Wrapper
-- Embedded
-- PCA
-- Cross-validation
-- SHAP
-- GNNExplainer
-- Active Learning
-- Bayesian Optimization
-- PINN
-- VAE
-- GAN
-
-### 本周输出
-
-- PCA 降维实验
-- SHAP Summary Plot
-- SHAP Dependence Plot
-- 单样本 Waterfall Plot
-- 全部算法总表
-
----
-
-# 十一、每个算法统一学习模板
-
-学习每个算法时，都按照以下模板记录。
-
-## 1. 算法名称
-
-中文名、英文名、缩写。
-
-## 2. 算法解决什么问题
-
-分类、回归、降维、优化、解释或生成。
-
-## 3. 输入与输出
-
-输入数据是什么，输出是什么。
-
-## 4. 核心思想
-
-用一段话解释算法。
-
-## 5. 数学公式
-
-写出核心目标函数或更新公式。
-
-## 6. 训练流程
-
-按步骤描述训练过程。
-
-## 7. 主要超参数
-
-列出参数及其作用。
-
-## 8. 优点
-
-说明算法适用条件。
-
-## 9. 缺点
-
-说明局限和风险。
-
-## 10. 与其他算法的区别
-
-至少比较两个相近算法。
-
-## 11. Python 实现
-
-使用 `scikit-learn`、`PyTorch` 或对应库。
-
-## 12. 验收问题
-
-为每个算法准备 3～5 个问题。
-
----
-
-# 十二、学习优先级
-
-## A 级：必须真正掌握
+至少比较：
 
 - MLR
-- MPR
-- Ridge
-- Lasso
-- SVM
-- SVR
-- LSSVM
 - Decision Tree
 - Random Forest
-- Bagging
-- Boosting
-- GBDT
 - XGBoost
-- LightGBM
-- CatBoost
-- MLP
-- BPNN
-- LSTM
-- Self-Attention
 - GNN
-- PCA
-- Cross-validation
-- SHAP
+
+## 5. 指标
+
+统一报告：
+
+- \(R^2\)
+- MAE
+- RMSE
+
+## 6. 稳定性
+
+使用：
+
+- 多个随机种子
+- K 折交叉验证
+- 平均值
+- 标准差
+
+## 7. 图表
+
+至少包含：
+
+- 真实值—预测值图
+- 残差图
+- 模型指标对比图
+- 特征重要性图
+- SHAP Summary Plot
 
 ---
 
-## B 级：掌握流程与结构
-
-- RNN
-- Autoencoder
-- LSTM Autoencoder
-- GNN-MG
-- GA
-- PSO
-- SA
-- CSA
-- Stacking
-- Cascading
-- Feature Fusion
-- GNNExplainer
-- Bayesian Optimization
-- Active Learning
-
----
-
-## C 级：先理解概念
-
-- LRP
-- PINN
-- VAE
-- GAN
-
----
-
-# 十三、最终验收标准
-
-完成这条路线后，应当达到以下水平。
-
-## 理论方面
-
-能够：
-
-- 写出主要算法的核心公式
-- 解释损失函数
-- 解释训练流程
-- 说明主要超参数
-- 比较相近算法
-- 分析算法优缺点
-- 判断算法适用场景
-
-## 编程方面
-
-能够独立使用：
-
-- `LinearRegression`
-- `Ridge`
-- `Lasso`
-- `SVR`
-- `DecisionTreeRegressor`
-- `RandomForestRegressor`
-- `GradientBoostingRegressor`
-- `XGBRegressor`
-- `LGBMRegressor`
-- `CatBoostRegressor`
-- `MLPRegressor`
-- PyTorch MLP
-- PyTorch LSTM
-- PyTorch Geometric
-- `PCA`
-- `KFold`
-- `GridSearchCV`
-- `shap`
-
-## 表达方面
-
-能够在 10～15 分钟内讲清：
-
-1. 论文中算法如何分类
-2. 线性模型、核方法、树模型、神经网络的区别
-3. Random Forest 与 Boosting 的区别
-4. XGBoost、LightGBM、CatBoost 的区别
-5. LSTM、Autoencoder 与 Self-Attention 的作用
-6. GNN 如何表示分子
-7. GA、PSO、CSA 如何优化模型
-8. SHAP 如何解释预测结果
-
----
-
-# 十四、最终建议
-
-不要同时学习所有算法。
-
-严格按照以下主线推进：
+# 十二、最终项目结构
 
 ```text
-MLR
-→ Ridge / Lasso
-→ SVR
+materials-ml/
+├── data/
+│   ├── raw/
+│   ├── processed/
+│   └── external/
+├── notebooks/
+│   ├── 01_dataset_overview.ipynb
+│   ├── 02_rdkit_descriptors.ipynb
+│   ├── 03_morgan_fingerprints.ipynb
+│   ├── 04_tree_models.ipynb
+│   ├── 05_gnn_models.ipynb
+│   ├── 06_model_comparison.ipynb
+│   ├── 07_shap_analysis.ipynb
+│   └── 08_mixture_models.ipynb
+├── src/
+│   ├── data_loader.py
+│   ├── standardize_smiles.py
+│   ├── descriptors.py
+│   ├── fingerprints.py
+│   ├── graph_data.py
+│   ├── splits.py
+│   ├── train_tree.py
+│   ├── train_gnn.py
+│   ├── evaluate.py
+│   └── explain.py
+├── results/
+│   ├── metrics/
+│   ├── figures/
+│   └── models/
+├── requirements.txt
+└── README.md
+```
+
+---
+
+# 十三、最终学习顺序
+
+严格按下面顺序推进：
+
+```text
+DeepChem 数据加载
+→ MoleculeNet ESOL
+→ SMILES
+→ PubChem
+→ RDKit
+→ 分子描述符
+→ Morgan Fingerprint
+→ MLR
 → Decision Tree
 → Random Forest
 → GBDT
 → XGBoost
 → LightGBM
 → CatBoost
-→ MLP
-→ LSTM
-→ Autoencoder
-→ Self-Attention
-→ GNN
-→ GA / PSO / CSA
-→ Stacking
-→ PCA
+→ Random Split
+→ Scaffold Split
+→ 分子图
+→ GCN / GraphConv
+→ MPNN
+→ GAT
 → SHAP
-→ Active Learning / Bayesian Optimization
-→ PINN / VAE / GAN
+→ Lipophilicity
+→ FreeSolv
+→ 双组分描述符拼接
+→ 双组分指纹拼接
+→ 双塔神经网络
+→ 双 GNN / Mixture GNN
+→ DES / 离子液体 / 材料数据
 ```
 
-优先完成 A 级算法，再进入 B 级和 C 级。  
-每学完一个算法，都要同时完成：
+---
 
-- 一页理论笔记
-- 一个最小代码示例
-- 一组超参数实验
-- 一次算法对比
-- 三个口头问题
+# 十四、优先级
+
+## 第一优先级
+
+必须优先完成：
+
+- DeepChem
+- MoleculeNet
+- SMILES
+- PubChem
+- RDKit
+- 分子描述符
+- Morgan Fingerprint
+- Decision Tree
+- Random Forest
+- XGBoost
+- GCN
+- MPNN
+- Random Split
+- Scaffold Split
+- SHAP
+
+---
+
+## 第二优先级
+
+完成第一优先级后学习：
+
+- Ridge
+- Lasso
+- GBDT
+- LightGBM
+- CatBoost
+- GAT
+- Group Split
+- Permutation Importance
+- 双组分特征拼接
+- 双 GNN
+- Mixture GNN
+
+---
+
+## 暂缓内容
+
+当前不优先：
+
+- LSSVM
+- PSO
+- GA
+- CSA
+- LSTM
+- LSTM-AE
+- VAE
+- GAN
+- PINN
+- Active Learning
+- Bayesian Optimization
+- LRP
+
+这些内容等真实数据和具体研究任务明确后再决定是否学习。
+
+---
+
+# 十五、最终验收标准
+
+完成本流程后，应能够：
+
+1. 从公开数据库获取分子数据
+2. 根据名称查询标准 SMILES
+3. 使用 RDKit 生成描述符和指纹
+4. 将分子表示成图
+5. 使用决策树和随机森林完成回归
+6. 使用 XGBoost、LightGBM 和 CatBoost 完成表格建模
+7. 使用 GCN 或 MPNN 完成图级回归
+8. 比较 Random Split 与 Scaffold Split
+9. 比较描述符、指纹和分子图
+10. 使用 SHAP 解释树模型
+11. 构建双组分或混合物输入
+12. 将完整流程迁移到 DES、离子液体或材料性质预测任务
+
+最终应当能够独立完成：
+
+```text
+找到数据
+→ 清洗数据
+→ 标准化分子结构
+→ 生成三类分子表示
+→ 训练传统模型
+→ 训练 GNN
+→ 比较划分方法
+→ 评价模型
+→ 解释模型
+→ 形成实验报告
+```
