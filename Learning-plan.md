@@ -1,1432 +1,816 @@
-# 化学与材料机器学习算法学习流程
+# 机器学习与图神经网络算法学习方案（修订版）
 
-> 目标：结合真实化学或材料数据，学习论文中与课题最相关的算法。  
-> 原则：不单独安排数学预备；在具体算法中遇到不会的公式、概念或代码时再补。  
-> 核心要求：每学习一个算法，都必须在真实数据集上完成一次完整实验。
+## 一、当前任务定位
 
----
+当前课题组的材料数据仍在采集和整理阶段，因此现阶段的重点不是围绕某一篇材料论文、某一种材料体系或某一个具体预测目标开展研究，而是：
 
-# 一、总体路线
+> 通过公开数据集、经典论文、官方教程和开源代码，系统熟悉决策树、随机森林、SVM、XGBoost、MLP、GCN、GraphSAGE、GAT、GIN 等算法，并掌握完整的机器学习实验流程。
 
-```text
-化学数据库与公开数据集
-        ↓
-SMILES 与分子结构
-        ↓
-RDKit 描述符与分子指纹
-        ↓
-传统机器学习模型
-        ↓
-分子图与 GNN
-        ↓
-混合物与双组分建模
-        ↓
-模型评价与解释
-        ↓
-迁移到 DES / 离子液体 / 材料数据
-```
-
-真正需要掌握的不是单独的模型名称，而是：
+现阶段的核心训练内容包括：
 
 ```text
-数据获取
-→ 分子表示
-→ 数据划分
-→ 模型训练
-→ 指标评价
-→ 模型解释
-→ 迁移到课题数据
+算法原理学习
+→ 查找公开数据与代码
+→ 原样跑通
+→ 修改关键参数
+→ 加入基线模型
+→ 比较实验结果
+→ 分析过拟合与稳定性
+→ 逐步整理公共代码
+→ 后续迁移到课题数据
 ```
+
+当前不应将学习范围限制在深共晶溶剂、CO₂ 捕集、分子性质预测、某一篇综述或某一个材料数据集。材料与分子任务可以作为后期练习方向，但不应成为当前唯一主线。
 
 ---
 
-# 二、第一阶段：建立完整分子机器学习流程
+# 二、基本原则
 
-## 推荐数据集
+## 2.1 先学习算法，再开发框架
 
-优先使用：
-
-- ESOL / Delaney：水溶解度回归
-- Lipophilicity：脂溶性回归
-- FreeSolv：水合自由能回归
-- QM7 / QM8 / QM9：分子量子性质预测
-
-第一套任务建议使用：
+正确顺序：
 
 ```text
-ESOL：根据分子结构预测水溶解度
+先分别跑通算法
+→ 理解不同任务的输入输出
+→ 找出共同代码
+→ 提取工具函数
+→ 拆分模型与训练模块
+→ 最后形成通用框架
 ```
 
-## 需要完成
+不建议一开始就设计完整统一框架，因为：
 
-1. 使用 DeepChem 加载数据集
-2. 查看样本数量
-3. 查看 SMILES
-4. 查看预测标签
-5. 查看训练集、验证集和测试集
-6. 建立一个最简单的基线模型
-7. 输出 RMSE、MAE 和 \(R^2\)
-8. 保存预测结果
-9. 画真实值—预测值散点图
-10. 画残差图
+- scikit-learn 使用 `fit()` 和 `predict()`；
+- PyTorch 模型使用 `forward()`；
+- PyTorch Geometric 的输入通常是 `Data` 或 `Batch`；
+- 表格数据是二维矩阵；
+- 图节点分类和图分类的数据结构不同；
+- 分类任务与回归任务的损失函数和指标不同。
 
-## 必须理解
+因此，不应强行把传统机器学习和深度学习完全统一成同一种模型接口。
 
-- 一个样本是什么
-- 输入是什么
-- 标签是什么
-- 模型预测什么
-- 数据集如何划分
-- 指标如何评价模型
-- 训练集表现好但测试集表现差意味着什么
+## 2.2 先使用标准数据集
 
-## 验收标准
+推荐使用：
 
-能够完整说清：
+### 表格分类
+- Iris
+- Wine
+- Breast Cancer Wisconsin
+- Digits
+
+### 表格回归
+- California Housing
+- Diabetes
+
+### 图节点分类
+- Karate Club
+- Cora
+- Citeseer
+
+### 图分类
+- MUTAG
+- PROTEINS
+
+### 后期可选
+- ESOL
+- FreeSolv
+- Lipophilicity
+- 其他分子或材料性质预测数据
+
+## 2.3 不预设模型必须达到某个指标
+
+模型性能取决于数据质量、特征工程、数据划分、随机种子、超参数、是否存在数据泄漏、样本规模和任务难度。
+
+正确目标是：
+
+> 在相同数据划分和评价标准下，比较不同模型的性能、稳定性、过拟合程度和计算成本。
+
+---
+
+# 三、学习路线总览
+
+## 第一阶段：传统机器学习
+
+重点算法：
+
+- 线性回归
+- 逻辑回归
+- K近邻
+- 决策树
+- 随机森林
+- 支持向量机
+- XGBoost
+
+目标：
+
+- 熟悉分类与回归；
+- 掌握训练集、验证集和测试集；
+- 掌握常见评价指标；
+- 理解过拟合与欠拟合；
+- 掌握基础调参方法；
+- 学会建立基线模型。
+
+## 第二阶段：基础神经网络
+
+重点模型：
+
+- MLP
+- CNN
+
+目标：
+
+- 理解前向传播；
+- 理解损失函数；
+- 理解反向传播；
+- 掌握优化器；
+- 理解 Batch、Iteration 和 Epoch；
+- 掌握 Dropout 和 Early Stopping；
+- 学会绘制训练曲线。
+
+## 第三阶段：图神经网络
+
+重点模型：
+
+- GCN
+- GraphSAGE
+- GAT
+- GIN
+
+目标：
+
+- 理解节点、边和邻接关系；
+- 理解节点特征矩阵；
+- 理解消息传递；
+- 理解邻居聚合；
+- 理解节点分类与图分类；
+- 理解图池化与 Readout；
+- 掌握 PyTorch Geometric。
+
+## 第四阶段：论文复现与领域迁移
+
+完成基础算法后，再选择一个方向：
+
+- 分子性质预测；
+- 材料性质预测；
+- 社交网络；
+- 推荐系统；
+- 交通网络；
+- 知识图谱。
+
+完成论文阅读、代码复现、数据获取、参数实验、基线比较、结果分析和后续课题迁移。
+
+---
+
+# 四、四周执行计划
+
+## 第一周：决策树与随机森林
+
+### 数据集
+
+| 数据集 | 任务 | 主要目的 |
+|---|---|---|
+| Iris | 多分类 | 熟悉分类树 |
+| Breast Cancer Wisconsin | 二分类 | 熟悉分类指标 |
+| California Housing | 回归 | 熟悉回归树 |
+
+### 实验内容
+
+1. 加载并查看数据；
+2. 划分训练集和测试集；
+3. 训练默认决策树；
+4. 修改 `max_depth`；
+5. 修改 `min_samples_split`；
+6. 修改 `min_samples_leaf`；
+7. 比较训练集和测试集性能；
+8. 可视化决策树；
+9. 查看特征重要性；
+10. 在相同数据上训练随机森林；
+11. 修改 `n_estimators`；
+12. 修改 `max_features`；
+13. 比较决策树与随机森林。
+
+### 重点问题
+
+- 决策树如何选择切分特征？
+- Gini 指数和信息增益有什么作用？
+- 为什么树太深容易过拟合？
+- 回归树与分类树有何区别？
+- 随机森林为什么比单棵树稳定？
+- Bagging 的作用是什么？
+
+### 本周产出
 
 ```text
-数据集
-→ 输入表示
-→ 模型
-→ 损失函数
-→ 预测结果
-→ 评价指标
+01_tree_models/
+├── decision_tree_classification.ipynb
+├── decision_tree_regression.ipynb
+├── random_forest.ipynb
+├── results.csv
+└── notes.md
 ```
 
----
+## 第二周：SVM、XGBoost 与公共评价模块
 
-# 三、第二阶段：学习分子数据表示
+### 数据集
 
-分子机器学习的核心不是直接把分子名称送进模型，而是先把分子转成算法可以处理的表示。
+- Breast Cancer Wisconsin
+- Digits
+- California Housing
 
-总路线：
+### SVM 实验
+
+1. 数据标准化；
+2. 训练线性 SVM；
+3. 训练 RBF 核 SVM；
+4. 修改参数 `C`；
+5. 修改参数 `gamma`；
+6. 比较不同核函数；
+7. 比较标准化前后的结果。
+
+### XGBoost 实验
+
+1. 在 California Housing 上完成回归；
+2. 在 Breast Cancer 上完成分类；
+3. 修改 `n_estimators`；
+4. 修改 `learning_rate`；
+5. 修改 `max_depth`；
+6. 修改 `subsample`；
+7. 使用 Early Stopping；
+8. 与随机森林比较。
+
+### 公共模块
 
 ```text
-SMILES
- ├── RDKit 分子描述符 → 传统表格模型
- ├── Morgan / ECFP 指纹 → 传统机器学习
- └── 分子图 → GNN
+common/
+├── metrics.py
+├── plots.py
+└── seed.py
 ```
 
----
+- `metrics.py`：分类与回归评价指标；
+- `plots.py`：混淆矩阵、真实值—预测值图、训练曲线；
+- `seed.py`：统一随机种子。
 
-## 1. SMILES
+## 第三周：GCN 节点分类
 
-### 需要学习
+### 数据集
 
-- SMILES 是什么
-- 原子如何表示
-- 键如何表示
-- 支链如何表示
-- 环如何表示
-- 芳香原子如何表示
-- 离子、电荷和立体结构如何表示
-- Canonical SMILES
-- Isomeric SMILES
+- Karate Club
+- Cora
 
-### 需要完成
+### Karate Club
 
-- 使用 RDKit 读取 SMILES
-- 检查 SMILES 是否有效
-- 将 SMILES 转成分子对象
-- 将分子对象画出来
-- 从 PubChem 获取标准 SMILES
+1. 使用 NetworkX 加载图；
+2. 查看节点数和边数；
+3. 可视化图；
+4. 查看节点邻居；
+5. 理解邻接矩阵；
+6. 观察节点嵌入。
 
-### 最小代码接口
+目标：
 
-```python
-from rdkit import Chem
+> 理解图神经网络如何利用邻居信息更新节点表示。
 
-mol = Chem.MolFromSmiles(smiles)
-```
+### Cora 节点分类
 
----
-
-## 2. RDKit 分子描述符
-
-### 重点描述符
-
-- Molecular Weight
-- LogP
-- TPSA
-- H-bond Donor Count
-- H-bond Acceptor Count
-- Rotatable Bond Count
-- Ring Count
-- Aromatic Ring Count
-- Heavy Atom Count
-- Fraction Csp3
-- Formal Charge
-- Molar Refractivity
-
-### 数据形式
+模型顺序：
 
 ```text
-SMILES
-  ↓
-RDKit
-  ↓
-数值描述符表格
-  ↓
-MLR / RF / XGBoost / MLP
+Logistic Regression
+→ MLP
+→ GCN
+→ GraphSAGE
+→ GAT
 ```
 
-示例：
+完成：
 
-| MolWt | LogP | TPSA | HBD | HBA | RotBonds | Target |
-|---:|---:|---:|---:|---:|---:|---:|
+1. 查看节点特征矩阵；
+2. 查看 `edge_index`；
+3. 理解训练、验证、测试 mask；
+4. 训练 MLP 基线；
+5. 训练两层 GCN；
+6. 修改 GCN 层数；
+7. 修改隐藏维度；
+8. 修改 Dropout；
+9. 训练 GraphSAGE；
+10. 训练 GAT；
+11. 比较各模型；
+12. 使用多个随机种子重复实验。
 
-### 需要完成
+## 第四周：图分类与第一次论文复现
 
-- 批量读取 SMILES
-- 批量生成描述符
-- 处理无效分子
-- 处理缺失值
-- 保存为 CSV
-- 查看描述符分布
-- 删除常数特征
-- 删除高度相关特征
+### 数据集
 
----
+- MUTAG
+- PROTEINS
 
-## 3. Morgan Fingerprint / ECFP
-
-### 需要学习
-
-- 分子指纹是什么
-- Morgan Fingerprint
-- ECFP
-- Radius
-- Bit Vector
-- Fingerprint Size
-- 子结构编码
-- 稀疏向量
-- Tanimoto Similarity
-
-### 数据形式
-
-\[
-x\in\{0,1\}^{n}
-\]
-
-常见设置：
+### 模型
 
 ```text
-radius = 2
-nBits = 1024 或 2048
+GCN
+→ GraphSAGE
+→ GIN
 ```
 
-### 需要完成
+### 实验内容
 
-- 从 SMILES 生成 Morgan 指纹
-- 比较 1024 位与 2048 位
-- 比较 radius=2 与 radius=3
-- 计算两个分子的 Tanimoto 相似度
-- 用指纹训练 Random Forest
-- 用指纹训练 XGBoost
+1. 查看每张图的节点数和边数；
+2. 理解一个 Batch 中的多张图；
+3. 使用 Global Mean Pooling；
+4. 使用 Global Add Pooling；
+5. 训练 GCN；
+6. 训练 GraphSAGE；
+7. 训练 GIN；
+8. 比较不同池化方式；
+9. 使用交叉验证；
+10. 记录均值和标准差。
 
-### 最小代码接口
+### 第一次论文复现
 
-```python
-from rdkit.Chem import AllChem
+论文选择标准：
 
-fp = AllChem.GetMorganFingerprintAsBitVect(
-    mol,
-    radius=2,
-    nBits=2048
-)
-```
+- 数据公开；
+- 代码公开；
+- README 清晰；
+- 单机可以运行；
+- 训练时间合理；
+- 依赖不复杂；
+- 有基准结果；
+- 模型规模适中。
 
----
+完成要求：
 
-## 4. 分子图
-
-### 图结构
-
-- 原子：节点
-- 化学键：边
-- 原子属性：节点特征
-- 化学键属性：边特征
-
-### 节点特征可以包括
-
-- 原子序数
-- 元素种类
-- 原子度
-- 形式电荷
-- 芳香性
-- 杂化方式
-- 是否在环中
-- 氢原子数
-
-### 边特征可以包括
-
-- 单键
-- 双键
-- 三键
-- 芳香键
-- 是否共轭
-- 是否在环中
-
-### 数据流程
-
-```text
-SMILES
-  ↓
-原子与化学键解析
-  ↓
-节点特征 + 边特征
-  ↓
-分子图
-  ↓
-GNN
-```
+1. 阅读论文摘要、方法和实验部分；
+2. 获取代码和数据；
+3. 配置环境；
+4. 原样跑通；
+5. 记录原始指标；
+6. 修改至少一个超参数；
+7. 加入一个基线模型；
+8. 分析与论文结果的差异；
+9. 写简短复现报告。
 
 ---
 
-# 四、第三阶段：传统机器学习模型
+# 五、统一评价指标
 
-所有传统模型优先在同一个数据集上比较，避免因为数据不同导致无法判断算法差异。
+## 5.1 分类任务
 
-固定比较：
+- Accuracy
+- Precision
+- Recall
+- F1-score
+- ROC-AUC
+- 混淆矩阵
 
-```text
-ESOL 数据集
-+ RDKit 描述符
-+ Morgan 指纹
-```
+类别不平衡时不能只看 Accuracy。
 
----
+## 5.2 回归任务
 
-## 1. 多元线性回归 MLR
-
-### 用途
-
-作为最基础的线性基线。
-
-### 需要理解
-
-- 多个特征的线性组合
-- 回归系数
-- 截距
-- 残差
-- 线性假设
-- 外推风险
-
-### 实验
-
-```text
-RDKit 描述符 + MLR
-```
-
-### 需要记录
-
-- 训练集指标
-- 验证集指标
-- 测试集指标
-- 回归系数
-- 是否出现异常预测
-
----
-
-## 2. Ridge
-
-### 用途
-
-缓解多重共线性和过拟合。
-
-### 实验
-
-```text
-RDKit 描述符 + StandardScaler + Ridge
-```
-
-### 需要比较
-
-- 不同 `alpha`
-- 系数收缩
-- 测试误差
-- 与 MLR 的差异
-
----
-
-## 3. Lasso
-
-### 用途
-
-正则化与特征选择。
-
-### 实验
-
-```text
-RDKit 描述符 + StandardScaler + Lasso
-```
-
-### 需要比较
-
-- 不同 `alpha`
-- 非零系数数量
-- 被删除的特征
-- 与 Ridge 的差异
-
----
-
-## 4. Decision Tree
-
-### 用途
-
-学习树模型的基础结构。
-
-### 需要理解
-
-- 节点
-- 特征切分
-- 切分阈值
-- 叶节点
-- 树深
-- 过拟合
-- 剪枝
-
-### 实验
-
-```text
-RDKit 描述符 + Decision Tree
-```
-
-比较：
-
-- `max_depth`
-- `min_samples_split`
-- `min_samples_leaf`
-
-### 必须观察
-
-- 训练集是否接近完美
-- 测试集是否明显变差
-- 树深对过拟合的影响
-
----
-
-## 5. Random Forest
-
-### 用途
-
-论文和导师明确要求重点学习。
-
-### 需要理解
-
-- Bootstrap
-- Bagging
-- 随机特征子集
-- 多棵树平均
-- OOB Error
-- 特征重要性
-
-### 两组实验
-
-```text
-RDKit 描述符 + Random Forest
-Morgan 指纹 + Random Forest
-```
-
-### 主要参数
-
-- `n_estimators`
-- `max_depth`
-- `max_features`
-- `min_samples_split`
-- `min_samples_leaf`
-
-### 必须比较
-
-- 单棵树与随机森林
-- 描述符与指纹
-- 训练误差与测试误差
-- 内置特征重要性与置换重要性
-
----
-
-## 6. GBDT
-
-### 用途
-
-学习 Boosting 的基本思想。
-
-### 需要理解
-
-- 串行训练
-- 弱学习器
-- 残差
-- 负梯度
-- 学习率
-- 树数量
-
-### 实验
-
-```text
-RDKit 描述符 + GBDT
-Morgan 指纹 + GBDT
-```
-
-### 主要参数
-
-- `n_estimators`
-- `learning_rate`
-- `max_depth`
-- `subsample`
-
----
-
-## 7. XGBoost
-
-### 用途
-
-材料和分子表格数据中的重要模型。
-
-### 需要理解
-
-- GBDT
-- 一阶梯度
-- 二阶梯度
-- 正则化
-- 行采样
-- 列采样
-- 分裂增益
-- 早停
-
-### 两组实验
-
-```text
-RDKit 描述符 + XGBoost
-Morgan 指纹 + XGBoost
-```
-
-### 主要参数
-
-- `n_estimators`
-- `learning_rate`
-- `max_depth`
-- `subsample`
-- `colsample_bytree`
-- `reg_alpha`
-- `reg_lambda`
-
----
-
-## 8. LightGBM
-
-### 需要理解
-
-- Histogram
-- Leaf-wise
-- Level-wise
-- GOSS
-- EFB
-- 训练效率
-- 小数据过拟合风险
-
-### 实验
-
-```text
-RDKit 描述符 + LightGBM
-```
-
-### 重点比较
-
-- 与 XGBoost 的训练速度
-- 与 XGBoost 的预测性能
-- 叶子数对过拟合的影响
-
----
-
-## 9. CatBoost
-
-### 需要理解
-
-- 类别特征
-- Target Statistics
-- Ordered Statistics
-- Ordered Boosting
-- Oblivious Tree
-- 目标泄漏
-
-### 适用场景
-
-后续 DES 或离子液体数据可能包含：
-
-- HBA 类型
-- HBD 类型
-- 阳离子类型
-- 阴离子类型
-- 材料类别
-
-因此 CatBoost 优先级较高。
-
-### 实验
-
-在普通分子数据上完成基础实验后，再在包含类别变量的数据上比较：
-
-```text
-One-Hot + XGBoost
-CatBoost 原生类别特征
-```
-
----
-
-# 五、第四阶段：模型评价与数据划分
-
-化学机器学习中，数据划分往往比模型本身更重要。
-
----
-
-## 1. Random Split
-
-随机把样本分成：
-
-- 训练集
-- 验证集
-- 测试集
-
-### 用途
-
-快速建立基线。
-
-### 局限
-
-相似分子可能同时出现在训练集和测试集，使测试结果偏乐观。
-
----
-
-## 2. Scaffold Split
-
-按照分子骨架划分。
-
-### 需要理解
-
-- Bemis–Murcko Scaffold
-- 骨架相同的分子放在同一集合
-- 测试模型对新化学骨架的泛化能力
-
-### 重要性
-
-对于分子性质预测，Scaffold Split 通常比 Random Split 更严格。
-
-### 必须比较
-
-```text
-Random Split
-vs
-Scaffold Split
-```
-
----
-
-## 3. Group Split
-
-后续双组分或混合物任务中使用。
-
-例如：
-
-- 同一个 HBA 只能出现在一个集合
-- 同一个 HBD 只能出现在一个集合
-- 同一种 DES 配方只能出现在一个集合
-- 同一种离子液体只能出现在一个集合
-
-### 目的
-
-防止模型只记住材料身份。
-
----
-
-## 4. 评价指标
-
-回归任务至少使用：
-
-- \(R^2\)
 - MAE
-- RMSE
-
-必要时增加：
-
 - MSE
-- AARD%
-- MAPE
-
-### 必须检查
-
-- 训练集指标
-- 验证集指标
-- 测试集指标
-- 多个随机种子
-- 交叉验证均值
-- 交叉验证标准差
-- 异常预测
-- 是否出现负值等物理不合理结果
-
----
-
-# 六、第五阶段：图神经网络
-
-导师明确提到 GNN，因此必须与传统模型在同一任务上比较。
-
-总流程：
-
-```text
-SMILES
-  ↓
-分子图
-  ↓
-Message Passing
-  ↓
-Graph Pooling
-  ↓
-全连接层
-  ↓
-性质预测
-```
-
----
-
-## 1. GraphConv / GCN
-
-### 需要理解
-
-- 节点特征
-- 邻居节点
-- 消息传递
-- 聚合
-- 节点更新
-- 图级池化
-- 图级回归
-
-### 实验
-
-```text
-ESOL + GraphConv / GCN
-```
-
-### 必须比较
-
-```text
-RDKit 描述符 + Random Forest
-Morgan 指纹 + Random Forest
-分子图 + GCN
-```
-
----
-
-## 2. MPNN
-
-### 需要理解
-
-- Message Function
-- Update Function
-- Readout Function
-- 边特征
-- 多轮消息传递
-
-### 实验
-
-```text
-ESOL + MPNN
-```
-
-### 重点比较
-
-- GCN 与 MPNN
-- 是否使用边特征
-- 消息传递层数
-- 图池化方式
-
----
-
-## 3. GAT
-
-### 需要理解
-
-- 图注意力
-- 邻居权重
-- 多头注意力
-- 不同邻居贡献不同
-
-### 实验
-
-```text
-ESOL + GAT
-```
-
-GAT 不需要优先于 GCN 和 MPNN，但应了解其基本结构。
-
----
-
-## 4. GNN 训练重点
-
-必须记录：
-
-- 节点特征
-- 边特征
-- 消息传递层数
-- Hidden Dimension
-- Pooling 方法
-- Batch Size
-- Learning Rate
-- Epoch
-- Early Stopping
-- 验证集最佳轮次
-
----
-
-# 七、第六阶段：相似数据集复现
-
-导师明确要求：
-
-> 找类似的数据和任务跑一下算法。
-
-因此不能只完成一个 ESOL 示例。
-
----
-
-## 任务 1：ESOL
-
-目标：
-
-```text
-分子结构 → 水溶解度
-```
-
-模型：
-
-- MLR
-- Random Forest
-- XGBoost
-- GCN
-- MPNN
-
----
-
-## 任务 2：Lipophilicity
-
-目标：
-
-```text
-分子结构 → 脂溶性
-```
-
-模型：
-
-- Random Forest
-- XGBoost
-- GCN
-- MPNN
-
-目的：
-
-检验是否真正掌握完整流程，而不是只会复制 ESOL 代码。
-
----
-
-## 任务 3：FreeSolv
-
-目标：
-
-```text
-分子结构 → 水合自由能
-```
-
-重点：
-
-- 小样本
-- 数据划分敏感
-- 模型稳定性
-- 多随机种子
-- 交叉验证
-
----
-
-## 任务 4：QM 数据
-
-可选：
-
-- QM7
-- QM8
-- QM9
-
-目标：
-
-```text
-分子结构 → 量子化学性质
-```
-
-重点：
-
-- 多任务学习
-- GNN
-- 大规模分子数据
-- 图表示
-
----
-
-# 八、第七阶段：从单分子迁移到双组分与混合物
-
-你们课题最终不是普通单分子预测，而更可能是：
-
-```text
-分子 A + 分子 B + 配比 + 实验条件 → 材料性质
-```
-
-因此需要从单分子模型迁移到双组分或混合物模型。
-
----
-
-## 1. 描述符拼接
-
-对两个组分分别生成描述符：
+- RMSE
+- \(R^2\)
 
 \[
-x_A,\quad x_B
+MAE=rac{1}{N}\sum_{i=1}^{N}|y_i-\hat y_i|
 \]
-
-再拼接条件变量：
 
 \[
-x=
-[x_A,x_B,r,T,P]
+RMSE=\sqrt{rac{1}{N}\sum_{i=1}^{N}(y_i-\hat y_i)^2}
 \]
-
-其中：
-
-- \(x_A\)：组分 A 描述符
-- \(x_B\)：组分 B 描述符
-- \(r\)：摩尔比
-- \(T\)：温度
-- \(P\)：压力
-
-可使用：
-
-- Random Forest
-- XGBoost
-- LightGBM
-- CatBoost
-- MLP
-
----
-
-## 2. 指纹拼接
-
-分别生成：
 
 \[
-f_A,\quad f_B
+R^2=1-rac{\sum_{i=1}^{N}(y_i-\hat y_i)^2}
+{\sum_{i=1}^{N}(y_i-ar y)^2}
 \]
 
-组合方式：
-
-```text
-直接拼接
-按比例加权
-求和
-求平均
-加入交互项
-```
-
-最终输入：
+## 5.3 AARD% 的使用原则
 
 \[
-x=[f_A,f_B,r,T,P]
+AARD\%=
+rac{100\%}{N}
+\sum_{i=1}^{N}
+\left|
+rac{\hat y_i-y_i}{y_i}
+
+ight|
 \]
 
-可用于：
+AARD% 适用于部分物性预测或化工任务，但不是所有任务的通用指标。当真实值接近零时，AARD% 可能异常放大。
 
-- Random Forest
-- XGBoost
-- MLP
-
----
-
-## 3. 双塔神经网络
-
-结构：
+当前阶段优先使用：
 
 ```text
-组分 A 表示 → Encoder A ┐
-                         ├→ Fusion → 回归器 → 预测
-组分 B 表示 → Encoder B ┘
-```
-
-输入可以是：
-
-- 描述符
-- 指纹
-- 图嵌入
-
----
-
-## 4. 双 GNN / Mixture GNN
-
-结构：
-
-```text
-组分 A 分子图 → GNN A → 表示 A
-组分 B 分子图 → GNN B → 表示 B
-                            ↓
-                        表示融合
-                            ↓
-                   拼接配比和实验条件
-                            ↓
-                         回归网络
-                            ↓
-                          预测值
-```
-
-需要比较：
-
-- GNN 是否共享参数
-- 表示拼接
-- 表示求和
-- 注意力融合
-- 按摩尔比加权
-- 加入条件特征的位置
-
----
-
-## 5. 顺序不变性
-
-对于某些混合物，组分顺序不应改变预测：
-
-\[
-f(A,B)=f(B,A)
-\]
-
-需要考虑：
-
-- 特征排序
-- 对称融合
-- 求和或平均
-- DeepSets
-- 共享编码器
-
-但对于具有明确 HBA/HBD 角色的体系，也可能保留角色顺序：
-
-```text
-HBA 编码器
-HBD 编码器
-```
-
-需根据任务定义决定。
-
----
-
-# 九、第八阶段：迁移到 DES、离子液体或材料数据
-
-目标数据形式：
-
-| HBA | HBD | Ratio | Temperature | Pressure | Target |
-|---|---|---:|---:|---:|---:|
-
-或者：
-
-| Cation | Anion | Temperature | Pressure | Property |
-|---|---|---:|---:|---:|
-
----
-
-## 数据获取流程
-
-```text
-论文正文与补充材料
-        ↓
-提取材料名称和实验条件
-        ↓
-统一名称
-        ↓
-PubChem 查询 SMILES
-        ↓
-RDKit 标准化
-        ↓
-生成描述符、指纹和分子图
-        ↓
-构建机器学习数据集
+MAE + RMSE + R²
 ```
 
 ---
 
-## 数据清洗重点
+# 六、每个算法的固定学习流程
 
-- 同义名称
-- 缩写
-- 化学式与名称对应
-- SMILES 标准化
-- 盐与离子的表示
-- 重复实验
-- 单位统一
-- 温度单位
-- 压力单位
-- 目标值单位
-- 摩尔比表示
-- 缺失值
-- 异常值
-- 数据来源记录
+## 6.1 原理学习
 
----
+需要回答：
 
-## 第一轮模型
+1. 该算法解决什么任务？
+2. 输入是什么？
+3. 输出是什么？
+4. 核心计算过程是什么？
+5. 损失函数是什么？
+6. 主要超参数是什么？
+7. 优势是什么？
+8. 局限是什么？
 
-优先训练：
+## 6.2 资源查找
 
-1. MLR
-2. Random Forest
-3. XGBoost
-4. LightGBM
-5. CatBoost
-6. MLP
+每个算法至少寻找：
 
----
+- 官方文档；
+- 经典论文；
+- 可运行代码。
 
-## 第二轮模型
+优先选择有清晰 README、环境说明、数据获取方式、训练代码、评价代码且单机可运行的项目。
 
-数据量和质量允许后训练：
-
-1. GCN
-2. MPNN
-3. 双 GNN
-4. Mixture GNN
-5. Attention Fusion
-
----
-
-# 十、模型解释
-
----
-
-## 1. 传统特征重要性
-
-适用于：
-
-- Decision Tree
-- Random Forest
-- XGBoost
-- LightGBM
-- CatBoost
-
-需要学习：
-
-- Split Importance
-- Gain Importance
-- Impurity Importance
-- 特征重要性偏差
-
----
-
-## 2. Permutation Importance
-
-流程：
-
-```text
-训练完成的模型
-   ↓
-打乱某个特征
-   ↓
-重新计算性能
-   ↓
-性能下降越大，特征越重要
-```
-
-优点：
-
-- 模型无关
-- 解释直观
-
-问题：
-
-- 相关特征会影响结果
-- 计算量较大
-
----
-
-## 3. SHAP
-
-### 必须掌握
-
-- 基准预测
-- SHAP Value
-- 正贡献
-- 负贡献
-- 局部解释
-- 全局解释
-- TreeSHAP
-
-### 必须会看
-
-- Bar Plot
-- Summary Plot
-- Dependence Plot
-- Waterfall Plot
-- Force Plot
-
-### 必须能够回答
-
-- 哪些描述符最重要
-- 高值使预测增大还是减小
-- 是否存在阈值
-- 是否存在特征交互
-- 某个样本为什么得到当前预测
-
----
-
-## 4. GNN 解释
-
-可学习：
-
-- GNNExplainer
-- 节点掩码
-- 边掩码
-- 子图解释
-- 原子贡献
-- 化学键贡献
-
-需要注意：
-
-> 模型解释只能说明模型依赖了什么，不自动等于化学因果关系。
-
----
-
-# 十一、统一实验设计
-
-每个数据集都按同一模板执行。
-
-## 1. 数据说明
+## 6.3 原样跑通
 
 记录：
 
-- 数据集名称
-- 数据来源
-- 样本数量
-- 输入字段
-- 目标变量
-- 单位
-- 缺失值
-- 重复值
+- Python 版本；
+- 包版本；
+- 数据集；
+- 数据规模；
+- 模型参数；
+- 训练时间；
+- 原始指标；
+- 报错信息；
+- 报错解决方式。
 
-## 2. 数据划分
+## 6.4 自己重写关键部分
 
-至少比较：
+至少独立完成：
 
-- Random Split
-- Scaffold Split 或 Group Split
+- 数据加载；
+- 数据划分；
+- 模型定义；
+- 损失函数；
+- 优化器；
+- 训练循环；
+- 验证循环；
+- 测试评价；
+- 模型保存；
+- 结果保存。
 
-## 3. 分子表示
+## 6.5 控制变量实验
 
-至少比较：
+### 决策树
+- `max_depth`
+- `min_samples_split`
+- `min_samples_leaf`
 
-- RDKit 描述符
-- Morgan 指纹
-- 分子图
+### 随机森林
+- `n_estimators`
+- `max_depth`
+- `max_features`
 
-## 4. 模型
+### SVM
+- `kernel`
+- `C`
+- `gamma`
 
-至少比较：
+### XGBoost
+- `learning_rate`
+- `n_estimators`
+- `max_depth`
+- `subsample`
 
-- MLR
-- Decision Tree
-- Random Forest
-- XGBoost
-- GNN
+### MLP
+- 隐藏层数量
+- 隐藏维度
+- 学习率
+- Dropout
+- Batch Size
 
-## 5. 指标
+### GCN
+- 层数
+- 隐藏维度
+- Dropout
+- 学习率
 
-统一报告：
+### GAT
+- 注意力头数
+- 隐藏维度
+- Dropout
+- 层数
 
-- \(R^2\)
-- MAE
-- RMSE
+## 6.6 基线模型
 
-## 6. 稳定性
+### 表格分类
 
-使用：
+```text
+Logistic Regression
+Decision Tree
+Random Forest
+SVM
+XGBoost
+```
 
-- 多个随机种子
-- K 折交叉验证
-- 平均值
-- 标准差
+### 表格回归
 
-## 7. 图表
+```text
+Linear Regression
+Decision Tree
+Random Forest
+XGBoost
+```
 
-至少包含：
+### Cora 节点分类
 
-- 真实值—预测值图
-- 残差图
-- 模型指标对比图
-- 特征重要性图
-- SHAP Summary Plot
+```text
+Logistic Regression
+MLP
+GCN
+GraphSAGE
+GAT
+```
+
+### 图分类
+
+```text
+图统计特征 + Random Forest
+GCN
+GraphSAGE
+GIN
+```
+
+## 6.7 实验总结
+
+每个实验至少回答：
+
+1. 哪个模型最好？
+2. 是否存在过拟合？
+3. 参数变化有什么影响？
+4. 模型提升是否稳定？
+5. 不同随机种子的结果差异多大？
+6. 计算成本如何？
+7. 模型为什么可能表现更好？
+8. 结果是否符合预期？
+9. 后续如何改进？
+10. 将来如何迁移到课题数据？
 
 ---
 
-# 十二、最终项目结构
+# 七、工程化重构路线
+
+## 第一级：Notebook 跑通
 
 ```text
-materials-ml/
-├── data/
-│   ├── raw/
-│   ├── processed/
-│   └── external/
-├── notebooks/
-│   ├── 01_dataset_overview.ipynb
-│   ├── 02_rdkit_descriptors.ipynb
-│   ├── 03_morgan_fingerprints.ipynb
-│   ├── 04_tree_models.ipynb
-│   ├── 05_gnn_models.ipynb
-│   ├── 06_model_comparison.ipynb
-│   ├── 07_shap_analysis.ipynb
-│   └── 08_mixture_models.ipynb
-├── src/
-│   ├── data_loader.py
-│   ├── standardize_smiles.py
-│   ├── descriptors.py
-│   ├── fingerprints.py
-│   ├── graph_data.py
-│   ├── splits.py
-│   ├── train_tree.py
-│   ├── train_gnn.py
-│   ├── evaluate.py
-│   └── explain.py
+加载数据
+→ 建立模型
+→ 训练
+→ 评价
+```
+
+## 第二级：提取公共工具函数
+
+```text
+common/
+├── metrics.py
+├── plots.py
+└── seed.py
+```
+
+## 第三级：拆分模块
+
+```text
+data/
+models/
+trainers/
+evaluation/
+```
+
+## 第四级：引入配置文件
+
+```text
+configs/
+├── decision_tree.yaml
+├── xgboost.yaml
+├── gcn_cora.yaml
+└── gin_mutag.yaml
+```
+
+## 第五级：统一实验入口
+
+```bash
+python main.py --config configs/gcn_cora.yaml
+```
+
+统一入口应在多个实验已经跑通后再实现。
+
+---
+
+# 八、推荐目录结构
+
+## 8.1 当前阶段
+
+```text
+ml-algorithm-practice/
+├── 01_decision_tree/
+├── 02_random_forest/
+├── 03_svm/
+├── 04_xgboost/
+├── 05_mlp/
+├── 06_gcn/
+├── 07_graphsage_gat/
+├── 08_graph_classification/
+├── common/
+│   ├── metrics.py
+│   ├── plots.py
+│   └── seed.py
 ├── results/
-│   ├── metrics/
-│   ├── figures/
-│   └── models/
-├── requirements.txt
 └── README.md
 ```
 
----
-
-# 十三、最终学习顺序
-
-严格按下面顺序推进：
+## 8.2 后期框架
 
 ```text
-DeepChem 数据加载
-→ MoleculeNet ESOL
-→ SMILES
-→ PubChem
-→ RDKit
-→ 分子描述符
-→ Morgan Fingerprint
-→ MLR
-→ Decision Tree
-→ Random Forest
-→ GBDT
-→ XGBoost
-→ LightGBM
-→ CatBoost
-→ Random Split
-→ Scaffold Split
-→ 分子图
-→ GCN / GraphConv
-→ MPNN
-→ GAT
-→ SHAP
-→ Lipophilicity
-→ FreeSolv
-→ 双组分描述符拼接
-→ 双组分指纹拼接
-→ 双塔神经网络
-→ 双 GNN / Mixture GNN
-→ DES / 离子液体 / 材料数据
+algorithm-framework/
+├── configs/
+├── data/
+│   ├── tabular_dataset.py
+│   ├── graph_dataset.py
+│   └── molecular_dataset.py
+├── models/
+│   ├── tree_models.py
+│   ├── mlp.py
+│   └── gnn_models.py
+├── trainers/
+│   ├── sklearn_trainer.py
+│   └── torch_trainer.py
+├── evaluation/
+│   ├── classification_metrics.py
+│   ├── regression_metrics.py
+│   └── visualization.py
+├── experiments/
+├── results/
+└── main.py
+```
+
+传统机器学习和深度学习建议分别使用 `SklearnTrainer` 与 `TorchTrainer`。
+
+---
+
+# 九、实验记录模板
+
+## 9.1 基本信息
+
+| 项目 | 内容 |
+|---|---|
+| 实验编号 |  |
+| 算法名称 |  |
+| 任务类型 | 分类 / 回归 / 节点分类 / 图分类 |
+| 数据集 |  |
+| 数据规模 |  |
+| 特征维度 |  |
+| 代码来源 |  |
+| 论文来源 |  |
+| 运行环境 |  |
+| 随机种子 |  |
+
+## 9.2 模型参数
+
+| 参数 | 设置 |
+|---|---|
+| 学习率 |  |
+| Batch Size |  |
+| Epoch |  |
+| 隐藏维度 |  |
+| 层数 |  |
+| Dropout |  |
+| 优化器 |  |
+| 其他参数 |  |
+
+## 9.3 实验结果
+
+| 模型 | Train | Validation | Test | 训练时间 | 备注 |
+|---|---:|---:|---:|---:|---|
+| Baseline |  |  |  |  |  |
+| Model 1 |  |  |  |  |  |
+| Model 2 |  |  |  |  |  |
+
+## 9.4 实验分析
+
+- 最优模型：
+- 是否过拟合：
+- 关键参数影响：
+- 多随机种子稳定性：
+- 运行中出现的问题：
+- 与参考结果的差异：
+- 可能原因：
+- 后续改进方向：
+- 对未来课题可迁移的部分：
+
+---
+
+# 十、当前执行顺序
+
+```text
+1. Iris：决策树分类
+2. California Housing：决策树回归
+3. 在相同数据上加入随机森林
+4. Breast Cancer：SVM 分类
+5. California Housing：XGBoost 回归
+6. Fashion-MNIST：MLP
+7. Fashion-MNIST 或 CIFAR-10：CNN
+8. Karate Club：理解图结构
+9. Cora：MLP 与 GCN
+10. Cora：GCN、GraphSAGE 与 GAT
+11. MUTAG：GCN、GraphSAGE 与 GIN
+12. 选择一篇难度适中的论文进行完整复现
+13. 等课题数据完善后迁移现有流程
 ```
 
 ---
 
-# 十四、优先级
+# 十一、阶段验收标准
 
-## 第一优先级
+一个算法只有同时满足以下条件，才算完成学习：
 
-必须优先完成：
-
-- DeepChem
-- MoleculeNet
-- SMILES
-- PubChem
-- RDKit
-- 分子描述符
-- Morgan Fingerprint
-- Decision Tree
-- Random Forest
-- XGBoost
-- GCN
-- MPNN
-- Random Split
-- Scaffold Split
-- SHAP
+- 能解释算法解决的问题；
+- 能解释输入与输出；
+- 能说明核心计算过程；
+- 能独立运行代码；
+- 能修改主要超参数；
+- 能建立基线模型；
+- 能输出规范评价指标；
+- 能判断是否过拟合；
+- 能比较多个模型；
+- 能分析实验结果；
+- 能保存模型和结果；
+- 能总结算法优势与局限；
+- 能说明未来如何迁移到课题数据。
 
 ---
 
-## 第二优先级
+# 十二、暂缓内容
 
-完成第一优先级后学习：
+以下内容保留为长期方向，但当前不作为四周主线：
 
-- Ridge
-- Lasso
-- GBDT
-- LightGBM
-- CatBoost
-- GAT
-- Group Split
-- Permutation Importance
-- 双组分特征拼接
-- 双 GNN
-- Mixture GNN
-
----
-
-## 暂缓内容
-
-当前不优先：
-
-- LSSVM
-- PSO
-- GA
-- CSA
-- LSTM
-- LSTM-AE
-- VAE
-- GAN
-- PINN
-- Active Learning
-- Bayesian Optimization
-- LRP
-
-这些内容等真实数据和具体研究任务明确后再决定是否学习。
+- RDKit 分子描述符；
+- Morgan 指纹；
+- DES 数据集；
+- CO₂ 捕集预测；
+- CatBoost 材料模型；
+- SHAP 材料特征解释；
+- MPNN 分子图回归；
+- GNN 与 CatBoost 混合模型；
+- Stacking；
+- Cascading；
+- 量子化学描述符；
+- COSMO-RS 特征；
+- 完整 YAML 配置系统；
+- 大型统一材料机器学习框架。
 
 ---
 
-# 十五、最终验收标准
+# 十三、向老师汇报时的概括
 
-完成本流程后，应能够：
+> 目前材料数据仍在采集阶段，因此我准备先不限定具体材料体系，而是利用公开标准数据集、经典论文和开源代码，系统熟悉决策树、随机森林、SVM、XGBoost、MLP，以及 GCN、GraphSAGE、GAT、GIN 等算法。每个算法都会完成原理学习、代码运行、参数实验、基线比较和结果总结。代码框架也会在实验跑通后逐步重构，而不是一开始就进行过度抽象。后续等课题数据完善后，再把已经建立的数据处理、训练和评价流程迁移到实际课题中。
 
-1. 从公开数据库获取分子数据
-2. 根据名称查询标准 SMILES
-3. 使用 RDKit 生成描述符和指纹
-4. 将分子表示成图
-5. 使用决策树和随机森林完成回归
-6. 使用 XGBoost、LightGBM 和 CatBoost 完成表格建模
-7. 使用 GCN 或 MPNN 完成图级回归
-8. 比较 Random Split 与 Scaffold Split
-9. 比较描述符、指纹和分子图
-10. 使用 SHAP 解释树模型
-11. 构建双组分或混合物输入
-12. 将完整流程迁移到 DES、离子液体或材料性质预测任务
+---
 
-最终应当能够独立完成：
+# 十四、最终原则
 
-```text
-找到数据
-→ 清洗数据
-→ 标准化分子结构
-→ 生成三类分子表示
-→ 训练传统模型
-→ 训练 GNN
-→ 比较划分方法
-→ 评价模型
-→ 解释模型
-→ 形成实验报告
-```
+当前阶段的主线是：
+
+\[
+oxed{
+	ext{标准数据集}
+
+ightarrow
+	ext{单个算法跑通}
+
+ightarrow
+	ext{参数实验}
+
+ightarrow
+	ext{模型比较}
+
+ightarrow
+	ext{逐步重构}
+}
+\]
+
+而不是：
+
+\[
+	ext{先搭大型材料框架}
+
+ightarrow
+	ext{再学习算法}
+\]
+
+框架应从实际实验需求中逐步形成，而不是在尚未理解各类任务之前进行过度抽象。
