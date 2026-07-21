@@ -1,0 +1,98 @@
+{
+  "run_id": "esol_ecfp_scaffold_seed42",
+  "branch": "baseline/esol-repro",
+  "source_commit": "5bd7b5c64b07be2091c827251aeb21e23c638863",
+  "working_tree_dirty_during_run": true,
+  "seed": 42,
+  "task": "measured log solubility in mols per litre",
+  "target_space": "original logS (mols per litre)",
+  "featurizer": {
+    "name": "ECFP",
+    "radius": 2,
+    "size": 1024
+  },
+  "splitter": "scaffold",
+  "transformers": [],
+  "split_sizes": {
+    "train": 902,
+    "valid": 113,
+    "test": 113
+  },
+  "selection_metric": "validation RMSE",
+  "best_model_by_validation_rmse": "random_forest",
+  "test_policy": "Not evaluated on Day 1; the legacy notebook already exposed this split.",
+  "versions": {
+    "python": "3.10.20",
+    "deepchem": "2.8.0",
+    "rdkit": "2026.03.3",
+    "numpy": "2.2.6",
+    "pandas": "2.3.3",
+    "scipy": "1.15.2",
+    "scikit-learn": "1.7.2"
+  },
+  "model_params": {
+    "dummy_mean": {
+      "constant": null,
+      "quantile": null,
+      "strategy": "mean"
+    },
+    "ridge": {
+      "alpha": 1.0,
+      "copy_X": true,
+      "fit_intercept": true,
+      "max_iter": null,
+      "positive": false,
+      "random_state": null,
+      "solver": "auto",
+      "tol": 0.0001
+    },
+    "decision_tree_overfit_diagnostic": {
+      "ccp_alpha": 0.0,
+      "criterion": "squared_error",
+      "max_depth": null,
+      "max_features": null,
+      "max_leaf_nodes": null,
+      "min_impurity_decrease": 0.0,
+      "min_samples_leaf": 1,
+      "min_samples_split": 2,
+      "min_weight_fraction_leaf": 0.0,
+      "monotonic_cst": null,
+      "random_state": 42,
+      "splitter": "best"
+    },
+    "decision_tree_regularized": {
+      "ccp_alpha": 0.0,
+      "criterion": "squared_error",
+      "max_depth": 5,
+      "max_features": null,
+      "max_leaf_nodes": null,
+      "min_impurity_decrease": 0.0,
+      "min_samples_leaf": 5,
+      "min_samples_split": 2,
+      "min_weight_fraction_leaf": 0.0,
+      "monotonic_cst": null,
+      "random_state": 42,
+      "splitter": "best"
+    },
+    "random_forest": {
+      "bootstrap": true,
+      "ccp_alpha": 0.0,
+      "criterion": "squared_error",
+      "max_depth": null,
+      "max_features": "sqrt",
+      "max_leaf_nodes": null,
+      "max_samples": null,
+      "min_impurity_decrease": 0.0,
+      "min_samples_leaf": 2,
+      "min_samples_split": 2,
+      "min_weight_fraction_leaf": 0.0,
+      "monotonic_cst": null,
+      "n_estimators": 300,
+      "n_jobs": -1,
+      "oob_score": false,
+      "random_state": 42,
+      "verbose": 0,
+      "warm_start": false
+    }
+  }
+}

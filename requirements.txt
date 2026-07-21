@@ -1,0 +1,11 @@
+# Tested with Python 3.10.20 on Apple Silicon.
+# This is a snapshot of the working Day 1 environment, not a universal lock file.
+deepchem==2.8.0
+rdkit==2026.3.3
+numpy==2.2.6
+pandas==2.3.3
+scikit-learn==1.7.2
+scipy==1.15.2
+jupyterlab==4.6.1
+ipykernel==7.3.0
+nbconvert==7.17.1
