@@ -1,5 +1,7 @@
 # ESOL Day 1 实验
 
+> 所属工作线：[B. 算法预研线](../../tracks/02_algorithm/README.md)
+
 ## 目标
 
 在固定 scaffold 划分和 1024 维 ECFP 特征上，建立一条可复现的传统机器学习基线，并判断单棵决策树是否明显过拟合。

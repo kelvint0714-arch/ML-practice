@@ -1,8 +1,17 @@
 # ML-practice
 
-一个面向化学与材料机器学习的可复现练习仓库。当前唯一执行主线是：先把 ESOL 分子溶解度传统机器学习基线做可信，再进入 MLP、GNN 和融合实验。
+一个面向化学与材料机器学习的可复现练习仓库。当前采用“两线并行”：化学组继续确认粘合剂数据，算法侧同时完成可迁移的基线、神经网络与融合方法预研。
 
-## 当前里程碑：ESOL Day 1
+## 当前工作方式：两线并行
+
+| 工作线 | 当前状态 | 当前入口 | 本阶段交付 |
+|---|---|---|---|
+| A. 粘合剂数据线 | 等待导师与化学组确认字段并提供样例 | [数据线说明](tracks/01_data/README.md) | 经确认的数据字典、3–5 行格式样例、首批真实数据 |
+| B. 算法预研线 | ESOL Day 1 传统基线已完成 | [算法线说明](tracks/02_algorithm/README.md) | 传统模型、MLP、混合模型的统一对照流程 |
+
+两条线的边界、衔接条件和本周任务见 [双线工作总览](tracks/README.md)。公开数据只用于方法开发和流程验收；在真实粘合剂数据到达前，不将公开数据结果表述为本项目的粘合剂实验结论。没有 SMILES、分子图或可靠结构文件前，不启动 GNN 实验。
+
+## 算法线当前里程碑：ESOL Day 1
 
 已纳入的基线：
 
@@ -18,6 +27,9 @@
 
 ## 仓库入口
 
+- [双线工作总览](tracks/README.md)
+- [A. 粘合剂数据线](tracks/01_data/README.md)
+- [B. 算法预研线](tracks/02_algorithm/README.md)
 - [数据和划分协议](DATASETS.md)
 - [ESOL 实验说明](practice/01_load_esol/readme.md)
 - [ESOL Day 1 Notebook](practice/01_load_esol/01_load_esol.ipynb)
