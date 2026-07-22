@@ -22,10 +22,15 @@
 - [ESOL 实验说明](practice/01_load_esol/readme.md)
 - [ESOL Day 1 Notebook](practice/01_load_esol/01_load_esol.ipynb)
 - [Day 1 实验结论](practice/01_load_esol/notes.md)
+- [粘合剂重要化学性质数据格式 v0.3](data_templates/adhesive/README.md)
 - [长期学习方案](Learning-plan.md)
 - [长期资源清单](Processing-plan_resources.md)
 
 `Learning-plan.md` 和 `Processing-plan_resources.md` 保留为长期参考；当前可执行任务以本 README 为准。
+
+## 粘合剂数据准备
+
+`data_templates/adhesive/` 保存了一份不预设环氧体系的粘合剂数据格式讨论稿。它用于让导师和化学组确认字段，尚不是真实数据集，也不代表已经选定了最终模型。
 
 ## 环境
 
