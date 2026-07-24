@@ -2,6 +2,8 @@
 
 > 所属工作线：[B. 算法预研线](../../tracks/02_algorithm/README.md)
 
+> Python 入门学习：[Day 1 零基础逐行讲解](../../tracks/02_algorithm/day01_beginner/README.md)
+
 ## 目标
 
 在固定 scaffold 划分和 1024 维 ECFP 特征上，建立一条可复现的传统机器学习基线，并判断单棵决策树是否明显过拟合。
@@ -30,6 +32,8 @@ python -m jupyter nbconvert \
   --inplace \
   practice/01_load_esol/01_load_esol.ipynb
 ```
+
+第一次学习时不要先修改模型参数。先按零基础材料理解代码，再从空内核按顺序运行；Notebook 中保存的旧输出是历史快照，切换 Git 分支不会自动刷新输出文字。
 
 ## 产物
 

@@ -33,6 +33,7 @@
 - [数据和划分协议](DATASETS.md)
 - [ESOL 实验说明](practice/01_load_esol/readme.md)
 - [ESOL Day 1 Notebook](practice/01_load_esol/01_load_esol.ipynb)
+- [ESOL Day 1 零基础逐行学习入口](tracks/02_algorithm/day01_beginner/README.md)
 - [Day 1 实验结论](practice/01_load_esol/notes.md)
 - [粘合剂重要化学性质数据格式 v0.3](data_templates/adhesive/README.md)
 - [长期学习方案](Learning-plan.md)

@@ -6,6 +6,10 @@
 
 当前可运行入口：[`practice/01_load_esol/01_load_esol.ipynb`](../../practice/01_load_esol/01_load_esol.ipynb)。ESOL 只是方法练习数据，不代表粘合剂项目数据。
 
+## 当前个人学习任务
+
+先完成 [Day 1 零基础学习材料](day01_beginner/README.md)。这套材料把原 Notebook 分成 Python 语法预备、全部代码逐行讲解和练习验收。仓库中的 Day 1 实验已经能运行，不等于学习者已经掌握；在能够解释 `X`、`y`、`fit`、`predict`、数据划分、指标和过拟合之前，不进入 MLP 或混合模型。
+
 ## 实验路线
 
 | 阶段 | 要做什么 | 主要输出 | 状态 |
