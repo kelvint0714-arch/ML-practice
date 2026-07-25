@@ -4,11 +4,11 @@
 
 ## 现在从这里开始
 
-1. 学习：[Day 1 零基础入口](curriculum/core/day01_beginner/README.md)
-2. 跟着讲解运行：[ESOL Day 1 Notebook](experiments/esol/day01_baseline/esol_baseline.ipynb)
-3. 用自己的话记录理解：[学习进度表](curriculum/PROGRESS.md)
+1. 打开唯一导航：[一步一步学习目录](curriculum/PROGRESS.md)
+2. 永远从目录里的第一个 `[ ]` 开始，完成并通过自测后再勾选
+3. 目录会从 Day 1 的第一篇讲解，一直带你走到 Day 28；GNN 是通过门槛后才开始的可选内容
 
-Day 1 没有完成自测前，不要急着跳到神经网络。完整顺序见 [Day 1–28 核心课程](curriculum/core/README.md)。
+`Day` 是学习单元，不是必须一天完成的期限。Day 1 没有完成自测前，不要急着跳到后面的模型。
 
 ## 两条研究工作线
 
@@ -35,6 +35,7 @@ ML-practice/
 
 详细入口：
 
+- [一步一步学习目录](curriculum/PROGRESS.md)
 - [课程总览](curriculum/README.md)
 - [Day 1–28 核心课程](curriculum/core/README.md)
 - [Day 29–35 可选 GNN](curriculum/optional_gnn/README.md)

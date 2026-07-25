@@ -10,12 +10,12 @@
 
 当前课程已拆成 [Day 1–28 核心路线](core/README.md) 和 [Day 29–35 可选 GNN 路线](optional_gnn/README.md)。
 
-第一次学习从 [Day 1 零基础学习材料](core/day01_beginner/README.md) 开始。Day 1 把原 Notebook 分成 Python 语法预备、全部代码逐行讲解和练习验收。仓库中的 Day 1 实验已经能运行，不等于学习者已经掌握；在能够解释 `X`、`y`、`fit`、`predict`、数据划分、指标和过拟合之前，不进入下一天。
+第一次学习只打开 [一步一步学习目录](PROGRESS.md)，找到第一个 `[ ]` 并按顺序执行。它会把 Day 1 拆成具体阅读、练习、运行和验收步骤，再依次连接 Day 2–35。仓库中的 Day 1 实验已经能运行，不等于学习者已经掌握；在能够解释 `X`、`y`、`fit`、`predict`、数据划分、指标和过拟合之前，不进入下一天。
 
 配套入口：
 
+- [一步一步学习目录（唯一任务清单）](PROGRESS.md)
 - [Day 1–28 核心课程](core/README.md)
-- [个人学习进度表](PROGRESS.md)
 - [共享词典、实验协议与报错排查](shared/README.md)
 - [Day 29–35 可选 GNN 与启动条件](optional_gnn/README.md)
 
