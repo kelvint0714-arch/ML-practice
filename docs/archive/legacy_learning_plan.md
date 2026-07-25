@@ -378,28 +378,28 @@ GCN
 - \(R^2\)
 
 \[
-MAE=rac{1}{N}\sum_{i=1}^{N}|y_i-\hat y_i|
+MAE=\frac{1}{N}\sum_{i=1}^{N}|y_i-\hat y_i|
 \]
 
 \[
-RMSE=\sqrt{rac{1}{N}\sum_{i=1}^{N}(y_i-\hat y_i)^2}
+RMSE=\sqrt{\frac{1}{N}\sum_{i=1}^{N}(y_i-\hat y_i)^2}
 \]
 
 \[
-R^2=1-rac{\sum_{i=1}^{N}(y_i-\hat y_i)^2}
-{\sum_{i=1}^{N}(y_i-ar y)^2}
+R^2=1-\frac{\sum_{i=1}^{N}(y_i-\hat y_i)^2}
+{\sum_{i=1}^{N}(y_i-\bar y)^2}
 \]
 
 ## 5.3 AARD% 的使用原则
 
 \[
 AARD\%=
-rac{100\%}{N}
+\frac{100\%}{N}
 \sum_{i=1}^{N}
 \left|
-rac{\hat y_i-y_i}{y_i}
+\frac{\hat y_i-y_i}{y_i}
 
-ight|
+\right|
 \]
 
 AARD% 适用于部分物性预测或化工任务，但不是所有任务的通用指标。当真实值接近零时，AARD% 可能异常放大。
@@ -784,30 +784,30 @@ algorithm-framework/
 当前阶段的主线是：
 
 \[
-oxed{
-	ext{标准数据集}
+\boxed{
+\text{标准数据集}
 
-ightarrow
-	ext{单个算法跑通}
+\rightarrow
+\text{单个算法跑通}
 
-ightarrow
-	ext{参数实验}
+\rightarrow
+\text{参数实验}
 
-ightarrow
-	ext{模型比较}
+\rightarrow
+\text{模型比较}
 
-ightarrow
-	ext{逐步重构}
+\rightarrow
+\text{逐步重构}
 }
 \]
 
 而不是：
 
 \[
-	ext{先搭大型材料框架}
+\text{先搭大型材料框架}
 
-ightarrow
-	ext{再学习算法}
+\rightarrow
+\text{再学习算法}
 \]
 
 框架应从实际实验需求中逐步形成，而不是在尚未理解各类任务之前进行过度抽象。

@@ -23,6 +23,7 @@ Day 1 没有完成自测前，不要急着跳到神经网络。完整顺序见 [
 
 ```text
 ML-practice/
+├── .github/workflows/       # GitHub 自动仓库检查
 ├── curriculum/             # 学习任务：核心 28 天、可选 GNN、共享词典
 ├── data/                   # 公开数据说明与粘合剂数据接口
 ├── experiments/            # 真正运行过或正在执行的实验
@@ -70,10 +71,14 @@ python -m nbconvert \
 ## 仓库自检
 
 ```bash
-python scripts/check_curriculum.py
+python scripts/check_repository.py
 ```
 
-检查器验证 35 个任务目录、课程任务卡结构、Markdown 本地链接和 Python 代码块语法，但不会把任何学习日自动标为完成。
+检查器验证目录结构、35 个任务卡、Markdown 链接、Python 代码块、Notebook、ESOL 结果文件和 Excel 包结构。GitHub Actions 会在 `main` 的推送和 Pull Request 上自动运行同一检查，但不会把任何学习日自动标为完成。
+
+## 分支规则
+
+`main` 是唯一长期分支。课程、数据、实验和文档修改使用短期分支，检查通过并合并后删除。完整规则见 [分支与仓库维护规则](docs/development_workflow.md)。
 
 ## 数据安全边界
 
