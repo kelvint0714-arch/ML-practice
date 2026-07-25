@@ -72,3 +72,9 @@ Day 1 的主要代码只是把这个骨架扩展为五个模型，并把每次�
 DeepChem 可能提示缺少 PyTorch、TensorFlow、JAX 或 PyTorch Geometric。Day 1 使用的是 ECFP 与 scikit-learn，不需要这些深度学习可选依赖。只要后续打印出仓库、数据规模和模型结果，这些提示不代表 Day 1 失败。
 
 真正需要停止检查的是：出现 Python traceback、`AssertionError`、数据无法下载，或者后面的代码单元没有继续执行。
+
+## 完成后的下一步
+
+只有当 [练习与验收](exercises.md) 的“必须理解”部分全部通过，才进入 [Day 2：安全重跑 Day 1 实验](../day02_safe_rerun/README.md)。
+
+不要一次跳到 MLP 或 GNN。完整顺序见 [算法线每日课程表](../LEARNING_PATH.md)，个人完成情况填写在 [学习进度表](../PROGRESS.md)。

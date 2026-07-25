@@ -7,7 +7,7 @@
 | 工作线 | 当前状态 | 当前入口 | 本阶段交付 |
 |---|---|---|---|
 | A. 粘合剂数据线 | 等待导师与化学组确认字段并提供样例 | [数据线说明](tracks/01_data/README.md) | 经确认的数据字典、3–5 行格式样例、首批真实数据 |
-| B. 算法预研线 | ESOL Day 1 传统基线已完成 | [算法线说明](tracks/02_algorithm/README.md) | 传统模型、MLP、混合模型的统一对照流程 |
+| B. 算法预研线 | Day 1 实验可运行；个人学习从 Day 1 开始 | [28 天核心课程](tracks/02_algorithm/LEARNING_PATH.md) | 传统模型、MLP、混合模型与主动学习的统一对照流程 |
 
 两条线的边界、衔接条件和本周任务见 [双线工作总览](tracks/README.md)。公开数据只用于方法开发和流程验收；在真实粘合剂数据到达前，不将公开数据结果表述为本项目的粘合剂实验结论。没有 SMILES、分子图或可靠结构文件前，不启动 GNN 实验。
 
@@ -30,6 +30,8 @@
 - [双线工作总览](tracks/README.md)
 - [A. 粘合剂数据线](tracks/01_data/README.md)
 - [B. 算法预研线](tracks/02_algorithm/README.md)
+- [算法线 Day 1–28 完整课程](tracks/02_algorithm/LEARNING_PATH.md)
+- [个人学习进度表](tracks/02_algorithm/PROGRESS.md)
 - [数据和划分协议](DATASETS.md)
 - [ESOL 实验说明](practice/01_load_esol/readme.md)
 - [ESOL Day 1 Notebook](practice/01_load_esol/01_load_esol.ipynb)
@@ -39,7 +41,7 @@
 - [长期学习方案](Learning-plan.md)
 - [长期资源清单](Processing-plan_resources.md)
 
-`Learning-plan.md` 和 `Processing-plan_resources.md` 保留为长期参考；当前可执行任务以本 README 为准。
+`Learning-plan.md` 和 `Processing-plan_resources.md` 保留为长期参考；当前每日执行顺序以 `tracks/02_algorithm/LEARNING_PATH.md` 为准。任务卡已经写好不代表学习或实验已经完成，完成状态只能由本人按验收标准更新。
 
 ## 粘合剂数据准备
 
@@ -52,10 +54,10 @@
 ```bash
 conda create -n esol-repro python=3.10.20 -y
 conda activate esol-repro
-python -m pip install -r requirements.txt
+python -m pip install -r requirements-learning.txt
 ```
 
-DeepChem 导入时可能提示缺少 PyTorch、TensorFlow、JAX 或 PyG。它们是 Day 1 不需要的可选深度学习依赖，不影响 ECFP + scikit-learn 基线。
+DeepChem 导入时可能提示缺少 PyTorch、TensorFlow、JAX 或 PyG。它们是 Day 1–28 核心路线不需要的可选深度学习依赖，不影响 ECFP＋scikit-learn 基线与 `MLPRegressor`。可选 GNN 路线通过门槛后再建立独立环境。
 
 ## 从头复现
 

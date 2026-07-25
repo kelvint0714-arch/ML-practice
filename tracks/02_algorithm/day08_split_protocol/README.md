@@ -1,0 +1,180 @@
+# Day 8：数据划分协议与测试集边界
+
+## 今天为什么学
+
+模型看过哪些数据，决定了一个指标能够说明什么。如果一边调整模型一边反复查看 test，test 就会逐渐参与模型选择，不再代表真正未见数据。
+
+今天不追求更好的数字，而是把 train、validation 和 test 的职责写成明确协议。
+
+## 前置条件
+
+- 已完成 [Day 7 梯度提升](../day07_gradient_boosting/README.md)；
+- 知道模型使用训练集执行 `fit`；
+- 知道验证集用于开发阶段比较；
+- 能读取 DeepChem 数据集的 `ids`；
+- 今天不增加新模型。
+
+## 今日产出
+
+今天应完成：
+
+1. 一张 split 样本数检查表；
+2. 三个 split 的 ID 重叠检查；
+3. 一份测试集使用规则；
+4. 对当前 ESOL test 已暴露事实的说明；
+5. 一个不调用 test 预测的模型开发流程图。
+
+这些检查只证明精确 ID 是否重叠，不能证明所有分子骨架完全独立。
+
+## 核心概念
+
+### 1. 训练集
+
+训练集用于：
+
+- 拟合模型参数；
+- 拟合 scaler；
+- 建立树的切分；
+- 学习线性系数。
+
+### 2. 验证集
+
+验证集用于开发阶段：
+
+- 比较事先固定的候选模型；
+- 选择超参数；
+- 观察过拟合；
+- 决定是否继续改进。
+
+反复使用同一个验证集也会产生开发偏差，因此需要记录尝试次数。
+
+### 3. 测试集
+
+理想情况下，test 只在方案完全冻结后使用一次。
+
+当前仓库的旧实验已经查看过原有 ESOL test，因此它不能被重新包装成严格未见证据。
+
+今天仍然不产生新的 test 预测。
+
+### 4. 数据泄漏
+
+泄漏是模型训练过程直接或间接获得本不应该得到的信息。
+
+常见例子：
+
+- 在全数据上拟合 scaler；
+- 先看 test 再调参数；
+- 同一样本同时进入 train 和 valid；
+- 用验证标签构造训练特征。
+
+## 分步骤任务
+
+### 第一步：写明每个 split 的用途
+
+不要只写样本数，要写“谁可以 fit、谁可以比较、谁暂不使用”。
+
+### 第二步：建立 split 表
+
+表中至少包含 split 名称、样本数、特征维数、标签数和当前用途。
+
+### 第三步：检查有限值
+
+确认各 split 的 `X` 和 `y` 没有无穷或 NaN。
+
+### 第四步：检查 ID 交集
+
+分别检查 train-valid、train-test、valid-test。
+
+### 第五步：写测试集政策
+
+写明：“Day 2–10 不使用原 test 选择模型，也不生成新的 test 指标。”
+
+## 核心代码骨架
+
+```python
+import numpy as np
+import pandas as pd
+
+split_datasets = {
+    "train": train_dataset,
+    "valid": valid_dataset,
+    "test": test_dataset,
+}
+
+rows = []
+
+for split_name, dataset in split_datasets.items():
+    X = np.asarray(dataset.X)
+    y = np.asarray(dataset.y).reshape(-1)
+
+    rows.append({
+        "split": split_name,
+        "n_samples": X.shape[0],
+        "n_features": X.shape[1],
+        "n_labels": y.shape[0],
+        "all_X_finite": bool(np.isfinite(X).all()),
+        "all_y_finite": bool(np.isfinite(y).all()),
+    })
+
+split_table = pd.DataFrame(rows)
+
+id_sets = {
+    name: set(dataset.ids)
+    for name, dataset in split_datasets.items()
+}
+
+overlaps = {
+    "train_valid": len(id_sets["train"] & id_sets["valid"]),
+    "train_test": len(id_sets["train"] & id_sets["test"]),
+    "valid_test": len(id_sets["valid"] & id_sets["test"]),
+}
+
+print(split_table)
+print(overlaps)
+```
+
+今天新增语法：
+
+- `set(...)`：建立去重集合；
+- `集合A & 集合B`：求两个集合的交集；
+- `dict.items()`：同时取得字典键和值；
+- `bool(...)`：把 NumPy 布尔结果转成普通 Python 布尔值。
+
+## 常见错误
+
+- 把 validation 当作最终 test；
+- 每调一次参数都查看 test；
+- 在全部数据上先拟合 StandardScaler；
+- 只检查样本数，不检查 ID 重叠；
+- 认为精确 ID 不重叠就证明化学结构完全独立；
+- 把已暴露 test 重新表述为严格未见；
+- 为了提高指标删除验证集中的难样本；
+- 不记录数据划分方式。
+
+## 完成标准
+
+- 能准确说明三个 split 的职责；
+- split 表中样本数、特征数和标签数一致；
+- 三组精确 ID 交集均被检查；
+- 能解释精确重叠检查的能力边界；
+- scaler 和模型只在训练数据上 fit；
+- Day 8 不产生新的 test 预测；
+- 写下明确测试集政策；
+- 能指出至少三种数据泄漏方式；
+- 不把当前验证结果称为最终性能。
+
+## 自测问题
+
+1. 训练集可以用于哪些操作？
+2. validation 与 test 的核心区别是什么？
+3. 为什么反复看 test 会使它失去意义？
+4. scaler 为什么也属于需要 fit 的对象？
+5. 集合交集能够发现什么？
+6. 精确 ID 无重叠为什么仍不能证明骨架完全独立？
+7. 当前 ESOL test 为什么不能重新称为严格未见？
+8. 今天为什么不需要训练一个新模型？
+
+## 导航
+
+- 上一天：[Day 7 梯度提升](../day07_gradient_boosting/README.md)
+- 下一天：[Day 9 交叉验证与 OOF](../day09_cross_validation_oof/README.md)

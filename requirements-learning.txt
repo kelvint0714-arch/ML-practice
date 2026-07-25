@@ -1,0 +1,5 @@
+# Day 2–28 extends the tested Day 1 environment only with plotting.
+# GNN dependencies are intentionally excluded until the Day 28 gate.
+-r requirements.txt
+matplotlib==3.10.9
+openpyxl==3.1.5
