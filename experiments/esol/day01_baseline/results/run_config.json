@@ -1,7 +1,7 @@
 {
   "run_id": "esol_ecfp_scaffold_seed42",
-  "branch": "agent/data-algorithm-tracks",
-  "source_commit": "74949b3ffba9ec14ac4d00453f6a9457cc1f9e92",
+  "branch": "main",
+  "source_commit": "426b580bd20371da1541c926e682cd5542f6d9c2",
   "working_tree_dirty_during_run": false,
   "seed": 42,
   "task": "measured log solubility in mols per litre",
