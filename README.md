@@ -1,88 +1,83 @@
 # ML-practice
 
-一个面向化学与材料机器学习的可复现练习仓库。当前采用“两线并行”：化学组继续确认粘合剂数据，算法侧同时完成可迁移的基线、神经网络与融合方法预研。
+面向化学与材料机器学习的学习与实验仓库。仓库把“课程任务”“真实实验”“数据接口”和“参考资料”分开，避免把已写好的任务卡误认为已经完成的实验。
 
-## 当前工作方式：两线并行
+## 现在从这里开始
 
-| 工作线 | 当前状态 | 当前入口 | 本阶段交付 |
+1. 学习：[Day 1 零基础入口](curriculum/core/day01_beginner/README.md)
+2. 跟着讲解运行：[ESOL Day 1 Notebook](experiments/esol/day01_baseline/esol_baseline.ipynb)
+3. 用自己的话记录理解：[学习进度表](curriculum/PROGRESS.md)
+
+Day 1 没有完成自测前，不要急着跳到神经网络。完整顺序见 [Day 1–28 核心课程](curriculum/core/README.md)。
+
+## 两条研究工作线
+
+| 工作线 | 当前状态 | 入口 | 现阶段交付 |
 |---|---|---|---|
-| A. 粘合剂数据线 | 等待导师与化学组确认字段并提供样例 | [数据线说明](tracks/01_data/README.md) | 经确认的数据字典、3–5 行格式样例、首批真实数据 |
-| B. 算法预研线 | Day 1 实验可运行；个人学习从 Day 1 开始 | [28 天核心课程](tracks/02_algorithm/LEARNING_PATH.md) | 传统模型、MLP、混合模型与主动学习的统一对照流程 |
+| 粘合剂数据线 | 等待导师与化学组确认体系、字段和真实样例 | [数据线说明](data/adhesive/README.md) | 数据字典、3–5 行格式样例、首批获授权真实数据 |
+| 算法预研线 | ESOL Day 1 已可复现；学习从 Day 1 开始 | [算法线说明](curriculum/README.md) | 传统模型、MLP、混合模型与主动学习的统一对照流程 |
 
-两条线的边界、衔接条件和本周任务见 [双线工作总览](tracks/README.md)。公开数据只用于方法开发和流程验收；在真实粘合剂数据到达前，不将公开数据结果表述为本项目的粘合剂实验结论。没有 SMILES、分子图或可靠结构文件前，不启动 GNN 实验。
+两条线的边界和衔接条件见 [项目路线图](docs/project_roadmap.md)。公开数据只用于方法开发；真实粘合剂数据到达前，不把 ESOL 结果表述为粘合剂实验结论。没有可靠结构表示前，不启动粘合剂 GNN。
 
-## 算法线当前里程碑：ESOL Day 1
+## 仓库结构
 
-已纳入的基线：
+```text
+ML-practice/
+├── curriculum/             # 学习任务：核心 28 天、可选 GNN、共享词典
+├── data/                   # 公开数据说明与粘合剂数据接口
+├── experiments/            # 真正运行过或正在执行的实验
+├── docs/                   # 项目路线、参考资料和旧方案归档
+├── scripts/                # 仓库检查工具
+├── requirements.txt        # 已复现实验的完整环境
+└── requirements-learning.txt
+```
 
-- Dummy mean；
-- Ridge；
-- 不限深决策树（过拟合诊断）；
-- 限制后决策树；
-- 随机森林。
+详细入口：
 
-所有模型使用同一 ESOL scaffold 划分和 1024 维 ECFP，在原始 logS 标签空间统一比较 MAE、RMSE 和 R²。
+- [课程总览](curriculum/README.md)
+- [Day 1–28 核心课程](curriculum/core/README.md)
+- [Day 29–35 可选 GNN](curriculum/optional_gnn/README.md)
+- [数据目录](data/README.md)
+- [实验目录](experiments/README.md)
+- [项目文档](docs/README.md)
 
-当前一次固定验证结果中，随机森林的 validation RMSE 为 1.7031 logS、R² 为 0.2578，在五个事先固定的候选模型中最好。这只是单次划分证据，不是最终测试结论。
+## 当前可复现实验
 
-## 仓库入口
+ESOL Day 1 使用固定 scaffold 划分、1024 维 ECFP，以及 Dummy、Ridge、决策树和随机森林基线。实验说明、结果和证据边界都保存在 [实验目录](experiments/esol/day01_baseline/README.md)；公开数据来源见 [ESOL 数据说明](data/public/esol.md)。
 
-- [双线工作总览](tracks/README.md)
-- [A. 粘合剂数据线](tracks/01_data/README.md)
-- [B. 算法预研线](tracks/02_algorithm/README.md)
-- [算法线 Day 1–28 完整课程](tracks/02_algorithm/LEARNING_PATH.md)
-- [个人学习进度表](tracks/02_algorithm/PROGRESS.md)
-- [数据和划分协议](DATASETS.md)
-- [ESOL 实验说明](practice/01_load_esol/readme.md)
-- [ESOL Day 1 Notebook](practice/01_load_esol/01_load_esol.ipynb)
-- [ESOL Day 1 零基础逐行学习入口](tracks/02_algorithm/day01_beginner/README.md)
-- [Day 1 实验结论](practice/01_load_esol/notes.md)
-- [粘合剂重要化学性质数据格式 v0.3](data_templates/adhesive/README.md)
-- [长期学习方案](Learning-plan.md)
-- [长期资源清单](Processing-plan_resources.md)
+任务卡已经写好不等于本人已经完成。`curriculum/` 描述“应该做什么”，`experiments/` 只保存“实际做过什么”。
 
-`Learning-plan.md` 和 `Processing-plan_resources.md` 保留为长期参考；当前每日执行顺序以 `tracks/02_algorithm/LEARNING_PATH.md` 为准。任务卡已经写好不代表学习或实验已经完成，完成状态只能由本人按验收标准更新。
+## 环境与复现
 
-## 粘合剂数据准备
-
-`data_templates/adhesive/` 保存了一份不预设环氧体系的粘合剂数据格式讨论稿。它用于让导师和化学组确认字段，尚不是真实数据集，也不代表已经选定了最终模型。
-
-## 环境
-
-已验证环境：Python 3.10.20、DeepChem 2.8.0、RDKit 2026.3.3 和 scikit-learn 1.7.2。完整版本见 `requirements.txt`。
+已验证环境为 Python 3.10.20、DeepChem 2.8.0、RDKit 2026.3.3 和 scikit-learn 1.7.2。
 
 ```bash
 conda create -n esol-repro python=3.10.20 -y
 conda activate esol-repro
 python -m pip install -r requirements-learning.txt
-```
 
-DeepChem 导入时可能提示缺少 PyTorch、TensorFlow、JAX 或 PyG。它们是 Day 1–28 核心路线不需要的可选深度学习依赖，不影响 ECFP＋scikit-learn 基线与 `MLPRegressor`。可选 GNN 路线通过门槛后再建立独立环境。
-
-## 从头复现
-
-在仓库根目录执行：
-
-```bash
-conda activate esol-repro
-python -m jupyter nbconvert \
+python -m nbconvert \
   --to notebook \
   --execute \
+  --ExecutePreprocessor.kernel_name=python3 \
   --ExecutePreprocessor.timeout=600 \
   --inplace \
-  practice/01_load_esol/01_load_esol.ipynb
+  experiments/esol/day01_baseline/esol_baseline.ipynb
 ```
 
-首次运行可能需要联网下载 ESOL。数据和特征缓存会写入 `.cache/deepchem/`，该目录不进入 Git。
+首次运行可能需要联网下载 ESOL；缓存写入 `.cache/deepchem/`，不进入 Git。
 
-## 产物
+## 仓库自检
 
-执行 Notebook 后生成：
-
-```text
-practice/01_load_esol/results/
-├── baseline_metrics.csv
-└── run_config.json
+```bash
+python scripts/check_curriculum.py
 ```
 
-Day 1 只用 train/validation 比较固定候选模型。旧 Notebook 已经查看过当前 test split，因此不将它包装成严格未见的最终证据。
+检查器验证 35 个任务目录、课程任务卡结构、Markdown 本地链接和 Python 代码块语法，但不会把任何学习日自动标为完成。
+
+## 数据安全边界
+
+- 仓库中的粘合剂 Excel 是空白字段讨论稿，不是真实数据集；
+- 真实配方或实验记录上传前必须确认保密、署名和共享权限；
+- 未授权数据放在受控位置，不提交到 GitHub；
+- 3–5 行样例只用于格式验收，不能作为可靠训练数据。
