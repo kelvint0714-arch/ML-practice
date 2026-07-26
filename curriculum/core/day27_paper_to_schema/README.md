@@ -190,4 +190,5 @@ paper_evidence:
 ## 上一天 / 下一天
 
 - 上一天：[Day 26：主动学习池模拟](../day26_active_learning/README.md)
+- 完成验收后：[返回一步一步学习目录](../../PROGRESS.md)
 - 下一天：[Day 28：粘合剂接入与导师交接](../day28_capstone_handoff/README.md)

@@ -127,5 +127,6 @@
 ## 导航
 
 - 上一天：[Day 34 GIN 与图分类](../day34_gin_graph_classification/README.md)
+- 完成验收后：[返回一步一步学习目录](../../PROGRESS.md)
 - 启动条件：[GNN 启动条件](../README.md)
 - 总路线：[可选 GNN 课程](../README.md)

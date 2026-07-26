@@ -16,40 +16,37 @@
 >
 > **8 月 30 日前的建议目标：**尽量学到 Day 14，能够完成一套可信的传统机器学习比较；质量优先，不需要提前赶 MLP 或 GNN。
 
-## 第一阶段：看懂 Python 和传统机器学习（Day 1–7）
+## 第一阶段：先学算法，代码只做伴随练习（Day 1–7）
 
-### Day 1：第一次看懂完整机器学习流程
+### Day 1：先建立算法骨架
 
-Day 1 特意拆成 9 个小步骤。必须按 1.1 到 1.9 的顺序完成。
+Day 1 特意拆成 6 个小步骤。先阅读 [Day 1 总说明](core/day01_beginner/README.md)，再按 1.1 到 1.6 的顺序完成。完整工程 Notebook 到 Day 7 才从头运行。
 
-- [ ] **1.1 先看今天要学什么：**阅读 [Day 1 零基础学习入口](core/day01_beginner/README.md)，只建立整体认识。
-- [ ] **1.2 补最少量 Python 语法：**学习 [Python 语法预备](core/day01_beginner/python_basics.md)，认出变量、函数、参数、返回值、列表、字典、循环和数组形状。
-- [ ] **1.3 看 Notebook 总地图：**阅读 [Notebook 逐行讲解总览](core/day01_beginner/notebook_line_by_line.md)，先知道每个代码单元负责什么。
-- [ ] **1.4 学代码前半部分：**完成 [逐行讲解 Part 1](core/day01_beginner/notebook_line_by_line_part1.md)，每段都能说出“输入、动作、输出”。
-- [ ] **1.5 学代码后半部分：**完成 [逐行讲解 Part 2](core/day01_beginner/notebook_line_by_line_part2.md)，分清创建模型、`fit`、`predict`、评价和保存结果。
-- [ ] **1.6 自己做题：**完成 [Day 1 练习与验收](core/day01_beginner/exercises.md)。先答题，再看答案；安全小实验放在临时 Notebook 中。
-- [ ] **1.7 回到真实代码：**打开 [ESOL Day 1 Notebook](../experiments/esol/day01_baseline/esol_baseline.ipynb)，按顺序逐格运行，并尝试在运行前说明每格会做什么。
-- [ ] **1.8 学会解释结果：**阅读 [Day 1 实验记录](../experiments/esol/day01_baseline/notes.md)，解释为什么随机森林当前较好、为什么不限深决策树过拟合，以及这些结果不能证明什么。
-- [ ] **1.9 Day 1 验收：**不看答案，用自己的话解释 `X`、`y`、训练集、验证集、`fit`、`predict`、MAE、RMSE、R² 和过拟合；然后按下方模板写一份学习记录。全部做到后才勾选本项并进入 Day 2。
+- [ ] **1.1 机器学习算法是什么：**阅读 [算法概念](core/day01_beginner/01_concepts.md)，先不用代码，分清算法、模型、样本、`X`、`y`、训练和预测。
+- [ ] **1.2 亲手完成一次预测：**完成 [纸笔手算](core/day01_beginner/02_hand_calculation.md)，自己计算均值基线、MAE 和 RMSE。
+- [ ] **1.3 用中文说出流程：**完成 [中文伪代码](core/day01_beginner/03_pseudocode.md)，能够脱离 Python 复述“数据 → 训练 → 预测 → 评价”。
+- [ ] **1.4 再看最小代码：**逐块运行 [最小 Python 代码](core/day01_beginner/04_minimal_code.md)，每一行都能放回刚刚学过的算法步骤。
+- [ ] **1.5 只在真实代码里找主线：**使用 [ESOL Notebook 对照地图](core/day01_beginner/05_esol_notebook_map.md)，只定位数据、模型、`fit`、`predict` 和指标，不逐行硬啃工程代码。
+- [ ] **1.6 Day 1 验收：**完成 [核心验收](core/day01_beginner/exercises.md)。能够口头解释、手算并运行最小代码后，才勾选本项。
 
 ### Day 2–7：按天继续
 
-- [ ] **Day 2｜安全重跑与读取产物：**完成 [Day 2 任务卡](core/day02_safe_rerun/README.md)，产出一次从空内核完整重跑的记录。
-- [ ] **Day 3｜MAE、RMSE、R²：**完成 [Day 3 任务卡](core/day03_metrics/README.md)，手算指标并用中文解释三个指标。
+- [ ] **Day 2｜MAE、RMSE、R²：**完成 [Day 2 任务卡](core/day02_metrics/README.md)，建立一个小例子的误差表并解释三个指标。
+- [ ] **Day 3｜线性回归与 Ridge：**完成 [Day 3 任务卡](core/day03_ridge/README.md)，理解权重、L2 正则化和 `alpha`。
 - [ ] **Day 4｜决策树与过拟合：**完成 [Day 4 任务卡](core/day04_decision_tree/README.md)，比较不同树深度。
 - [ ] **Day 5｜随机森林与 Bagging：**完成 [Day 5 任务卡](core/day05_random_forest/README.md)，比较单棵树与随机森林。
-- [ ] **Day 6｜Ridge、缩放与正则化：**完成 [Day 6 任务卡](core/day06_ridge_scaling/README.md)，得到 `alpha` 扫描结果。
-- [ ] **Day 7｜Gradient Boosting：**完成 [Day 7 任务卡](core/day07_gradient_boosting/README.md)，建立梯度提升基线。
+- [ ] **Day 6｜Gradient Boosting：**完成 [Day 6 任务卡](core/day06_gradient_boosting/README.md)，理解模型怎样顺序修正错误。
+- [ ] **Day 7｜完整 ESOL 基线：**完成 [Day 7 任务卡](core/day07_integrated_baseline/README.md)，这时才从空内核运行完整 Notebook，并把长代码映射回算法主线。
 
 ## 第二阶段：让实验结果可信（Day 8–14）
 
 - [ ] **Day 8｜数据划分与测试集边界：**完成 [Day 8 任务卡](core/day08_split_protocol/README.md)，写出 split 检查表和测试集使用规则。
-- [ ] **Day 9｜交叉验证与 OOF：**完成 [Day 9 任务卡](core/day09_cross_validation_oof/README.md)，保存折间结果并解释 OOF。
+- [ ] **Day 9｜K 折交叉验证：**完成 [Day 9 任务卡](core/day09_cross_validation/README.md)，保存逐折结果并报告均值与标准差。
 - [ ] **Day 10｜随机种子稳定性：**完成 [Day 10 任务卡](core/day10_seed_stability/README.md)，报告多次结果、均值和标准差。
 - [ ] **Day 11｜Pipeline 与数据泄漏：**完成 [Day 11 任务卡](core/day11_pipeline_leakage/README.md)，建立无泄漏预处理流程。
-- [ ] **Day 12｜不偷看测试集的调参：**完成 [Day 12 任务卡](core/day12_tuning_without_test/README.md)，只用训练/验证数据选择参数。
-- [ ] **Day 13｜传统模型公平比较：**完成 [Day 13 任务卡](core/day13_fair_comparison/README.md)，形成统一指标和耗时表。
-- [ ] **Day 14｜传统机器学习阶段报告：**完成 [Day 14 任务卡](core/day14_ml_stage_report/README.md)，提交第一份可以向导师解释的阶段报告。
+- [ ] **Day 12｜不偷看测试集的调参：**完成 [Day 12 任务卡](core/day12_tuning_without_test/README.md)，只在训练集内部 K 折选择 `alpha`，冻结后只检查一次外部 validation。
+- [ ] **Day 13｜传统模型公平比较：**完成 [Day 13 任务卡](core/day13_fair_comparison/README.md)，保存逐折 `fold_metrics.csv` 和汇总 `model_summary.csv`。
+- [ ] **Day 14｜传统机器学习阶段报告：**完成 [Day 14 任务卡](core/day14_ml_stage_report/README.md)，从 Day 13 真实产物形成第一份可以向导师解释的阶段报告。
 
 ## 第三阶段：神经网络入门（Day 15–21）
 

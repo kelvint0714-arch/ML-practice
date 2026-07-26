@@ -189,4 +189,5 @@ print("仍需人工确认体系、单位、分组和权限。")
 ## 上一天 / 下一天
 
 - 上一天：[Day 27：论文到数据字段](../day27_paper_to_schema/README.md)
-- 下一天（可选门槛）：[Day 29：图、节点、边与邻接关系](../../optional_gnn/day29_graph_basics/README.md)
+- 完成验收后：[返回一步一步学习目录](../../PROGRESS.md)
+- 下一步（先检查门槛）：[GNN 启动条件](../../optional_gnn/README.md)

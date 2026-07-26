@@ -172,4 +172,5 @@ print(comparison)
 ## 上一天 / 下一天
 
 - 上一天：[Day 20：MLP 正则化与早停](../day20_regularization_early_stopping/README.md)
+- 完成验收后：[返回一步一步学习目录](../../PROGRESS.md)
 - 下一天：[Day 22：混合模型方案与泄漏风险](../day22_hybrid_risk/README.md)

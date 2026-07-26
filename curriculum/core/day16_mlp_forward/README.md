@@ -155,4 +155,5 @@ assert y_pred.shape == (5, 1)
 ## 上一天 / 下一天
 
 - 上一天：[Day 15：用 NumPy 理解张量与形状](../day15_tensor_shape/README.md)
+- 完成验收后：[返回一步一步学习目录](../../PROGRESS.md)
 - 下一天：[Day 17：损失函数与优化](../day17_loss_optimizer/README.md)

@@ -31,7 +31,7 @@
 ### 1. 为什么继续使用 ECFP
 
 Day 19 的目的是比较算法，不是同时更换数据表示。
-因此 MLP 暂时使用与 Day 1 传统模型相同的 1024 维 ECFP。
+因此 MLP 暂时使用与 ESOL 参考基线 E01 相同的 1024 维 ECFP。
 
 ### 2. 隐藏层结构
 
@@ -143,4 +143,5 @@ print("iterations:", mlp.n_iter_)
 ## 上一天 / 下一天
 
 - 上一天：[Day 18：Batch、Epoch 与训练循环](../day18_batch_epoch_loop/README.md)
+- 完成验收后：[返回一步一步学习目录](../../PROGRESS.md)
 - 下一天：[Day 20：正则化与早停](../day20_regularization_early_stopping/README.md)

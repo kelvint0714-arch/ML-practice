@@ -28,6 +28,8 @@
 
 今天的目标不是找到宇宙中最好的参数，而是建立正确的选择程序。
 
+本日不把选择结果自动传给 Day 13。因为如果先在同一组 K 折上选择 `alpha`，又把同一组折的成绩当作无偏模型性能，结果会偏乐观。Day 13 使用运行前重新声明的固定基线；更严格的“调参＋无偏比较”需要以后学习嵌套交叉验证。
+
 ## 核心概念
 
 ### 1. 参数与学到的参数不同
@@ -105,7 +107,9 @@ valid_pred = search.best_estimator_.predict(X_valid)
 valid_rmse = np.sqrt(mean_squared_error(y_valid, valid_pred))
 
 cv_table = pd.DataFrame(search.cv_results_)
-print(cv_table[["param_ridge__alpha", "mean_test_score"]])
+cv_table["cv_rmse"] = -cv_table["mean_test_score"]
+
+print(cv_table[["param_ridge__alpha", "cv_rmse"]])
 print("frozen params:", search.best_params_)
 print("external validation RMSE:", valid_rmse)
 ```
@@ -117,7 +121,7 @@ print("external validation RMSE:", valid_rmse)
 - `GridSearchCV` 会组合候选参数并重复训练，不是一个新的预测模型原理。
 - `best_params_` 是交叉验证选出的参数字典。
 - `best_estimator_` 是使用最佳参数重新拟合后的完整 Pipeline。
-- scikit-learn 的负误差评分越大越好；显示时可取相反数恢复普通 RMSE。
+- scikit-learn 的负误差评分越大越好；`cv_rmse = -mean_test_score` 把它恢复为越小越好的普通 RMSE。
 
 ## 常见错误
 
@@ -150,4 +154,5 @@ print("external validation RMSE:", valid_rmse)
 ## 上一天 / 下一天
 
 - 上一天：[Day 11：用 Pipeline 防止数据泄漏](../day11_pipeline_leakage/README.md)
+- 完成验收后：[返回一步一步学习目录](../../PROGRESS.md)
 - 下一天：[Day 13：公平比较多个模型](../day13_fair_comparison/README.md)

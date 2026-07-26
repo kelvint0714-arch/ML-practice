@@ -177,4 +177,5 @@ print(ablation)
 ## 上一天 / 下一天
 
 - 上一天：[Day 23：OOF Stacking](../day23_oof_stacking/README.md)
+- 完成验收后：[返回一步一步学习目录](../../PROGRESS.md)
 - 下一天：[Day 25：启发式不确定性](../day25_uncertainty/README.md)

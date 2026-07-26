@@ -1,6 +1,8 @@
 # Notebook 逐行讲解（下）：指标、模型、训练、排名、保存与验收
 
-本页覆盖原 Notebook 的代码 Cell 7、8、9、10、11、12。建议先完成[上半部分](notebook_line_by_line_part1.md)，至少确认你知道 `X_train`、`y_train`、`X_valid` 和 `y_valid` 分别是什么。
+> 本文是工程代码参考手册，不是当前课程 Day 1 的前置任务。文中的“Day 1”是旧实验编号。
+
+本页覆盖原 Notebook 的代码 Cell 7、8、9、10、11、12。需要追查真实代码时，可先查看[上半部分](notebook_line_by_line_part1.md)，至少确认 `X_train`、`y_train`、`X_valid` 和 `y_valid` 分别是什么。
 
 ## 下半部分总数据流
 
@@ -1140,7 +1142,7 @@ display(Markdown(
 
 ---
 
-## 下半部分必须掌握的十句话
+## 如果查阅本部分，优先理解的十句话
 
 1. 指标函数接收真实值和预测值，返回 MAE、RMSE、R²。
 2. 创建模型对象时还没有训练。
@@ -1153,4 +1155,4 @@ display(Markdown(
 9. CSV 保存指标，JSON 保存运行配置和证据边界。
 10. 测试集本轮不参与训练、选择和结果表。
 
-完成后返回[练习与验收](exercises.md)，先不看答案区做第一遍。
+完成后可进入[扩展练习](exercises_extended.md)，先不看答案区做第一遍。

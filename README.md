@@ -8,14 +8,14 @@
 2. 永远从目录里的第一个 `[ ]` 开始，完成并通过自测后再勾选
 3. 目录会从 Day 1 的第一篇讲解，一直带你走到 Day 28；GNN 是通过门槛后才开始的可选内容
 
-`Day` 是学习单元，不是必须一天完成的期限。Day 1 没有完成自测前，不要急着跳到后面的模型。
+`Day` 是学习单元，不是必须一天完成的期限。路线先学算法概念和手算，再用最小代码验证理解；完整 ESOL Notebook 到 Day 7 才从头运行。
 
 ## 两条研究工作线
 
 | 工作线 | 当前状态 | 入口 | 现阶段交付 |
 |---|---|---|---|
 | 粘合剂数据线 | 等待导师与化学组确认体系、字段和真实样例 | [数据线说明](data/adhesive/README.md) | 数据字典、3–5 行格式样例、首批获授权真实数据 |
-| 算法预研线 | ESOL Day 1 已可复现；学习从 Day 1 开始 | [算法线说明](curriculum/README.md) | 传统模型、MLP、混合模型与主动学习的统一对照流程 |
+| 算法预研线 | ESOL 参考基线 E01 已可复现；课程从 Day 1 算法概念开始 | [算法线说明](curriculum/README.md) | 传统模型、MLP、混合模型与主动学习的统一对照流程 |
 
 两条线的边界和衔接条件见 [项目路线图](docs/project_roadmap.md)。公开数据只用于方法开发；真实粘合剂数据到达前，不把 ESOL 结果表述为粘合剂实验结论。没有可靠结构表示前，不启动粘合剂 GNN。
 
@@ -45,7 +45,7 @@ ML-practice/
 
 ## 当前可复现实验
 
-ESOL Day 1 使用固定 scaffold 划分、1024 维 ECFP，以及 Dummy、Ridge、决策树和随机森林基线。实验说明、结果和证据边界都保存在 [实验目录](experiments/esol/day01_baseline/README.md)；公开数据来源见 [ESOL 数据说明](data/public/esol.md)。
+已有 ESOL 参考基线使用固定 scaffold 划分、1024 维 ECFP，以及 Dummy、Ridge、决策树和随机森林。它作为 Day 7 的综合代码材料；实验说明、结果和证据边界保存在 [实验目录](experiments/esol/day01_baseline/README.md)，公开数据来源见 [ESOL 数据说明](data/public/esol.md)。
 
 任务卡已经写好不等于本人已经完成。`curriculum/` 描述“应该做什么”，`experiments/` 只保存“实际做过什么”。
 

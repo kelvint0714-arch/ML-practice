@@ -1,6 +1,6 @@
-# Day 1 所需的 Python 语法预备
+# Python 语法字典（按需查询）
 
-这不是完整 Python 教程，只解释 Day 1 Notebook 中实际出现的语法。阅读时不要求背诵，遇到原代码时能够回来查找即可。
+这不是 Day 1 的前置读物，也不是完整 Python 教程。它只解释 ESOL Notebook 中实际出现的语法。按照 [一步一步学习目录](../../PROGRESS.md) 学算法时，遇到看不懂的符号再查对应小节，不需要从头读完或背诵。
 
 ## 1. Jupyter Notebook 是什么
 

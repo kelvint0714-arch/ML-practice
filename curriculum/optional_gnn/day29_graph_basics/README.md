@@ -100,5 +100,7 @@ print(adjacency)
 ## 导航
 
 - 上一天：[Day 28 粘合剂接入与总报告](../../core/day28_capstone_handoff/README.md)
+- 开始本日前必须通过：[GNN 启动条件](../README.md)
+- 完成验收后：[返回一步一步学习目录](../../PROGRESS.md)
 - 下一天：[Day 30 PyTorch Geometric Data](../day30_pyg_data/README.md)
 - 总路线：[可选 GNN 课程](../README.md)

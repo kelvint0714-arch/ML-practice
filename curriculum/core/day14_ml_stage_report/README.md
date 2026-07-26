@@ -21,7 +21,7 @@
 完成后应当产生：
 
 1. 一张统一模型结果表；
-2. 一份阶段报告 Markdown；
+2. 一份 `experiments/day14_ml_stage_report/report.md` 阶段报告；
 3. 一页“可以得出 / 不能得出”的结论边界；
 4. 下一阶段学习 MLP 的明确入口；
 5. 一份缺失证据清单。
@@ -59,7 +59,7 @@ ESOL 的目标是分子水溶解度，不是粘合剂强度。
 ## 分步骤任务
 
 1. 列出 Day 1–Day 13 哪些已经亲自完成，哪些只是阅读。
-2. 找到每次运行的指标文件和配置文件。
+2. 从 Day 13 的 `fold_metrics.csv` 找到公平比较的逐折指标，并把其他协议的结果作为单独证据引用。
 3. 检查所有结果是否使用相同目标空间和指标单位。
 4. 删除或隔离协议不一致、来源不明的行。
 5. 汇总模型、划分、种子、RMSE、MAE、R² 和耗时。
@@ -71,64 +71,83 @@ ESOL 的目标是分子水溶解度，不是粘合剂强度。
 
 ## 核心代码骨架
 
-先把你实际存在的 CSV 路径填入列表；不要为了让代码通过而创建虚假文件。
+下面直接读取 Day 13 规定的真实产物。文件不存在时应先返回 Day 13，而不是创建虚假结果。
 
 ```python
 from pathlib import Path
 import pandas as pd
 
 # 从仓库根目录运行这段代码。
-metric_paths = [
-    Path("请替换为你实际生成的结果.csv"),
-]
+fold_metrics_path = Path(
+    "experiments/day13_fair_comparison/results/fold_metrics.csv"
+)
 results_dir = Path("experiments/day14_ml_stage_report/results")
+report_path = Path("experiments/day14_ml_stage_report/report.md")
 results_dir.mkdir(parents=True, exist_ok=True)
 
+if not fold_metrics_path.exists():
+    raise FileNotFoundError(
+        f"请先完成 Day 13：{fold_metrics_path}"
+    )
+
+fold_metrics = pd.read_csv(fold_metrics_path)
 required_columns = {
-    "model", "split", "rmse", "mae", "r2"
+    "model", "fold", "split", "mae", "rmse", "r2", "fit_seconds"
 }
-tables = []
+missing = required_columns - set(fold_metrics.columns)
 
-for path in metric_paths:
-    if not path.exists():
-        raise FileNotFoundError(f"找不到真实结果文件：{path}")
-    table = pd.read_csv(path)
-    table = table.rename(columns={
-        "mae_logS": "mae", "rmse_logS": "rmse"
-    })
-    missing = required_columns - set(table.columns)
-    if missing:
-        raise ValueError(f"{path} 缺少列：{sorted(missing)}")
-    table["source_file"] = str(path)
-    tables.append(table)
+if missing:
+    raise ValueError(
+        f"{fold_metrics_path} 缺少列：{sorted(missing)}"
+    )
 
-all_results = pd.concat(tables, ignore_index=True)
-valid_rows = all_results.loc[
-    all_results["split"].isin(["valid", "cv_valid"])
-].copy()
+if set(fold_metrics["split"]) != {"cv_valid"}:
+    raise ValueError("Day 13 文件中出现了不一致的 split。")
+
+if fold_metrics.duplicated(["model", "fold"]).any():
+    raise ValueError("Day 13 文件中存在重复的 model/fold。")
+
+expected_folds = {1, 2, 3, 4, 5}
+if set(fold_metrics["fold"]) != expected_folds:
+    raise ValueError("Day 13 文件的折编号不是 1–5。")
+
+fold_counts = fold_metrics.groupby("model")["fold"].nunique()
+if not (fold_counts == 5).all():
+    raise ValueError("至少一个模型没有完整的5折结果。")
 
 summary = (
-    valid_rows.groupby("model")[["rmse", "mae", "r2"]]
-    .agg(["mean", "std", "count"])
-    .sort_values(("rmse", "mean"))
+    fold_metrics.groupby("model")
+    .agg(
+        mae_mean=("mae", "mean"),
+        rmse_mean=("rmse", "mean"),
+        rmse_std=("rmse", "std"),
+        r2_mean=("r2", "mean"),
+        fit_seconds_mean=("fit_seconds", "mean"),
+        n_folds=("fold", "count"),
+    )
+    .reset_index()
+    .sort_values("rmse_mean")
 )
 
 summary.to_csv(
     results_dir / "ml_stage_summary.csv",
     encoding="utf-8",
+    index=False,
 )
 print(summary)
+print("请把阶段报告写到：", report_path)
 ```
 
 ## 只解释今天新增的语法
 
-- `required_columns - set(table.columns)` 是集合差，得到缺失列名。
+- `required_columns - set(fold_metrics.columns)` 是集合差，得到缺失列名。
 - `raise FileNotFoundError(...)` 主动停止，而不是静默跳过缺失证据。
-- `pd.concat(..., ignore_index=True)` 把结构一致的表按行合并。
-- `.isin([...])` 判断一列的值是否属于允许集合。
-- `.agg(["mean", "std", "count"])` 同时计算均值、标准差和样本数。
+- `set(fold_metrics["split"])` 检查文件中实际出现的划分名称。
+- `.duplicated(["model", "fold"])` 检查同一个模型、同一折是否重复；
+- `.nunique()` 检查每个模型是否恰好具有5个不同折；
+- `.agg(...)` 同时计算均值、标准差、耗时和折数。
 
-代码中的占位路径故意不能直接使用，它提醒你只汇总真实产物。
+Day 1 的固定验证结果与 Day 13 的交叉验证结果采用不同协议，不应直接混成同一个平均值。报告中可以并列说明，但主比较表以 Day 13 的逐折文件为准。
 
 ## 常见错误
 
@@ -142,7 +161,7 @@ print(summary)
 
 ## 完成标准
 
-- [ ] 报告中的每个数字都能追溯到真实文件；
+- [ ] `experiments/day14_ml_stage_report/report.md` 中的每个数字都能追溯到真实文件；
 - [ ] 我区分了单次分数和均值±标准差；
 - [ ] 我写明数据、目标、单位和划分；
 - [ ] 我没有把 ESOL 结果称为粘合剂结果；
@@ -160,4 +179,5 @@ print(summary)
 ## 上一天 / 下一天
 
 - 上一天：[Day 13：公平比较多个传统模型](../day13_fair_comparison/README.md)
+- 完成验收后：[返回一步一步学习目录](../../PROGRESS.md)
 - 下一天：[Day 15：用 NumPy 理解张量与形状](../day15_tensor_shape/README.md)

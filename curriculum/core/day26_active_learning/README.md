@@ -179,4 +179,5 @@ print(acquisition_score[query_ids])
 ## 上一天 / 下一天
 
 - 上一天：[Day 25：启发式不确定性](../day25_uncertainty/README.md)
+- 完成验收后：[返回一步一步学习目录](../../PROGRESS.md)
 - 下一天：[Day 27：从论文映射到数据字段](../day27_paper_to_schema/README.md)

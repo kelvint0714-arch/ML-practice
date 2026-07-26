@@ -1,10 +1,12 @@
 # 算法线 28 天零基础学习路线
 
-这份路线是当前算法线的唯一每日导航。它解决的不是“28 天学完所有机器学习”，而是让刚入门 Python 的学习者完成一条可以验收的研究流程：
+这份文件是课程地图；真正执行和勾选只使用 [一步一步学习目录](../PROGRESS.md)。路线解决的不是“28 天学完所有机器学习”，而是让刚入门 Python 的学习者完成一条可以验收的研究流程：
 
 ```text
-读懂数据和代码
-→ 掌握传统模型与验证
+先理解算法问题与直觉
+→ 用纸笔和最小代码验证理解
+→ 再映射到完整研究代码
+→ 掌握传统模型与可信验证
 → 学习 MLP 神经网络
 → 公平比较两类模型
 → 实现无泄漏的混合模型
@@ -16,40 +18,41 @@ ESOL 只用于练习算法流程。它的预测目标是水溶解度 `logS`，�
 
 ## 怎样使用这套路线
 
-1. 必须按 Day 1 到 Day 28 顺序进行，不建议一次运行所有代码。
-2. 每天先读当天 `README.md`，再打开或新建当天实验文件。
-3. 每一段新代码都先回答“输入、动作、输出”三个问题。
-4. 当天的必做练习和完成清单没有通过，就不要勾选“完成”。
-5. 测试集不是每日排行榜。模型选择只使用训练集和验证集。
-6. 遇到代码报错时保存完整报错，不要只截最后一行。
-7. 按 [一步一步学习目录](../PROGRESS.md) 勾选进度，实验数字写入当天结果文件。
-8. Day 29–35 是通过门槛后才开始的 GNN 扩展，不是当前赶工任务。
+1. 只按 [一步一步学习目录](../PROGRESS.md) 找下一个任务，不在本页跳着学习。
+2. 每个单元固定按“中文概念 → 纸笔或图示 → 最小代码 → 结果解释 → 自测”执行。
+3. 先说清算法在解决什么问题，再看代码；不要求先学完整 Python 才能开始算法。
+4. 每一段新代码都回答“输入、动作、输出”三个问题。
+5. 完整工程 Notebook 只在任务明确要求时打开；长逐行讲解只作为按需参考。
+6. 当天的必做练习和完成清单没有通过，就不要勾选“完成”。
+7. 测试集不是每日排行榜。模型选择只使用训练集和验证集。
+8. 遇到代码报错时保存完整报错，不要只截最后一行。
+9. Day 29–35 是通过门槛后才开始的 GNN 扩展，不是当前赶工任务。
 
-## 第一阶段：读懂传统机器学习（Day 1–7）
+## 第一阶段：算法优先的传统机器学习入门（Day 1–7）
 
 | 天数 | 主题 | 当天必须产出 |
 |---:|---|---|
-| [Day 1](day01_beginner/README.md) | Python 与完整机器学习流程识读 | 练习答案和口头复述 |
-| [Day 2](day02_safe_rerun/README.md) | 安全重跑与读取产物 | 一次从空内核重跑记录 |
-| [Day 3](day03_metrics/README.md) | MAE、RMSE、R² | 手算指标与文字解释 |
+| [Day 1](day01_beginner/README.md) | 回归、X/y、均值基线与算法骨架 | 手算、伪代码和最小运行 |
+| [Day 2](day02_metrics/README.md) | MAE、RMSE、R² | 误差表与三句解释 |
+| [Day 3](day03_ridge/README.md) | 线性回归、Ridge 与 L2 | `alpha` 敏感性表 |
 | [Day 4](day04_decision_tree/README.md) | 决策树与过拟合 | 不同树深度结果表 |
 | [Day 5](day05_random_forest/README.md) | 随机森林与 Bagging | 单树/森林对照 |
-| [Day 6](day06_ridge_scaling/README.md) | Ridge、缩放与正则化 | `alpha` 扫描表 |
-| [Day 7](day07_gradient_boosting/README.md) | Gradient Boosting | Boosting 基线结果 |
+| [Day 6](day06_gradient_boosting/README.md) | Gradient Boosting | Bagging/Boosting 对照与固定基线 |
+| [Day 7](day07_integrated_baseline/README.md) | 映射并重跑完整 ESOL 基线 | 代码分类、重跑记录和结果解释 |
 
-这一阶段让你认识常用传统算法，并能解释为什么简单基线必须保留。Day 7 使用 scikit-learn 自带的梯度提升模型；XGBoost 只作为后续可选项，不要求为了完成课程立即安装。
+前六天先使用纸笔和人工小数据理解算法，Day 7 才回到完整 ESOL Notebook。长篇 Python 与 Notebook 逐行教程保留为查询手册，不再作为进入算法前的硬门槛。梯度提升使用 scikit-learn 自带模型；XGBoost 只作为后续可选项。
 
 ## 第二阶段：让实验可信（Day 8–14）
 
 | 天数 | 主题 | 当天必须产出 |
 |---:|---|---|
 | [Day 8](day08_split_protocol/README.md) | 数据划分协议与测试集边界 | split 检查表与使用规则 |
-| [Day 9](day09_cross_validation_oof/README.md) | 交叉验证与 OOF | 折间结果和 OOF 解释 |
+| [Day 9](day09_cross_validation/README.md) | K 折交叉验证 | 逐折指标、均值和标准差 |
 | [Day 10](day10_seed_stability/README.md) | 多随机种子稳定性 | 均值、标准差、逐次结果 |
-| [Day 11](day11_pipeline_leakage/README.md) | Pipeline 与预处理泄漏 | 两条无泄漏 Pipeline |
-| [Day 12](day12_tuning_without_test/README.md) | 不偷看测试集的调参 | 预定义验证搜索结果 |
-| [Day 13](day13_fair_comparison/README.md) | 传统模型公平比较 | 指标和耗时统一表 |
-| [Day 14](day14_ml_stage_report/README.md) | 传统 ML 阶段报告 | 第一份阶段报告 |
+| [Day 11](day11_pipeline_leakage/README.md) | Pipeline 与预处理泄漏 | 错误/正确流程图和一条无泄漏 Pipeline |
+| [Day 12](day12_tuning_without_test/README.md) | 不偷看测试集的调参 | 训练内 CV 候选表和一次外部验证 |
+| [Day 13](day13_fair_comparison/README.md) | 传统模型公平比较 | 逐折文件和汇总文件 |
+| [Day 14](day14_ml_stage_report/README.md) | 传统 ML 阶段报告 | 基于 Day 13 真实产物的阶段报告 |
 
 这一阶段不是追求最高分，而是回答“这个结果能不能相信”。完成后，你应当能发现常见的数据泄漏、单次分数误导和不公平比较。
 
@@ -125,7 +128,7 @@ Day 29–35 的任务卡也预先写好，但只有通过 [GNN 启动条件](../
 experiments/
 ├── esol/
 │   └── day01_baseline/
-├── day02_safe_rerun/
+├── day02_metrics/
 ├── ...
 └── day28_capstone_handoff/
 ```

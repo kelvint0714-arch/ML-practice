@@ -4,29 +4,33 @@
 
 决策树能把特征空间不断切分，并在叶节点给出预测。它容易理解，也容易把训练数据记得过于精细。
 
-Day 1 已经出现一棵不限深树和一棵受限制树。今天要通过控制变量实验真正看懂：
+今天先用人工小数据观察树怎样切分，再通过控制变量实验真正看懂：
 
 > 为什么训练成绩非常好，验证成绩却可能很差。
 
 ## 前置条件
 
-- 已完成 [Day 3 评价指标](../day03_metrics/README.md)；
+- 已完成 [Day 3 Ridge](../day03_ridge/README.md)；
 - 能调用 `fit`、`predict` 和评价函数；
 - 知道 train 与 validation 的作用不同；
 - 知道验证 RMSE 越小通常越好；
-- 已能得到 `X_train`、`y_train`、`X_valid`、`y_valid`。
+- 今天继续使用人工小数据，不需要先运行完整 ESOL Notebook。
 
 ## 今日产出
 
 今天应完成：
 
 1. 一组只改变 `max_depth` 的决策树实验；
-2. 每个配置的 train 与 validation 指标；
+2. 每个配置的 train 与 validation 指标放在同一行；
 3. 一列训练—验证 R² 差距；
 4. 一段过拟合判断；
-5. 一个你能够解释的参数选择，而不是只报最好数字。
+5. 一段对树深如何改变欠拟合/过拟合的解释，而不是宣布“最佳参数”。
 
 本页提供任务与代码骨架，不表示这些实验已经运行。
+
+学习顺序仍然是：先画出切分规则，口头解释叶节点，再运行最小代码。不要先从参数表开始背。
+
+今天比较深度只是观察算法行为，不属于正式调参或最终模型选择。正确的调参边界会在 Day 12 学习。
 
 ## 核心概念
 
@@ -65,10 +69,10 @@ Day 1 已经出现一棵不限深树和一棵受限制树。今天要通过控�
 示例：
 
 ```text
-在同一 ESOL 划分上，树深增加会怎样改变训练和验证性能？
+在同一份人工小数据上，树深增加会怎样改变训练和验证性能？
 ```
 
-### 第二步：提前固定候选值
+### 第二步：提前固定观察值
 
 在看结果前写下：
 
@@ -82,12 +86,9 @@ depth_values = [2, 5, 10, None]
 
 每棵树使用同一训练数据、同一验证数据、同一评价函数和同一随机种子。
 
-### 第四步：整理长表
+### 第四步：整理对照表
 
-每个深度记录两行：
-
-- train；
-- valid。
+每个深度记录一行，同时放入 train、valid 和两者的 R² 差距。
 
 ### 第五步：判断过拟合
 
@@ -96,10 +97,25 @@ depth_values = [2, 5, 10, None]
 ## 核心代码骨架
 
 ```python
+import numpy as np
 import pandas as pd
+from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.tree import DecisionTreeRegressor
 
-depth_values = [2, 5, 10, None]
+X_train = np.arange(12, dtype=float).reshape(-1, 1)
+y_train = X_train.reshape(-1).copy()
+y_train[5] = 20.0
+
+X_valid = (np.arange(11, dtype=float) + 0.5).reshape(-1, 1)
+y_valid = X_valid.reshape(-1)
+
+def regression_metrics(actual, predicted):
+    return {
+        "rmse": float(np.sqrt(mean_squared_error(actual, predicted))),
+        "r2": float(r2_score(actual, predicted)),
+    }
+
+depth_values = [1, 2, 3, None]
 records = []
 
 for depth in depth_values:
@@ -118,13 +134,11 @@ for depth in depth_values:
 
     records.append({
         "max_depth": depth,
-        "split": "train",
-        **train_scores,
-    })
-    records.append({
-        "max_depth": depth,
-        "split": "valid",
-        **valid_scores,
+        "train_rmse": train_scores["rmse"],
+        "valid_rmse": valid_scores["rmse"],
+        "train_r2": train_scores["r2"],
+        "valid_r2": valid_scores["r2"],
+        "r2_gap": train_scores["r2"] - valid_scores["r2"],
     })
 
 results = pd.DataFrame(records)
@@ -135,19 +149,24 @@ print(results)
 
 - `for depth in depth_values`：依次把候选深度交给同一实验骨架；
 - `records.append(...)`：把一次结果追加到列表；
-- `**train_scores`：把指标字典展开进当前结果字典；
 - `None`：表示没有显式设置该上限，不是数字零。
+- `y_train[5] = 20.0`：故意给训练数据加入一个离群点，用来观察复杂树怎样记忆异常；
+- `r2_gap`：训练 R² 减去验证 R²，差距过大是过拟合信号之一。
+
+这段代码是自包含的：从第一行开始运行，不依赖 ESOL Notebook 中已经存在的隐藏变量。
+
+这份人工数据的正常关系接近 `y=x`，但训练集中故意放入一个离群点。深树可以把这个点记住，训练 R² 接近1；验证数据保持正常关系，因此深树的验证 R² 会明显下降。这是为了展示机制，不代表真实数据一定以同样方式过拟合。
 
 ## 常见错误
 
 - 只记录验证成绩，无法观察过拟合；
-- 只记录训练成绩并选择最深的树；
+- 只记录训练成绩并宣布最深的树最好；
 - 在不同深度使用不同数据划分；
 - 一次同时改多个超参数；
 - 忘记固定 `random_state`；
 - 把 `max_depth=None` 解释成深度为零；
 - 根据一次验证结果声称找到了全局最佳模型；
-- 把 ESOL 树模型结果直接写成粘合剂项目结论。
+- 把人工小数据结果直接写成 ESOL 或粘合剂项目结论。
 
 ## 完成标准
 
@@ -158,7 +177,7 @@ print(results)
 - 能指出哪类结果表现出过拟合；
 - 能区分过拟合和程序报错；
 - 实验中一次只改变一个主要变量；
-- 没有使用 test 选择树深；
+- 没有使用 test 观察或选择树深；
 - 能用自己的话写三句结果分析。
 
 ## 自测问题
@@ -174,5 +193,6 @@ print(results)
 
 ## 导航
 
-- 上一天：[Day 3 评价指标](../day03_metrics/README.md)
+- 上一天：[Day 3 Ridge](../day03_ridge/README.md)
+- 完成验收后：[返回一步一步学习目录](../../PROGRESS.md)
 - 下一天：[Day 5 随机森林](../day05_random_forest/README.md)

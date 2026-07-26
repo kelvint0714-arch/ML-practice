@@ -147,4 +147,5 @@ print("steps:", list(ridge_pipeline.named_steps))
 ## 上一天 / 下一天
 
 - 上一天：[Day 10：多随机种子稳定性](../day10_seed_stability/README.md)
+- 完成验收后：[返回一步一步学习目录](../../PROGRESS.md)
 - 下一天：[Day 12：不偷看测试集的调参](../day12_tuning_without_test/README.md)

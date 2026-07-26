@@ -89,5 +89,6 @@ class SmallGraphSAGE(torch.nn.Module):
 ## 导航
 
 - 上一天：[Day 31 GCN](../day31_gcn/README.md)
+- 完成验收后：[返回一步一步学习目录](../../PROGRESS.md)
 - 下一天：[Day 33 GAT](../day33_gat/README.md)
 - 总路线：[可选 GNN 课程](../README.md)

@@ -103,5 +103,6 @@ class SmallGCN(torch.nn.Module):
 ## 导航
 
 - 上一天：[Day 30 PyG Data](../day30_pyg_data/README.md)
+- 完成验收后：[返回一步一步学习目录](../../PROGRESS.md)
 - 下一天：[Day 32 GraphSAGE](../day32_graphsage/README.md)
 - 总路线：[可选 GNN 课程](../README.md)

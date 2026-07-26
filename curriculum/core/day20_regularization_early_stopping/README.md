@@ -144,4 +144,5 @@ for row in rows:
 ## 上一天 / 下一天
 
 - 上一天：[Day 19：在 ESOL 上建立 MLP 基线](../day19_mlp_esol/README.md)
+- 完成验收后：[返回一步一步学习目录](../../PROGRESS.md)
 - 下一天：[Day 21：传统模型与 MLP 公平比较](../day21_mlp_vs_ml/README.md)

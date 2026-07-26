@@ -8,10 +8,10 @@
 
 ## 前置条件
 
-- 已完成 [Day 7 梯度提升](../day07_gradient_boosting/README.md)；
+- 已完成 [Day 7 完整 ESOL 基线](../day07_integrated_baseline/README.md)；
 - 知道模型使用训练集执行 `fit`；
 - 知道验证集用于开发阶段比较；
-- 能读取 DeepChem 数据集的 `ids`；
+- 已在正确的课程环境中从仓库根目录启动 Notebook；
 - 今天不增加新模型。
 
 ## 今日产出
@@ -69,31 +69,54 @@
 
 ## 分步骤任务
 
-### 第一步：写明每个 split 的用途
+### 第一步：从空内核重新加载数据
+
+Day 8 的代码必须自包含，不能默认继承 Day 7 内核中的旧变量。Restart Kernel 后，从下面代码第一行开始运行。
+
+### 第二步：写明每个 split 的用途
 
 不要只写样本数，要写“谁可以 fit、谁可以比较、谁暂不使用”。
 
-### 第二步：建立 split 表
+### 第三步：建立 split 表
 
 表中至少包含 split 名称、样本数、特征维数、标签数和当前用途。
 
-### 第三步：检查有限值
+### 第四步：检查有限值
 
 确认各 split 的 `X` 和 `y` 没有无穷或 NaN。
 
-### 第四步：检查 ID 交集
+### 第五步：检查 ID 交集
 
 分别检查 train-valid、train-test、valid-test。
 
-### 第五步：写测试集政策
+### 第六步：写测试集政策
 
-写明：“Day 2–10 不使用原 test 选择模型，也不生成新的 test 指标。”
+写明：“核心路线 Day 2–28 的模型开发阶段不使用原 test 选择模型；只有方案预先冻结并明确最终评价协议后，才允许一次性评价真正未见的测试数据。”
 
 ## 核心代码骨架
 
 ```python
+from pathlib import Path
+import deepchem as dc
 import numpy as np
 import pandas as pd
+
+data_dir = Path(".cache/deepchem")
+data_dir.mkdir(parents=True, exist_ok=True)
+featurizer = dc.feat.CircularFingerprint(size=1024, radius=2)
+
+tasks, datasets, transformers = dc.molnet.load_delaney(
+    featurizer=featurizer,
+    splitter="scaffold",
+    transformers=[],
+    reload=True,
+    data_dir=str(data_dir),
+    save_dir=str(data_dir),
+)
+
+train_dataset, valid_dataset, test_dataset = datasets
+
+assert transformers == []
 
 split_datasets = {
     "train": train_dataset,
@@ -135,6 +158,8 @@ print(overlaps)
 
 今天新增语法：
 
+- `Path(".cache/deepchem")`：使用仓库内的数据缓存位置；
+- `tasks, datasets, transformers = ...`：接收加载函数返回的三部分；
 - `set(...)`：建立去重集合；
 - `集合A & 集合B`：求两个集合的交集；
 - `dict.items()`：同时取得字典键和值；
@@ -176,5 +201,6 @@ print(overlaps)
 
 ## 导航
 
-- 上一天：[Day 7 梯度提升](../day07_gradient_boosting/README.md)
-- 下一天：[Day 9 交叉验证与 OOF](../day09_cross_validation_oof/README.md)
+- 上一天：[Day 7 完整 ESOL 基线](../day07_integrated_baseline/README.md)
+- 完成验收后：[返回一步一步学习目录](../../PROGRESS.md)
+- 下一天：[Day 9 K 折交叉验证](../day09_cross_validation/README.md)

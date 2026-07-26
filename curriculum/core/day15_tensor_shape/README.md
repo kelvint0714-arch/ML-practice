@@ -141,4 +141,5 @@ assert hidden_with_bias.shape == (4, 2)
 ## 上一天 / 下一天
 
 - 上一天：[Day 14：传统机器学习阶段报告](../day14_ml_stage_report/README.md)
+- 完成验收后：[返回一步一步学习目录](../../PROGRESS.md)
 - 下一天：[Day 16：手写 MLP 前向计算](../day16_mlp_forward/README.md)

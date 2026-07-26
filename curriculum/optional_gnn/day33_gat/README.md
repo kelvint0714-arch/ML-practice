@@ -90,5 +90,6 @@ class SmallGAT(torch.nn.Module):
 ## 导航
 
 - 上一天：[Day 32 GraphSAGE](../day32_graphsage/README.md)
+- 完成验收后：[返回一步一步学习目录](../../PROGRESS.md)
 - 下一天：[Day 34 GIN 与图分类](../day34_gin_graph_classification/README.md)
 - 总路线：[可选 GNN 课程](../README.md)

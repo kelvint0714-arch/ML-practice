@@ -142,4 +142,5 @@ print(history[-1])
 ## 上一天 / 下一天
 
 - 上一天：[Day 17：损失函数与优化](../day17_loss_optimizer/README.md)
+- 完成验收后：[返回一步一步学习目录](../../PROGRESS.md)
 - 下一天：[Day 19：在 ESOL 上建立 MLP 基线](../day19_mlp_esol/README.md)

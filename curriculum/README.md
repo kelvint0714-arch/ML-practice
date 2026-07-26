@@ -4,13 +4,13 @@
 
 在等待真实粘合剂数据期间，建立一套可复现、可比较、能迁移到小样本材料表格数据的算法流程，并完成老师要求的“传统机器学习与神经网络结合”方法调研。
 
-当前可运行入口：[ESOL Day 1 Notebook](../experiments/esol/day01_baseline/esol_baseline.ipynb)。ESOL 只是方法练习数据，不代表粘合剂项目数据。
+当前已有一份可复现的 [ESOL 基线 Notebook](../experiments/esol/day01_baseline/esol_baseline.ipynb)，但它是 Day 7 的综合材料，不再是学习起点。ESOL 只是方法练习数据，不代表粘合剂项目数据。
 
 ## 从这里开始
 
 当前课程已拆成 [Day 1–28 核心路线](core/README.md) 和 [Day 29–35 可选 GNN 路线](optional_gnn/README.md)。
 
-第一次学习只打开 [一步一步学习目录](PROGRESS.md)，找到第一个 `[ ]` 并按顺序执行。它会把 Day 1 拆成具体阅读、练习、运行和验收步骤，再依次连接 Day 2–35。仓库中的 Day 1 实验已经能运行，不等于学习者已经掌握；在能够解释 `X`、`y`、`fit`、`predict`、数据划分、指标和过拟合之前，不进入下一天。
+第一次学习只打开 [一步一步学习目录](PROGRESS.md)，找到第一个 `[ ]` 并按顺序执行。路线采用“算法概念 → 纸笔手算 → 中文伪代码 → 最小代码 → 真实 Notebook”的顺序。Day 1 不要求逐行阅读完整工程代码；Day 7 才把已经学过的算法映射回完整 ESOL 实验。
 
 配套入口：
 
@@ -19,16 +19,16 @@
 - [共享词典、实验协议与报错排查](shared/README.md)
 - [Day 29–35 可选 GNN 与启动条件](optional_gnn/README.md)
 
-Day 2–28 使用 `requirements-learning.txt`。核心路线不要求安装 XGBoost、PyTorch 或 PyTorch Geometric；Day 29 以后再根据当时官方兼容说明建立独立 GNN 环境。
+需要运行代码时使用根目录的 [`requirements-learning.txt`](../requirements-learning.txt)。核心路线不要求安装 XGBoost、PyTorch 或 PyTorch Geometric；Day 29 以后再根据当时官方兼容说明建立独立 GNN 环境。
 
 ## 实验路线
 
 | 阶段 | 要做什么 | 主要输出 | 状态 |
 |---|---|---|---|
-| B0 传统基线 | Dummy、Ridge、决策树、随机森林、Boosting | 固定划分的 MAE、RMSE、R² | Day 1–7 |
-| B1 可信验证 | 划分、OOF、多随机种子、Pipeline、无测试集调参 | 均值、标准差、协议和配置 | Day 8–14 |
+| B0 算法入门与传统基线 | Dummy、Ridge、决策树、随机森林、Boosting | 手算、最小代码和完整 ESOL 基线映射 | Day 1–7 |
+| B1 可信验证 | 划分、K 折、多随机种子、Pipeline、无测试集调参 | 逐折结果、均值、标准差、协议和配置 | Day 8–14 |
 | B2 神经网络基线 | 小型 MLP，与传统模型使用相同输入和评估口径 | 学习曲线、验证指标、过拟合诊断 | Day 15–21 |
-| B3 混合模型 | OOF Stacking、对照和消融 | 与 B0、B2 的公平对照 | Day 22–24 |
+| B3 混合模型 | OOF 原理、Stacking、对照和消融 | 与 B0、B2 的公平对照 | Day 22–24 |
 | B4 实验推荐 | 集成不确定性、主动学习池模拟 | 候选选择逻辑及边界 | Day 25–26 |
 | B5 材料接入 | 论文字段映射、真实数据接口和阶段报告 | 可供导师与化学组确认的接入清单 | Day 27–28 |
 | B6 可选 GNN | 公开图任务、分子图和启用评审 | 只在门槛通过后执行 | Day 29–35 |

@@ -174,4 +174,5 @@ print(diagnosis.head(10))
 ## 上一天 / 下一天
 
 - 上一天：[Day 24：混合模型消融](../day24_hybrid_ablation/README.md)
+- 完成验收后：[返回一步一步学习目录](../../PROGRESS.md)
 - 下一天：[Day 26：主动学习池模拟](../day26_active_learning/README.md)

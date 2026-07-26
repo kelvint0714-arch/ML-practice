@@ -10,7 +10,7 @@
 
 ## 前置条件
 
-- 已完成 [Day 9 交叉验证与 OOF](../day09_cross_validation_oof/README.md)；
+- 已完成 [Day 9 K 折交叉验证](../day09_cross_validation/README.md)；
 - 能解释随机森林中的随机性来源；
 - 会把多次结果追加到列表；
 - 知道均值描述中心，标准差描述波动；
@@ -173,5 +173,6 @@ print(summary)
 
 ## 导航
 
-- 上一天：[Day 9 交叉验证与 OOF](../day09_cross_validation_oof/README.md)
+- 上一天：[Day 9 K 折交叉验证](../day09_cross_validation/README.md)
+- 完成验收后：[返回一步一步学习目录](../../PROGRESS.md)
 - 下一天：[Day 11 Pipeline 与数据泄漏](../day11_pipeline_leakage/README.md)
