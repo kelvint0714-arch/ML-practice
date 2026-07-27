@@ -8,7 +8,7 @@
 2. 永远从目录里的第一个 `[ ]` 开始，完成并通过自测后再勾选
 3. 目录会从 Day 1 的第一篇讲解，一直带你走到 Day 28；GNN 是通过门槛后才开始的可选内容
 
-`Day` 是学习单元，不是必须一天完成的期限。路线先学算法概念和手算，再用最小代码验证理解；完整 ESOL Notebook 到 Day 7 才从头运行。
+`Day` 是学习单元，不是必须一天完成的期限。路线先学算法概念和手算，再用最小代码验证理解；Day 2–28 均提供中文讲义、算法推演、练习、参考答案和可运行教学 Notebook。完整 ESOL 基线 Notebook 到 Day 7 才从头运行。
 
 ## 两条研究工作线
 
@@ -28,7 +28,7 @@ ML-practice/
 ├── data/                   # 公开数据说明与粘合剂数据接口
 ├── experiments/            # 真正运行过或正在执行的实验
 ├── docs/                   # 项目路线、参考资料和旧方案归档
-├── scripts/                # 仓库检查工具
+├── scripts/                # 建立个人 Day、只读运行 Notebook、仓库检查
 ├── requirements.txt        # 已复现实验的完整环境
 └── requirements-learning.txt
 ```
@@ -39,6 +39,7 @@ ML-practice/
 - [课程总览](curriculum/README.md)
 - [Day 1–28 核心课程](curriculum/core/README.md)
 - [Day 29–35 可选 GNN](curriculum/optional_gnn/README.md)
+- [完整 Day 学习包使用方法](curriculum/shared/day_package_guide.md)
 - [数据目录](data/README.md)
 - [实验目录](experiments/README.md)
 - [项目文档](docs/README.md)
@@ -54,8 +55,8 @@ ML-practice/
 已验证环境为 Python 3.10.20、DeepChem 2.8.0、RDKit 2026.3.3 和 scikit-learn 1.7.2。
 
 ```bash
-conda create -n esol-repro python=3.10.20 -y
-conda activate esol-repro
+conda create -n esol python=3.10.20 -y
+conda activate esol
 python -m pip install -r requirements-learning.txt
 
 python -m nbconvert \
@@ -69,13 +70,22 @@ python -m nbconvert \
 
 首次运行可能需要联网下载 ESOL；缓存写入 `.cache/deepchem/`，不进入 Git。
 
+开始 Day 2–28 中的某一天时，先建立不覆盖教材的个人副本：
+
+```bash
+python scripts/start_day.py 2
+```
+
+脚本会把该日 `tutorial.ipynb` 复制到 `experiments/dayXX_topic/`，同时建立个人 `notes.md` 和 `results/` 说明。
+
 ## 仓库自检
 
 ```bash
 python scripts/check_repository.py
+python scripts/run_curriculum_notebooks.py --first-day 2 --last-day 28
 ```
 
-检查器验证目录结构、35 个任务卡、Markdown 链接、Python 代码块、Notebook、ESOL 结果文件和 Excel 包结构。GitHub Actions 会在 `main` 的推送和 Pull Request 上自动运行同一检查，但不会把任何学习日自动标为完成。
+第一条验证目录结构、35 个任务卡、Markdown 链接、Python 代码块、Notebook、ESOL 结果文件和 Excel 包结构；第二条从头执行 Day 2–28 教程，但默认只在内存中检查，不修改教材。只有课程维护者确实要刷新预存输出时才显式添加 `--in-place`。GitHub Actions 会运行结构检查，但不会把任何学习日自动标为完成。
 
 ## 分支规则
 

@@ -2,6 +2,18 @@
 
 > 状态：待学习。今天只计算输出，不训练网络。
 
+## 学习文件导航
+
+按顺序完成以下五个课程文件：
+
+1. [概念讲义](01_concepts.md)
+2. [算法推演](02_algorithm_walkthrough.md)
+3. [可运行教程 Notebook](tutorial.ipynb)
+4. [练习题](03_exercises.md)
+5. [参考答案](04_reference_answers.md)
+
+`tutorial.ipynb` 使用固定随机权重演示前向数据流；随机输出没有性能意义，也不代表学习者已经训练模型。本人记录再写入 `experiments/day16_mlp_forward/`。
+
 ## 今天为什么学
 
 `MLPRegressor.fit()` 能帮我们完成很多工作，但如果完全不知道内部发生什么，就很难理解隐藏层、激活函数和输出层。

@@ -2,11 +2,22 @@
 
 > 状态：待学习、待运行。代码是流程骨架，分数必须实际运行后填写。
 
+## 本日完整学习包
+
+1. [概念精讲](01_concepts.md)
+2. [算法走读](02_algorithm_walkthrough.md)
+3. [可运行教程 Notebook](tutorial.ipynb)
+4. [练习](03_exercises.md)
+5. [参考答案](04_reference_answers.md)
+
+`tutorial.ipynb` 是课程附带的 OOF 演示。保存的教程输出不代表学习者已完成实验，个人证据应另存到 `experiments/`。
+
 ## 今天为什么学
 
 昨天已经知道，第二层模型不能直接学习基础模型的训练内预测。
 今天使用 `StackingRegressor`，
-让 scikit-learn 在训练数据内部生成折外预测。
+让 scikit-learn 按 ESOL 的 Bemis–Murcko scaffold groups
+在训练数据内部生成折外预测。
 
 目标不是追求最复杂结构，
 而是做出一个可以和单模型公平比较的最小 stacking 基线。
@@ -23,7 +34,7 @@
 
 1. 一张手工 OOF 折覆盖表；
 2. 一个两基础模型的 `StackingRegressor`；
-3. 一份内部 K 折配置；
+3. 一份 scaffold-aware GroupKFold 配置与组互斥检查；
 4. 单模型、简单平均与 stacking 的结果表；
 5. 一次泄漏检查记录和谨慎解释。
 
@@ -31,12 +42,12 @@
 
 ### 1. OOF 预测怎样产生
 
-假设训练集分成 5 折。
+假设训练集按 scaffold group 分成 5 折。
 每次用其中 4 折训练基础模型，
 再预测没有参与训练的第 5 折。
 
 循环 5 次后，
-每个训练样本都有一条“没见过自己”的预测。
+每个训练样本都有一条“没见过自己、也没见过同 scaffold 样本”的预测。
 这些预测才适合训练第二层。
 
 ### 2. StackingRegressor 做了什么
@@ -61,9 +72,9 @@
 1. 先用6个样本、3折在纸上标出每个样本在哪一轮作为 holdout。
 2. 确认每个样本的二层训练特征都来自“没用它训练”的基础模型。
 3. 读取 Day 22 的预注册方案。
-4. 确认 Ridge/树模型/MLP 的预处理都封装在 Pipeline 中。
+4. 从 ESOL SMILES 生成 Bemis–Murcko scaffold；空环系统一为 `__ACYCLIC__`。
 5. 选择两个互补的基础模型，不一次堆入很多候选。
-6. 创建带 shuffle 和固定种子的 KFold。
+6. 用 GroupKFold 创建 split 列表，并断言每折 scaffold 互斥。
 7. 使用简单 Ridge 作为第二层模型。
 8. 只对 `X_train, y_train` 调用 stacking 的 `fit()`。
 9. 对同一个 `X_valid` 预测。
@@ -77,36 +88,70 @@
 
 ```python
 import numpy as np
-from sklearn.ensemble import GradientBoostingRegressor, StackingRegressor
+import json
+import warnings
+from rdkit import Chem
+from rdkit.Chem.Scaffolds import MurckoScaffold
+from sklearn.ensemble import RandomForestRegressor, StackingRegressor
+from sklearn.exceptions import ConvergenceWarning
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import Ridge
 from sklearn.metrics import mean_absolute_error, r2_score, root_mean_squared_error
-from sklearn.model_selection import KFold
+from sklearn.model_selection import GroupKFold
 from sklearn.neural_network import MLPRegressor
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
-tree = make_pipeline(
-    SimpleImputer(strategy="median"),
-    GradientBoostingRegressor(random_state=42),
+def murcko_group(smiles):
+    mol = Chem.MolFromSmiles(str(smiles))
+    scaffold = MurckoScaffold.MurckoScaffoldSmiles(mol=mol)
+    return scaffold or "__ACYCLIC__"
+
+groups = np.array([murcko_group(s) for s in train_ids])
+config_path = (
+    REPO_ROOT
+    / "experiments/esol/day01_baseline/results/run_config.json"
 )
+if not config_path.exists():
+    raise FileNotFoundError("缺少 Day 07 冻结配置")
+rf_params = json.loads(config_path.read_text())[
+    "model_params"
+]["random_forest"]
+tree = RandomForestRegressor(**rf_params)
 mlp = make_pipeline(
     SimpleImputer(strategy="median"), StandardScaler(),
-    MLPRegressor(hidden_layer_sizes=(64,), alpha=0.001,
-                 early_stopping=True, max_iter=500, random_state=42),
+    MLPRegressor(hidden_layer_sizes=(32,), alpha=0.001,
+                 early_stopping=True, max_iter=300,
+                 n_iter_no_change=10, random_state=42),
 )
-inner_cv = KFold(n_splits=5, shuffle=True, random_state=42)
+inner_splits = list(
+    GroupKFold(5).split(X_train, y_train, groups=groups)
+)
+for fit_idx, hold_idx in inner_splits:
+    assert set(groups[fit_idx]).isdisjoint(set(groups[hold_idx]))
 stack = StackingRegressor(
     estimators=[("tree", tree), ("mlp", mlp)],
     final_estimator=Ridge(alpha=1.0),
-    cv=inner_cv,
+    cv=inner_splits,
     passthrough=False,
 )
-stack.fit(X_train, y_train)
+with warnings.catch_warnings(record=True) as stack_caught:
+    warnings.simplefilter("always", ConvergenceWarning)
+    stack.fit(X_train, y_train)
+print("stack convergence warnings:", [
+    str(item.message) for item in stack_caught
+    if issubclass(item.category, ConvergenceWarning)
+])
 stack_pred = stack.predict(X_valid)
 
 tree.fit(X_train, y_train)
-mlp.fit(X_train, y_train)
+with warnings.catch_warnings(record=True) as mlp_caught:
+    warnings.simplefilter("always", ConvergenceWarning)
+    mlp.fit(X_train, y_train)
+print("MLP convergence warnings:", [
+    str(item.message) for item in mlp_caught
+    if issubclass(item.category, ConvergenceWarning)
+])
 mean_pred = (tree.predict(X_valid) + mlp.predict(X_valid)) / 2
 
 for name, pred in {"mean": mean_pred, "stack": stack_pred}.items():
@@ -121,15 +166,17 @@ for name, pred in {"mean": mean_pred, "stack": stack_pred}.items():
 - `StackingRegressor` 是回归任务的预测级组合器。
 - `estimators=[("tree", tree), ...]` 给基础模型命名。
 - `final_estimator` 指定第二层模型。
-- `cv=inner_cv` 指定生成 OOF 特征的内部划分。
+- `cv=inner_splits` 传入已按 scaffold 生成的 OOF 划分。
 - `passthrough=False` 表示第二层只接收基础模型预测。
 - `(a + b) / 2` 计算两个等权预测的简单平均。
 - 字典的 `.items()` 同时取出方案名称和预测数组。
+- `catch_warnings(record=True)` 让收敛警告成为可见记录；不要全局忽略。
 
 ## 粘合剂数据需要额外处理
 
+本日 ESOL 已使用 SMILES 衍生 scaffold group，而不是普通 KFold。
 当真实数据包含同一配方的重复试样时，
-普通 KFold 可能把相关样本拆到不同折。
+scaffold 不能替代真实实验分组。
 此时应根据化学组提供的配方号、批次号或实验批次，
 考虑 GroupKFold。
 
@@ -144,7 +191,7 @@ for name, pred in {"mean": mean_pred, "stack": stack_pred}.items():
 
 | 错误 | 后果 | 正确处理 |
 |---|---|---|
-| 使用 `cv="prefit"` | 二层可能看到训练内预测 | 使用明确 KFold |
+| 使用 `cv="prefit"` | 二层可能看到训练内预测 | 使用明确 GroupKFold splits |
 | 外部验证参与内部 CV | 选择偏乐观 | 内部 CV 只切训练集 |
 | 基础模型没有 Pipeline | 每折预处理不完整 | 封装插补和缩放 |
 | stacking 只与弱基线比较 | 无法证明价值 | 对比最强单模型和平均 |
@@ -153,7 +200,7 @@ for name, pred in {"mean": mean_pred, "stack": stack_pred}.items():
 ## 完成标准
 
 - [ ] stacking 只在外部训练集上拟合；
-- [ ] 内部 CV 明确固定折数和种子；
+- [ ] 外部 train/valid 与每个内部折都通过 scaffold 互斥断言；
 - [ ] 没有使用 `cv="prefit"`；
 - [ ] 预处理包含在基础模型 Pipeline 中；
 - [ ] 已与最强单模型和简单平均比较；

@@ -2,12 +2,23 @@
 
 > 状态：待学习。本文不包含已验证的 MLP 分数，也不代表粘合剂实验结果。
 
+## 本日完整学习包
+
+1. [概念精讲](01_concepts.md)
+2. [算法走读](02_algorithm_walkthrough.md)
+3. [可运行教程 Notebook](tutorial.ipynb)
+4. [练习](03_exercises.md)
+5. [参考答案](04_reference_answers.md)
+
+`tutorial.ipynb` 是课程附带材料，不是学习者已经完成的实验记录。亲自运行、修改和解释后的证据才应另存到 `experiments/`。
+
 ## 今天为什么学
 
 前四天分别学习了形状、前向计算、损失和训练循环。
 今天把这些概念放回 ESOL，使用 scikit-learn 的 `MLPRegressor` 建立第一个神经网络回归基线。
 
-重点不是让 MLP 一定超过随机森林，而是让它和传统模型使用相同输入、划分和指标。
+重点是先把第一条 MLP 的输入、Pipeline、输出和收敛诊断定位清楚。
+Dummy 与 Day 07 传统模型的正式同协议比较放到 Day 21，今天不提前做排行榜。
 
 ## 前置条件
 
@@ -23,7 +34,7 @@
 1. 一条可复现的 MLP Pipeline；
 2. 训练与验证 MAE、RMSE、R²；
 3. MLP 参数与迭代次数记录；
-4. 与 Dummy 和一个传统模型相同口径的对照表；
+4. 一份收敛警告、损失曲线末端和训练—验证差距诊断；
 5. 一段准确的结论边界。
 
 ## 核心概念
@@ -35,13 +46,14 @@ Day 19 的目的是比较算法，不是同时更换数据表示。
 
 ### 2. 隐藏层结构
 
-`hidden_layer_sizes=(64,)` 表示一个隐藏层，其中有 64 个单元。
+`hidden_layer_sizes=(32,)` 表示一个隐藏层，其中有 32 个单元。
 它不是 64 层，也不是 64 个输入特征。
 
-### 3. MLP 也需要基线
+### 3. 今天只定位 MLP
 
 神经网络结构更复杂，不代表小数据上一定更好。
-比较中必须保留 Dummy、Ridge 或随机森林，且不能因为结果不好就改变比较协议。
+但 Day 19 的任务是先保证 MLP 流程能正确运行；Day 21 会读取冻结配置，
+再把 Dummy、Ridge、受限决策树、随机森林和 MLP 放进同一比较协议。
 
 ### 4. 今天暂不早停
 
@@ -58,7 +70,7 @@ Day 19 的目的是比较算法，不是同时更换数据表示。
 6. 计算训练与验证预测。
 7. 用 Day 1 相同的 MAE、RMSE、R²。
 8. 保存实际迭代次数与是否收敛的提示。
-9. 与传统模型结果并排，不改变旧模型数据。
+9. 写明今天没有比较算法家族，避免把单模型诊断误读成排名。
 10. 明确 ESOL 不是粘合剂数据。
 
 ## 核心代码骨架
@@ -75,12 +87,12 @@ mlp_pipeline = Pipeline([
     ("imputer", SimpleImputer(strategy="median")),
     ("scaler", StandardScaler()),
     ("mlp", MLPRegressor(
-        hidden_layer_sizes=(64,),
+        hidden_layer_sizes=(32,),
         activation="relu",
         solver="adam",
         alpha=0.0001,
         learning_rate_init=0.001,
-        max_iter=400,
+        max_iter=120,
         early_stopping=False,
         random_state=42,
     )),
@@ -106,7 +118,7 @@ print("iterations:", mlp.n_iter_)
 
 ## 只解释今天新增的语法
 
-- `(64,)` 是只有一项的元组，末尾逗号不能省略。
+- `(32,)` 是只有一项的元组，末尾逗号不能省略。
 - `activation="relu"` 指定隐藏层激活函数。
 - `solver="adam"` 选择 MLPRegressor 内部的优化算法。
 - `alpha` 是 L2 正则化强度，不是学习率。
@@ -118,25 +130,25 @@ print("iterations:", mlp.n_iter_)
 | 错误 | 后果 | 处理 |
 |---|---|---|
 | 不标准化直接训练 MLP | 优化可能困难 | 保留训练内 Pipeline |
-| 把 `(64,)` 写成 `64` 后误解结构 | 参数含义不清 | 明确隐藏层元组 |
+| 把 `(32,)` 写成 `32` 后误解结构 | 参数含义不清 | 明确隐藏层元组 |
 | 看到收敛警告就删除警告 | 掩盖训练问题 | 记录参数和完整提示 |
 | MLP 分数低就换划分 | 比较失去公平性 | 固定同一协议 |
 | 把 ESOL 写成粘合剂强度 | 结论越界 | 明确任务是 logS |
 
 ## 完成标准
 
-- [ ] MLP 与传统模型使用相同 ESOL 输入和划分；
+- [ ] MLP 只使用固定 ESOL train/valid，测试集仍封存；
 - [ ] 标准化器只在训练数据上拟合；
 - [ ] 我保存了训练与验证三项指标；
 - [ ] 我记录了全部参数、随机种子和迭代次数；
 - [ ] 我没有查看测试集来调 MLP；
-- [ ] 我没有声称 MLP 一定优于传统模型。
+- [ ] 我把正式模型比较留到 Day 21，没有从单模型诊断宣布赢家。
 
 ## 自测问题
 
-1. `hidden_layer_sizes=(64,)` 表示什么？
+1. `hidden_layer_sizes=(32,)` 表示什么？
 2. `alpha` 与 `learning_rate_init` 有何区别？
-3. 为什么 MLP 需要与 Dummy 比较？
+3. 为什么 Day 19 不应提前把 MLP 与 Dummy/传统模型排成排行榜？
 4. `n_iter_ == max_iter` 时应检查什么？
 5. 为什么 ESOL MLP 结果不能直接用于推荐粘合剂配方？
 

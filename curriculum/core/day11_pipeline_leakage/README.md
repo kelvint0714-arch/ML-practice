@@ -2,6 +2,18 @@
 
 > 状态：待学习。本文是任务说明，不代表实验已经完成。
 
+## 学习文件导航
+
+按顺序完成以下五个课程文件：
+
+1. [概念讲义](01_concepts.md)
+2. [算法推演](02_algorithm_walkthrough.md)
+3. [可运行教程 Notebook](tutorial.ipynb)
+4. [练习题](03_exercises.md)
+5. [参考答案](04_reference_answers.md)
+
+`tutorial.ipynb` 通过确定性人工数据对照错误与正确统计量，只是课程演示。学习者亲自运行后的证据应另存到 `experiments/day11_pipeline_leakage/`。
+
 ## 今天为什么学
 
 模型不仅会从标签中学习，缺失值填补和标准化也会从数据中学习统计量。

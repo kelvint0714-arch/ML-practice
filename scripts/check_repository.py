@@ -7,10 +7,15 @@ tracked adhesive workbook package. It never marks a learning day complete.
 
 from __future__ import annotations
 
+import contextlib
 import csv
+import io
 import json
+import math
 import re
+import runpy
 import sys
+import tempfile
 import zipfile
 from pathlib import Path
 from urllib.parse import unquote
@@ -106,6 +111,32 @@ EXPECTED_GNN_DAY_DIRS = (
     "day34_gin_graph_classification",
     "day35_molecular_graph_gate",
 )
+CORE_PACKAGE_FILES = (
+    "01_concepts.md",
+    "02_algorithm_walkthrough.md",
+    "tutorial.ipynb",
+    "03_exercises.md",
+    "04_reference_answers.md",
+)
+DAY13_OUTPUT_ROOT = CORE_ROOT / "day13_fair_comparison" / "tutorial_outputs"
+DAY14_OUTPUT_ROOT = CORE_ROOT / "day14_ml_stage_report" / "tutorial_outputs"
+DAY13_FOLD_METRICS = DAY13_OUTPUT_ROOT / "fold_metrics.csv"
+DAY13_MODEL_SUMMARY = DAY13_OUTPUT_ROOT / "model_summary.csv"
+DAY14_STAGE_SUMMARY = DAY14_OUTPUT_ROOT / "ml_stage_summary.csv"
+DAY14_REPORT_PREVIEW = DAY14_OUTPUT_ROOT / "report_preview.md"
+TUTORIAL_OUTPUT_PROVENANCE_MARKERS = (
+    "artifact_kind: deterministic_synthetic_tutorial",
+    "learner_evidence: false",
+    "不是 ESOL",
+    "真实粘合剂研究成果",
+)
+EXPECTED_TUTORIAL_MODELS = {
+    "dummy",
+    "ridge",
+    "decision_tree",
+    "random_forest",
+    "gradient_boosting",
+}
 LEGACY_DAY_SLUGS = (
     "day02_safe_rerun",
     "day03_metrics",
@@ -204,6 +235,135 @@ def check_task_card_sections(day_dirs: list[Path], errors: list[str]) -> None:
             errors.append(f"{relative(readme)}: missing next-day navigation.")
 
 
+def check_complete_core_packages(
+    core_days: list[Path],
+    errors: list[str],
+) -> tuple[int, int]:
+    """Validate the detailed Day 02–28 lesson files and tutorial notebooks."""
+
+    notebook_count = 0
+    code_cell_count = 0
+    for day_dir in core_days:
+        match = DAY_PATTERN.fullmatch(day_dir.name)
+        assert match is not None
+        number = int(match.group(1))
+        if number == 1:
+            continue
+
+        missing = [
+            name for name in CORE_PACKAGE_FILES if not (day_dir / name).is_file()
+        ]
+        if missing:
+            errors.append(
+                f"{relative(day_dir)}/: incomplete learning package; "
+                f"missing {missing}."
+            )
+            continue
+
+        readme = day_dir / "README.md"
+        linked_targets = local_link_targets(readme)
+        linked_sequence = local_link_target_sequence(readme)
+        package_positions: list[int] = []
+        for name in CORE_PACKAGE_FILES:
+            expected = (day_dir / name).resolve()
+            if expected not in linked_targets:
+                errors.append(
+                    f"{relative(readme)}: must link to learning-package file "
+                    f"'{name}'."
+                )
+                continue
+            package_positions.append(linked_sequence.index(expected))
+        if (
+            len(package_positions) == len(CORE_PACKAGE_FILES)
+            and package_positions != sorted(package_positions)
+        ):
+            errors.append(
+                f"{relative(readme)}: learning-package links must follow "
+                f"{list(CORE_PACKAGE_FILES)}."
+            )
+
+        notebook_path = day_dir / "tutorial.ipynb"
+        notebook_count += 1
+        try:
+            notebook = json.loads(notebook_path.read_text(encoding="utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            errors.append(f"{relative(notebook_path)}: invalid Notebook JSON: {exc}")
+            continue
+
+        if notebook.get("nbformat") != 4:
+            errors.append(
+                f"{relative(notebook_path)}: expected nbformat 4; "
+                f"found {notebook.get('nbformat')}."
+            )
+
+        course_artifact = notebook.get("metadata", {}).get("course_artifact", {})
+        if course_artifact.get("kind") != "supplied_tutorial":
+            errors.append(
+                f"{relative(notebook_path)}: metadata.course_artifact.kind must "
+                "be 'supplied_tutorial'."
+            )
+        if course_artifact.get("learner_evidence") is not False:
+            errors.append(
+                f"{relative(notebook_path)}: course tutorial metadata must set "
+                "learner_evidence=false."
+            )
+
+        cells = notebook.get("cells", [])
+        markdown_text = "\n".join(
+            "".join(cell.get("source", []))
+            for cell in cells
+            if cell.get("cell_type") == "markdown"
+        )
+        for heading in ("## Goal", "## Setup", "## Steps", "## Checks", "## Next Steps"):
+            if heading not in markdown_text:
+                errors.append(
+                    f"{relative(notebook_path)}: missing tutorial section "
+                    f"'{heading}'."
+                )
+        if f"Day {number}" not in markdown_text:
+            errors.append(
+                f"{relative(notebook_path)}: must identify itself as Day {number}."
+            )
+
+        code_cells = [
+            cell for cell in cells if cell.get("cell_type") == "code"
+        ]
+        code_cell_count += len(code_cells)
+        if len(code_cells) < 2:
+            errors.append(
+                f"{relative(notebook_path)}: expected at least two focused code "
+                "cells."
+            )
+            continue
+
+        execution_counts = [
+            cell.get("execution_count") for cell in code_cells
+        ]
+        expected_counts = list(range(1, len(code_cells) + 1))
+        if execution_counts != expected_counts:
+            errors.append(
+                f"{relative(notebook_path)}: expected consecutive execution "
+                f"counts {expected_counts}; found {execution_counts}."
+            )
+
+        for cell_index, cell in enumerate(code_cells, start=1):
+            for output in cell.get("outputs", []):
+                if output.get("output_type") == "error":
+                    errors.append(
+                        f"{relative(notebook_path)}: code cell {cell_index} "
+                        f"contains saved error {output.get('ename')}: "
+                        f"{output.get('evalue')}"
+                    )
+
+        serialized = json.dumps(notebook, ensure_ascii=False)
+        if "/Users/" in serialized or "file://" in serialized:
+            errors.append(
+                f"{relative(notebook_path)}: contains a machine-specific path."
+            )
+
+    return notebook_count, code_cell_count
+
+
 def normalized_link_target(source: Path, raw_target: str) -> Path | None:
     """Resolve a local Markdown target or return None for external links."""
 
@@ -229,6 +389,17 @@ def local_link_targets(markdown: Path) -> set[Path]:
         if (normalized := normalized_link_target(markdown, raw_target)) is not None
     }
     return targets
+
+
+def local_link_target_sequence(markdown: Path) -> list[Path]:
+    """Return local Markdown targets in their first-seen document order."""
+
+    text = markdown.read_text(encoding="utf-8")
+    return [
+        normalized
+        for raw_target in LINK_PATTERN.findall(text)
+        if (normalized := normalized_link_target(markdown, raw_target)) is not None
+    ]
 
 
 def check_curriculum_routes(
@@ -332,7 +503,7 @@ def check_curriculum_routes(
 
 
 def check_learning_artifact_contract(errors: list[str]) -> None:
-    """Keep the Day 13 output and Day 14 input contract synchronized."""
+    """Validate the Day 13 fixture and the derived Day 14 teaching report."""
 
     day13_path = CORE_ROOT / "day13_fair_comparison" / "README.md"
     day14_path = CORE_ROOT / "day14_ml_stage_report" / "README.md"
@@ -351,13 +522,329 @@ def check_learning_artifact_contract(errors: list[str]) -> None:
         '"mae"',
         '"rmse"',
         '"r2"',
-        '"fit_seconds"',
     )
     for marker in shared_markers:
         if marker not in day13 or marker not in day14:
             errors.append(
                 "Day 13/14 artifact contract is inconsistent; missing shared "
                 f"marker {marker!r}."
+            )
+
+    for output_root in (DAY13_OUTPUT_ROOT, DAY14_OUTPUT_ROOT):
+        provenance = output_root / "README.md"
+        if not provenance.is_file():
+            errors.append(
+                f"Missing tutorial-output provenance: {relative(provenance)}."
+            )
+            continue
+        provenance_text = provenance.read_text(encoding="utf-8")
+        for marker in TUTORIAL_OUTPUT_PROVENANCE_MARKERS:
+            if marker not in provenance_text:
+                errors.append(
+                    f"{relative(provenance)}: missing provenance marker "
+                    f"{marker!r}."
+                )
+
+    fold_columns, fold_rows = read_csv_artifact(DAY13_FOLD_METRICS, errors)
+    required_fold_columns = {
+        "model",
+        "fold",
+        "split",
+        "mae",
+        "rmse",
+        "r2",
+    }
+    missing_fold_columns = required_fold_columns - fold_columns
+    if missing_fold_columns:
+        errors.append(
+            f"{relative(DAY13_FOLD_METRICS)}: missing columns "
+            f"{sorted(missing_fold_columns)}."
+        )
+    if len(fold_rows) != 25:
+        errors.append(
+            f"{relative(DAY13_FOLD_METRICS)}: expected 25 model/fold rows; "
+            f"found {len(fold_rows)}."
+        )
+
+    fold_keys: set[tuple[str, int]] = set()
+    fold_numbers_by_model: dict[str, set[int]] = {}
+    for row_number, row in enumerate(fold_rows, start=2):
+        model = row.get("model", "")
+        try:
+            fold = int(row.get("fold", ""))
+        except (TypeError, ValueError):
+            errors.append(
+                f"{relative(DAY13_FOLD_METRICS)}:{row_number}: invalid fold "
+                f"{row.get('fold')!r}."
+            )
+            continue
+        key = (model, fold)
+        if key in fold_keys:
+            errors.append(
+                f"{relative(DAY13_FOLD_METRICS)}:{row_number}: duplicate "
+                f"model/fold {key}."
+            )
+        fold_keys.add(key)
+        fold_numbers_by_model.setdefault(model, set()).add(fold)
+        if row.get("split") != "cv_valid":
+            errors.append(
+                f"{relative(DAY13_FOLD_METRICS)}:{row_number}: split must be "
+                "'cv_valid'."
+            )
+        for column in ("mae", "rmse", "r2"):
+            check_finite_csv_value(
+                DAY13_FOLD_METRICS,
+                row_number,
+                column,
+                row.get(column),
+                errors,
+            )
+    if set(fold_numbers_by_model) != EXPECTED_TUTORIAL_MODELS:
+        errors.append(
+            f"{relative(DAY13_FOLD_METRICS)}: expected models "
+            f"{sorted(EXPECTED_TUTORIAL_MODELS)}; found "
+            f"{sorted(fold_numbers_by_model)}."
+        )
+    for model, folds in sorted(fold_numbers_by_model.items()):
+        if folds != {1, 2, 3, 4, 5}:
+            errors.append(
+                f"{relative(DAY13_FOLD_METRICS)}: model {model!r} must contain "
+                f"folds 1–5; found {sorted(folds)}."
+            )
+
+    summary_columns, summary_rows = read_csv_artifact(DAY13_MODEL_SUMMARY, errors)
+    required_summary_columns = {
+        "model",
+        "mae_mean",
+        "rmse_mean",
+        "rmse_std",
+        "rmse_min",
+        "rmse_max",
+        "r2_mean",
+        "n_folds",
+    }
+    missing_summary_columns = required_summary_columns - summary_columns
+    if missing_summary_columns:
+        errors.append(
+            f"{relative(DAY13_MODEL_SUMMARY)}: missing columns "
+            f"{sorted(missing_summary_columns)}."
+        )
+    check_summary_rows(
+        DAY13_MODEL_SUMMARY,
+        summary_rows,
+        (
+            "mae_mean",
+            "rmse_mean",
+            "rmse_std",
+            "rmse_min",
+            "rmse_max",
+            "r2_mean",
+        ),
+        errors,
+    )
+
+    stage_columns, stage_rows = read_csv_artifact(DAY14_STAGE_SUMMARY, errors)
+    required_stage_columns = {
+        "model",
+        "mae_mean",
+        "rmse_mean",
+        "rmse_std",
+        "r2_mean",
+        "n_folds",
+        "source_file",
+        "protocol",
+    }
+    missing_stage_columns = required_stage_columns - stage_columns
+    if missing_stage_columns:
+        errors.append(
+            f"{relative(DAY14_STAGE_SUMMARY)}: missing columns "
+            f"{sorted(missing_stage_columns)}."
+        )
+    check_summary_rows(
+        DAY14_STAGE_SUMMARY,
+        stage_rows,
+        (
+            "mae_mean",
+            "rmse_mean",
+            "rmse_std",
+            "r2_mean",
+        ),
+        errors,
+    )
+    expected_source = relative(DAY13_FOLD_METRICS)
+    expected_protocol = "deterministic_synthetic_random_kfold5_tutorial"
+    for row_number, row in enumerate(stage_rows, start=2):
+        if row.get("source_file") != expected_source:
+            errors.append(
+                f"{relative(DAY14_STAGE_SUMMARY)}:{row_number}: source_file "
+                f"must be {expected_source!r}."
+            )
+        if row.get("protocol") != expected_protocol:
+            errors.append(
+                f"{relative(DAY14_STAGE_SUMMARY)}:{row_number}: protocol must "
+                f"be {expected_protocol!r}."
+            )
+    if not DAY14_REPORT_PREVIEW.is_file():
+        errors.append(
+            f"Missing Day 14 tutorial report: {relative(DAY14_REPORT_PREVIEW)}."
+        )
+    else:
+        report = DAY14_REPORT_PREVIEW.read_text(encoding="utf-8")
+        report_markers = (
+            "人工教程",
+            "不代表 ESOL",
+            "真实粘合剂",
+            expected_source,
+            "计时：只保留在 Day 13 运行时内存变量中，不进入预存展示或 CSV fixture",
+        )
+        for marker in report_markers:
+            if marker not in report:
+                errors.append(
+                    f"{relative(DAY14_REPORT_PREVIEW)}: missing report marker "
+                    f"{marker!r}."
+                )
+
+
+def read_csv_artifact(
+    path: Path,
+    errors: list[str],
+) -> tuple[set[str], list[dict[str, str]]]:
+    """Read one required CSV fixture and return its columns and rows."""
+
+    try:
+        with path.open(newline="", encoding="utf-8") as handle:
+            reader = csv.DictReader(handle)
+            columns = set(reader.fieldnames or [])
+            rows = list(reader)
+    except (OSError, csv.Error, UnicodeDecodeError) as exc:
+        errors.append(f"{relative(path)}: cannot read CSV fixture: {exc}")
+        return set(), []
+    return columns, rows
+
+
+def check_finite_csv_value(
+    path: Path,
+    row_number: int,
+    column: str,
+    raw_value: object,
+    errors: list[str],
+) -> None:
+    """Report a non-finite numeric CSV value."""
+
+    try:
+        value = float(raw_value)
+    except (TypeError, ValueError):
+        errors.append(
+            f"{relative(path)}:{row_number}: {column} must be numeric; "
+            f"found {raw_value!r}."
+        )
+        return
+    if not math.isfinite(value):
+        errors.append(
+            f"{relative(path)}:{row_number}: {column} must be finite; "
+            f"found {raw_value!r}."
+        )
+
+
+def check_summary_rows(
+    path: Path,
+    rows: list[dict[str, str]],
+    numeric_columns: tuple[str, ...],
+    errors: list[str],
+) -> None:
+    """Validate the shared five-model tutorial summary shape."""
+
+    if len(rows) != 5:
+        errors.append(
+            f"{relative(path)}: expected 5 model summary rows; found {len(rows)}."
+        )
+    models = {row.get("model", "") for row in rows}
+    if models != EXPECTED_TUTORIAL_MODELS:
+        errors.append(
+            f"{relative(path)}: expected models "
+            f"{sorted(EXPECTED_TUTORIAL_MODELS)}; found {sorted(models)}."
+        )
+    for row_number, row in enumerate(rows, start=2):
+        try:
+            n_folds = int(row.get("n_folds", ""))
+        except (TypeError, ValueError):
+            n_folds = None
+        if n_folds != 5:
+            errors.append(
+                f"{relative(path)}:{row_number}: n_folds must be 5; "
+                f"found {row.get('n_folds')!r}."
+            )
+        for column in numeric_columns:
+            check_finite_csv_value(
+                path,
+                row_number,
+                column,
+                row.get(column),
+                errors,
+            )
+
+
+def check_start_day_contract(errors: list[str]) -> None:
+    """Exercise the learner-copy transformation in an isolated directory."""
+
+    script = REPO_ROOT / "scripts" / "start_day.py"
+    source = CORE_ROOT / "day02_metrics" / "tutorial.ipynb"
+    if not script.is_file() or not source.is_file():
+        errors.append("Cannot check start_day.py contract: script or Day 2 tutorial missing.")
+        return
+
+    try:
+        namespace = runpy.run_path(str(script))
+        copy_clean_notebook = namespace["copy_clean_notebook"]
+        source_before = source.read_bytes()
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            destination = Path(temporary_directory) / "learner.ipynb"
+            with contextlib.redirect_stdout(io.StringIO()):
+                copy_clean_notebook(source, destination, dry_run=False)
+            notebook = json.loads(destination.read_text(encoding="utf-8"))
+        if source.read_bytes() != source_before:
+            errors.append("scripts/start_day.py modified the source tutorial during copy.")
+    except (KeyError, OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        errors.append(f"scripts/start_day.py learner-copy contract failed: {exc}")
+        return
+
+    metadata = notebook.get("metadata", {})
+    expected_source = relative(source)
+    expected_metadata = {
+        "artifact_role": "learner_workspace",
+        "learner_evidence": True,
+        "source_tutorial": expected_source,
+    }
+    for key, expected in expected_metadata.items():
+        if metadata.get(key) != expected:
+            errors.append(
+                f"scripts/start_day.py learner copy must set {key}={expected!r}; "
+                f"found {metadata.get(key)!r}."
+            )
+    if "course_artifact" in metadata:
+        errors.append(
+            "scripts/start_day.py learner copy must remove source course_artifact metadata."
+        )
+
+    code_cells = [
+        cell for cell in notebook.get("cells", [])
+        if cell.get("cell_type") == "code"
+    ]
+    for cell_index, cell in enumerate(code_cells, start=1):
+        if cell.get("execution_count") is not None:
+            errors.append(
+                f"scripts/start_day.py learner copy code cell {cell_index} "
+                "retains an execution count."
+            )
+        if cell.get("outputs") != []:
+            errors.append(
+                f"scripts/start_day.py learner copy code cell {cell_index} "
+                "retains saved outputs."
+            )
+        if "execution" in cell.get("metadata", {}):
+            errors.append(
+                f"scripts/start_day.py learner copy code cell {cell_index} "
+                "retains execution timing metadata."
             )
 
 
@@ -399,6 +886,13 @@ def check_python_fences(errors: list[str]) -> int:
     beginner_root = CORE_ROOT / "day01_beginner"
     markdown_files.update(beginner_root.glob("[0-9][0-9]_*.md"))
     markdown_files.add(beginner_root / "exercises.md")
+    for day_dir in CORE_ROOT.glob("day??_*"):
+        match = DAY_PATTERN.fullmatch(day_dir.name)
+        if match is None or int(match.group(1)) == 1:
+            continue
+        for name in CORE_PACKAGE_FILES:
+            if name.endswith(".md"):
+                markdown_files.add(day_dir / name)
 
     for markdown in sorted(markdown_files):
         if not markdown.is_file():
@@ -616,6 +1110,9 @@ def main() -> int:
     day_dirs = core_days + gnn_days
 
     check_task_card_sections(day_dirs, errors)
+    tutorial_count, tutorial_code_cells = check_complete_core_packages(
+        core_days, errors
+    )
     check_curriculum_routes(core_days, gnn_days, errors)
     check_markdown_files(errors)
     fence_count = check_python_fences(errors)
@@ -624,6 +1121,7 @@ def main() -> int:
     check_esol_results(errors)
     check_adhesive_workbook(errors)
     check_learning_artifact_contract(errors)
+    check_start_day_contract(errors)
 
     if errors:
         print("Repository validation failed:")
@@ -634,8 +1132,9 @@ def main() -> int:
     print(
         "Repository validation passed: "
         f"{len(core_days)} core days, {len(gnn_days)} optional GNN days, "
-        f"{fence_count} Python fences, {code_cell_count} executed Notebook "
-        "code cells, ESOL artifacts, and the adhesive workbook checked."
+        f"{fence_count} Python fences, {tutorial_count} curriculum notebooks "
+        f"with {tutorial_code_cells} code cells, {code_cell_count} ESOL "
+        "reference code cells, ESOL artifacts, and the adhesive workbook checked."
     )
     return 0
 

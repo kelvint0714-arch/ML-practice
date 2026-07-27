@@ -23,6 +23,16 @@
 - 已按根目录说明安装 `requirements-learning.txt`；
 - 今天不修改模型参数，也不使用测试集选择模型。
 
+## 完整学习包（按顺序）
+
+1. [概念：算法主线与工程支持](01_concepts.md)
+2. [算法推演：10 个代码单元审计与重跑](02_algorithm_walkthrough.md)
+3. [课程提供的静态审计 Tutorial](tutorial.ipynb)
+4. [独立练习](03_exercises.md)
+5. [折叠参考答案](04_reference_answers.md)
+
+本日 Tutorial 只审计已有文件，不重复训练。真正的运行对象仍是 [ESOL 参考基线 Notebook](../../../experiments/esol/day01_baseline/esol_baseline.ipynb)；只有你本人 Restart + Run All 成功并记录状态后，才算个人学习证据。不要复制同一基线到另一个实验目录并冒充第二次独立实验。
+
 ## 今日产出
 
 1. 一张10个代码单元的“算法核心/工程支持”分类表；
@@ -102,13 +112,13 @@ Notebook 保存了一次已经运行过的结果。你重新运行是在验证�
 在仓库根目录检查：
 
 ```bash
-conda activate esol-repro
+conda activate esol
 which python
 python --version
 python -c "import deepchem, rdkit, sklearn, numpy, pandas; print('imports ok')"
 ```
 
-如果你创建环境时使用的名字是 `esol`，第一行相应改成 `conda activate esol`。不要在缺少依赖的裸 Python 或 `base` 环境中继续。
+如果你使用了别的环境名，请把第一行替换成自己的名字。不要在缺少依赖的裸 Python 或 `base` 环境中继续。
 
 终端环境正确后，还要确认 Jupyter 当前 Kernel 指向同一个环境。终端导入成功而 Notebook Kernel 选错，Notebook 仍然会报 `ModuleNotFoundError`。
 

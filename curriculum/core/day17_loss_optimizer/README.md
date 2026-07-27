@@ -2,6 +2,18 @@
 
 > 状态：待学习。今天用 NumPy 演示学习机制，不声称训练了完整 MLP。
 
+## 学习文件导航
+
+按顺序完成以下五个课程文件：
+
+1. [概念讲义](01_concepts.md)
+2. [算法推演](02_algorithm_walkthrough.md)
+3. [可运行教程 Notebook](tutorial.ipynb)
+4. [练习题](03_exercises.md)
+5. [参考答案](04_reference_answers.md)
+
+`tutorial.ipynb` 在一元线性人工数据上演示梯度下降与学习率，不是完整 MLP、ESOL 或粘合剂实验。本人运行记录再写入 `experiments/day17_loss_optimizer/`。
+
 ## 今天为什么学
 
 前向计算只能根据当前权重产生预测。
@@ -87,12 +99,7 @@ for step in range(51):
     error = prediction - y
     loss = np.mean(error ** 2)
 
-    grad_w = 2.0 * np.mean(error * x)
-    grad_b = 2.0 * np.mean(error)
-
-    w -= learning_rate * grad_w
-    b -= learning_rate * grad_b
-
+    # 先记录当前参数对应的 loss，再更新到下一步。
     if step % 10 == 0:
         history.append({
             "step": step,
@@ -100,6 +107,12 @@ for step in range(51):
             "w": float(w),
             "b": float(b),
         })
+
+    grad_w = 2.0 * np.mean(error * x)
+    grad_b = 2.0 * np.mean(error)
+
+    w -= learning_rate * grad_w
+    b -= learning_rate * grad_b
 
 for record in history:
     print(record)

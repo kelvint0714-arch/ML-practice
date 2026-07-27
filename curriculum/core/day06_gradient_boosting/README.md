@@ -16,6 +16,16 @@
 - 能区分训练表现与验证表现；
 - 今天继续使用人工小数据。
 
+## 完整学习包（按顺序）
+
+1. [概念：顺序修错与学习率](01_concepts.md)
+2. [算法推演：残差与逐阶段预测](02_algorithm_walkthrough.md)
+3. [课程提供的可运行 Tutorial](tutorial.ipynb)
+4. [独立练习](03_exercises.md)
+5. [折叠参考答案](04_reference_answers.md)
+
+课程 Tutorial 提供可复查示例输出，但不代表学习者已运行。个人 `staged_metrics.csv`、Notebook 和解释只在实际学习时保存到 `experiments/day06_gradient_boosting/`。
+
 ## 今日产出
 
 1. 一张 Bagging 与 Boosting 的对比图；

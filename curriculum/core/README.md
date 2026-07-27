@@ -78,7 +78,7 @@ ESOL 只用于练习算法流程。它的预测目标是水溶解度 `logS`，�
 | [Day 23](day23_oof_stacking/README.md) | OOF Stacking | 无泄漏混合模型结果 |
 | [Day 24](day24_hybrid_ablation/README.md) | 对照与消融 | 单模型/混合模型消融表 |
 | [Day 25](day25_uncertainty/README.md) | 集成不确定性 | 预测均值与标准差 |
-| [Day 26](day26_active_learning/README.md) | 主动学习池模拟 | 学习曲线和候选排序 |
+| [Day 26](day26_active_learning/README.md) | 主动学习池模拟 | 单轮候选排序、标签揭示边界和随机对照 |
 | [Day 27](day27_paper_to_schema/README.md) | 论文到字段映射 | 三篇论文输入/输出表 |
 | [Day 28](day28_capstone_handoff/README.md) | 粘合剂接入与总报告 | 数据接入清单和总报告 |
 
@@ -122,26 +122,36 @@ Day 29–35 的任务卡也预先写好，但只有通过 [GNN 启动条件](../
 
 ## 每日文件约定
 
-从 Day 2 开始，只在实际执行当天任务时才在 `experiments/` 下建立实验目录。下面只展示命名规律，不要求现在创建 27 个空目录：
+Day 2–28 的教材已经提前补齐，但教材和个人实验严格分开：
 
 ```text
-experiments/
-├── esol/
-│   └── day01_baseline/
-├── day02_metrics/
-├── ...
-└── day28_capstone_handoff/
+curriculum/core/dayXX_topic/
+├── README.md
+├── 01_concepts.md
+├── 02_algorithm_walkthrough.md
+├── 03_exercises.md
+├── 04_reference_answers.md
+└── tutorial.ipynb
 ```
 
-每个实际实验目录至少保留：
+真正开始某一天时运行：
+
+```bash
+python scripts/start_day.py 2
+```
+
+脚本才会建立：
 
 ```text
-README.md        # 实验问题、运行方法和证据边界
-notes.md         # 你自己的理解、报错与结论
-results/         # CSV、JSON 或图片等可复查结果
+experiments/day02_metrics/
+├── README.md
+├── day02_metrics.ipynb
+├── notes.md
+└── results/
+    └── README.md
 ```
 
-Notebook 或 `.py` 文件在开始当天任务时再创建。这样可以区分“任务卡已经写好”与“本人已经完成实验”，不会让空白任务目录看起来像已有研究成果。
+这样既可以提前获得完整学习材料，也不会把教材的预存输出冒充成本人已经完成的研究证据。详细规则见[完整 Day 学习包使用方法](../shared/day_package_guide.md)。
 
 ## 模型比较的统一规则
 

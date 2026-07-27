@@ -2,6 +2,16 @@
 
 > 状态：待学习、待运行。所有结果位置必须由实际运行填写。
 
+## 本日完整学习包
+
+1. [概念精讲](01_concepts.md)
+2. [算法走读](02_algorithm_walkthrough.md)
+3. [可运行教程 Notebook](tutorial.ipynb)
+4. [练习](03_exercises.md)
+5. [参考答案](04_reference_answers.md)
+
+`tutorial.ipynb` 是课程附带的消融演示，不是学习者实验记录；其中 ESOL 输出不能写成粘合剂结论。
+
 ## 今天为什么学
 
 混合模型分数提高时，我们还不知道收益来自哪个部分。
@@ -14,7 +24,7 @@
 ## 前置条件
 
 - 完成 [Day 23](../day23_oof_stacking/README.md)；
-- 已保存最强传统模型、MLP、平均和 stacking 的定义；
+- 已保存 Day 07 冻结随机森林、统一 MLP、平均和 scaffold-aware stacking 的定义；
 - 使用同一个数据划分和评价指标；
 - 能解释控制变量；
 - 测试集仍未用于结构选择。
@@ -42,9 +52,11 @@
 - 传统模型单独；
 - MLP 单独；
 - 两者简单平均；
-- 两者无泄漏 stacking；
-- stacking 去掉 MLP；
-- 可选：`passthrough=False` 与 `True`。
+- 只有树作为一级模型、但仍保留 OOF + Ridge 二层的 `stack_tree_only`；
+- 树和 MLP 共同作为一级模型的 `stack_tree_mlp`。
+
+`tree_only` 与 `stack_tree_only` 必须是真正不同的拟合过程：
+后者需要从 OOF 树预测训练二层 Ridge，不能把树预测复制一遍改名。
 
 ### 3. 一次只改一项
 
@@ -67,8 +79,8 @@
 7. 运行传统模型单独方案。
 8. 运行 MLP 单独方案。
 9. 运行简单平均。
-10. 运行完整 stacking。
-11. 运行预先指定的去除组件方案。
+10. 运行 `stack_tree_only`。
+11. 运行 `stack_tree_mlp`，以“加入 MLP”作为唯一变化。
 12. 记录训练耗时和模型数量。
 13. 计算相对基准 RMSE 差值。
 14. 用多个种子核对方向是否稳定。
@@ -88,8 +100,8 @@ predictions = {
 predictions["simple_mean"] = (
     predictions["tree_only"] + predictions["mlp_only"]
 ) / 2
-predictions["full_stack"] = stack.predict(X_valid)
-predictions["stack_without_mlp"] = tree.predict(X_valid)
+predictions["stack_tree_only"] = stack_tree_only.predict(X_valid)
+predictions["stack_tree_mlp"] = stack_tree_mlp.predict(X_valid)
 
 rows = []
 baseline_rmse = root_mean_squared_error(
@@ -116,7 +128,8 @@ print(ablation)
 - `delta_vs_tree` 是当前 RMSE 减去基准 RMSE。
 - 差值小于零表示 RMSE 比基准低。
 - `variant` 表示消融方案，不是新的数据集。
-- 代码假设 `tree`、`mlp` 和 `stack` 已按 Day 23 拟合。
+- 代码假设两个单模型和两个 stack 都用 Day 23 相同冻结配方、
+  scaffold groups 与 GroupKFold split 列表拟合。
 
 ## 建议的消融记录表
 
@@ -125,11 +138,11 @@ print(ablation)
 | 树单模型 | 是 | 否 | 否 | 否 | 基准 |
 | MLP 单模型 | 否 | 是 | 否 | 否 | 模型类型 |
 | 简单平均 | 是 | 是 | 否 | 否 | 固定等权 |
-| 完整 stacking | 是 | 是 | 是 | 否 | 学习组合权重 |
-| stacking 直通 | 是 | 是 | 是 | 是 | 只增加原始特征 |
+| stack_tree_only | 是 | 否 | 是 | 否 | 在树 OOF 预测上拟合二层 |
+| stack_tree_mlp | 是 | 是 | 是 | 否 | 相对上一行只加入 MLP |
 
-示例中的 `stack_without_mlp` 退化为树模型预测。
-若严格比较第二层或 `passthrough`，应在运行前重新创建对应模型。
+这两行都必须真实调用 `StackingRegressor.fit()`；
+禁止用 `tree.predict()` 伪造 `stack_tree_only`。
 是否保留完整结构，要同时看指标、种子稳定性、耗时、可解释性，
 以及简单平均是否已达到近似效果。
 
@@ -163,6 +176,7 @@ print(ablation)
 - [ ] 所有方案复用相同外部划分；
 - [ ] 保存完整指标而非只留最好结果；
 - [ ] 已比较简单平均与 stacking；
+- [ ] `stack_tree_only` 不是 `tree_only` 的预测别名；
 - [ ] 结论同时讨论收益、稳定性和复杂度；
 - [ ] 未使用测试集选择消融方案。
 

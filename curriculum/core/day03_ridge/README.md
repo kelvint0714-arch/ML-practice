@@ -14,6 +14,16 @@ Ridge 是你学习的第一个真正会根据输入 `X` 改变预测值的算法
 - 能区分训练集与验证集；
 - 今天不打开 ESOL 完整 Notebook。
 
+## 完整学习包（按顺序）
+
+1. [概念：线性预测与 L2 正则化](01_concepts.md)
+2. [算法推演：固定模型与 alpha 对照](02_algorithm_walkthrough.md)
+3. [课程提供的可运行 Tutorial](tutorial.ipynb)
+4. [独立练习](03_exercises.md)
+5. [折叠参考答案](04_reference_answers.md)
+
+`tutorial.ipynb` 是供应的人工数据教学示例，不是你的模型实验。个人运行、副本、笔记和 `alpha_sensitivity.csv` 应在实际学习时保存到 `experiments/day03_ridge/`。
+
 ## 今日产出
 
 今天只要求两个核心产物：

@@ -2,6 +2,16 @@
 
 > 状态：待学习、待模拟。今天的“揭示标签”只模拟实验返回，不代表真实实验已经完成。
 
+## 本日完整学习包
+
+1. [概念精讲](01_concepts.md)
+2. [算法走读](02_algorithm_walkthrough.md)
+3. [可运行教程 Notebook](tutorial.ipynb)
+4. [练习](03_exercises.md)
+5. [参考答案](04_reference_answers.md)
+
+`tutorial.ipynb` 是已有 ESOL 标签上的池模拟课程材料；它没有合成、测试或推荐真实粘合剂。
+
 ## 今天为什么学
 
 粘合剂实验成本可能较高，主动学习希望推荐下一批候选。
@@ -15,7 +25,7 @@
 
 - 完成 [Day 25](../day25_uncertainty/README.md)；
 - 能计算集成平均和启发式分歧；
-- 已区分已标注集、候选池和独立测试集；
+- 已区分已标注集、候选池和固定外部对照集；
 - 知道主动学习不能替代化学可行性审核；
 - 采集规则在运行前已经固定。
 
@@ -24,7 +34,7 @@
 1. 一个初始已标注集和一个隐藏标签候选池；
 2. 一轮基于模型分歧的 query；
 3. 一轮同预算随机 query；
-4. query 前后模型指标对照；
+4. 在同一固定外部 valid 上的单轮指标对照；
 5. 一份发给化学组的候选交接字段草稿。
 
 ## 核心概念
@@ -33,7 +43,7 @@
 
 - 已标注集：特征和标签都可用于训练；
 - 候选池：选择时只能读取特征；
-- 独立评估集：只用于比较策略，不加入候选池。
+- 固定外部对照集：不加入候选池，只在 query 与更新完成后按同一口径比较。当前 ESOL valid 在课程前面已经被开发性查看过，所以它不是严格未见的最终 test。
 
 ### 2. Query
 
@@ -59,10 +69,10 @@ Query 是本轮准备请求实验的候选编号。
 8. 保存被选编号和选择理由。
 9. 此时才模拟读取 `y_pool[query_ids]`。
 10. 把新样本加入已标注集并重新训练。
-11. 用独立评估集检查更新前后指标。
+11. 用固定外部 valid 检查更新前后指标；不把它称为严格独立 test。
 12. 用同预算运行随机 query。
-13. 重复多个初始种子，避免单次偶然。
-14. 写明模拟结果不能替代真实实验验证。
+13. 写明本教程只演示一轮，单轮胜负不能证明策略优越。
+14. 把多初始化种子、多轮学习曲线列为完成本教程后的正式实验扩展。
 
 ## 核心代码骨架
 
@@ -75,43 +85,60 @@ pool_predictions = []
 
 for seed in seeds:
     model = RandomForestRegressor(
-        n_estimators=300,
+        n_estimators=120,
         max_features="sqrt",
         random_state=seed,
+        n_jobs=1,
     )
     model.fit(X_labeled, y_labeled)
     pool_predictions.append(model.predict(X_pool))
 
 prediction_matrix = np.vstack(pool_predictions)
 acquisition_score = prediction_matrix.std(axis=0)
-batch_size = 5
-query_ids = np.argsort(acquisition_score)[-batch_size:][::-1]
+batch_size = 10
+query_pos = np.lexsort((
+    pool_ids.astype(str),
+    -acquisition_score,
+))[:batch_size]
 
-# 到这一行，query 已固定；此前不得读取 y_pool。
-selected_X = X_pool[query_ids]
-selected_ids = pool_ids[query_ids]
+# 同预算随机对照也在标签揭示前固定。
+random_rng = np.random.default_rng(2026)
+random_pos = random_rng.choice(
+    len(X_pool), size=batch_size, replace=False
+)
+
+# 到这一行，主动 query 已固定；随机对照也必须在标签揭示前固定。
+selected_X = X_pool[query_pos]
+selected_ids = pool_ids[query_pos]
+random_X = X_pool[random_pos]
+random_ids = pool_ids[random_pos]
 
 # 下面一行只模拟“实验完成后返回真实性能”。
-selected_y = y_pool[query_ids]
+# 模拟 oracle 也到标签揭示线之后才接收隐藏标签。
+selected_y = y_pool[query_pos]
+random_y = y_pool[random_pos]
 X_labeled_next = np.concatenate([X_labeled, selected_X], axis=0)
 y_labeled_next = np.concatenate([y_labeled, selected_y], axis=0)
+X_random_next = np.concatenate([X_labeled, random_X], axis=0)
+y_random_next = np.concatenate([y_labeled, random_y], axis=0)
 
 print(selected_ids)
-print(acquisition_score[query_ids])
+print(acquisition_score[query_pos])
+print(random_ids)
 ```
 
 ## 只解释今天新增的语法
 
-- `np.argsort(score)` 返回按分数从小到大排列的索引。
-- `[-batch_size:]` 取最高分的最后若干个索引。
-- `[::-1]` 把顺序反转为从高到低。
-- `X_pool[query_ids]` 按索引取出被选候选。
+- `np.lexsort((candidate_id, -score))` 先按分歧从高到低排，并在分数相同时按候选 ID 排，保证并列规则固定。
+- `[:batch_size]` 取排序后的前若干个位置。
+- `X_pool[query_pos]` 按位置取出被选候选。
+- `default_rng(2026).choice(..., replace=False)` 用固定种子抽取不重复的同预算随机对照。
 - `np.concatenate(..., axis=0)` 按样本行拼接新旧数据。
 - 注释位置划出了“选择前”和“标签返回后”的权限边界。
 
 ## 最重要的泄漏审计
 
-在 `query_ids` 固定之前，
+在 `query_pos` 和 `selected_ids` 固定之前，
 搜索代码并确认没有出现：
 
 - `y_pool`；
@@ -120,7 +147,7 @@ print(acquisition_score[query_ids])
 - 用候选标签调采集权重；
 - 根据模拟结果反复改同一轮 query。
 
-可以用标签评价完整策略，
+可以在 query 固定后用标签评价完整策略，
 但不能让同一轮策略先看答案再选题。
 
 ## 真实粘合剂接口从今天开始
@@ -144,8 +171,9 @@ print(acquisition_score[query_ids])
 未经化学组批准，
 算法不能直接把高分歧候选当成实验任务。
 
-随机对照必须使用相同初始已标注集、每轮预算、总轮数和评估集，
-并覆盖多个预先声明的种子。
+随机对照必须使用相同初始已标注集、预算、模型和外部 valid。
+本日只完成单轮机制演示，因此结果表只说明代码流程；
+若要讨论策略有效性，必须另做多轮、多预先声明种子的学习曲线，
 不能只展示主动学习最好的一次和随机选择最差的一次。
 
 ## 常见错误
@@ -160,17 +188,18 @@ print(acquisition_score[query_ids])
 
 ## 完成标准
 
-- [ ] 已标注集、候选池和评估集互相区分；
+- [ ] 已标注集、候选池和固定外部 valid 互相区分；
 - [ ] query 前代码没有读取候选标签；
 - [ ] 候选只根据特征和冻结采集函数排序；
 - [ ] 标签仅在 query 固定后模拟揭示；
 - [ ] 已建立同预算随机对照；
 - [ ] 候选交接表包含化学可行性审核；
 - [ ] 没有声称真实实验已经完成。
+- [ ] 没有把单轮胜负或课程 valid 包装成策略优越性/最终性能；
 
 ## 自测问题
 
-1. 候选池与独立评估集有什么区别？
+1. 候选池与固定外部对照集有什么区别？为什么课程 valid 仍不是严格未见 test？
 2. 为什么 `selected_y` 必须出现在 query 固定之后？
 3. 主动学习为什么仍需要随机对照？
 4. 高分歧候选为什么不能自动送实验？

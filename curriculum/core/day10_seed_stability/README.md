@@ -1,5 +1,17 @@
 # Day 10：多随机种子稳定性
 
+## 学习文件导航
+
+按顺序完成以下五个课程文件：
+
+1. [概念讲义](01_concepts.md)
+2. [算法推演](02_algorithm_walkthrough.md)
+3. [可运行教程 Notebook](tutorial.ipynb)
+4. [练习题](03_exercises.md)
+5. [参考答案](04_reference_answers.md)
+
+`tutorial.ipynb` 固定人工数据与划分，只演示模型随机性。它不是学习者实验记录；本人运行后的逐 seed 证据应另存到 `experiments/day10_seed_stability/`。
+
 ## 今天为什么学
 
 随机森林的抽样和随机特征选择会受到随机种子影响。

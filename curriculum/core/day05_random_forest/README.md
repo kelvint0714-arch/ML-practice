@@ -18,6 +18,16 @@
 - 能读懂一个简单 `for` 循环；
 - 今天继续使用人工小数据。
 
+## 完整学习包（按顺序）
+
+1. [概念：Bootstrap、随机特征与平均](01_concepts.md)
+2. [算法推演：单树/森林公平对照](02_algorithm_walkthrough.md)
+3. [课程提供的可运行 Tutorial](tutorial.ipynb)
+4. [独立练习](03_exercises.md)
+5. [折叠参考答案](04_reference_answers.md)
+
+`tutorial.ipynb` 属于课程材料，不是个人实验。实际学习时在 `experiments/day05_random_forest/` 保存自己运行的模型对照、笔记和结果文件。
+
 ## 今日产出
 
 今天只要求：
