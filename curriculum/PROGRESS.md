@@ -22,12 +22,12 @@
 
 Day 1 特意拆成 6 个小步骤。先阅读 [Day 1 总说明](core/day01_beginner/README.md)，再按 1.1 到 1.6 的顺序完成。完整工程 Notebook 到 Day 7 才从头运行。
 
-- [ ] **1.1 机器学习算法是什么：**阅读 [算法概念](core/day01_beginner/01_concepts.md)，先不用代码，分清算法、模型、样本、`X`、`y`、训练和预测。
-- [ ] **1.2 亲手完成一次预测：**完成 [纸笔手算](core/day01_beginner/02_hand_calculation.md)，自己计算均值基线、MAE 和 RMSE。
-- [ ] **1.3 用中文说出流程：**完成 [中文伪代码](core/day01_beginner/03_pseudocode.md)，能够脱离 Python 复述“数据 → 训练 → 预测 → 评价”。
-- [ ] **1.4 再看最小代码：**逐块运行 [最小 Python 代码](core/day01_beginner/04_minimal_code.md)，每一行都能放回刚刚学过的算法步骤。
-- [ ] **1.5 只在真实代码里找主线：**使用 [ESOL Notebook 对照地图](core/day01_beginner/05_esol_notebook_map.md)，只定位数据、模型、`fit`、`predict` 和指标，不逐行硬啃工程代码。
-- [ ] **1.6 Day 1 验收：**完成 [核心验收](core/day01_beginner/exercises.md)。能够口头解释、手算并运行最小代码后，才勾选本项。
+- [√] **1.1 机器学习算法是什么：**阅读 [算法概念](core/day01_beginner/01_concepts.md)，先不用代码，分清算法、模型、样本、`X`、`y`、训练和预测。
+- [√] **1.2 亲手完成一次预测：**完成 [纸笔手算](core/day01_beginner/02_hand_calculation.md)，自己计算均值基线、MAE 和 RMSE。
+- [√] **1.3 用中文说出流程：**完成 [中文伪代码](core/day01_beginner/03_pseudocode.md)，能够脱离 Python 复述“数据 → 训练 → 预测 → 评价”。
+- [√] **1.4 再看最小代码：**逐块运行 [最小 Python 代码](core/day01_beginner/04_minimal_code.md)，每一行都能放回刚刚学过的算法步骤。
+- [√] **1.5 只在真实代码里找主线：**使用 [ESOL Notebook 对照地图](core/day01_beginner/05_esol_notebook_map.md)，只定位数据、模型、`fit`、`predict` 和指标，不逐行硬啃工程代码。
+- [√] **1.6 Day 1 验收：**完成 [核心验收](core/day01_beginner/exercises.md)。能够口头解释、手算并运行最小代码后，才勾选本项。
 
 ### Day 2–7：按天继续
 
