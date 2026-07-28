@@ -4,7 +4,7 @@
 
 | 文件 | 什么时候查 |
 |---|---|
-| [完整 Day 学习包使用方法](day_package_guide.md) | 不清楚教材、教学 Notebook 与个人实验目录有什么区别，或准备开始 Day 2–28 时 |
+| [完整 Day 学习包使用方法](day_package_guide.md) | 不清楚教材、教学 Notebook 与个人实验目录有什么区别，或准备开始 Day 2–35 时 |
 | [Python 语法字典](../core/day01_beginner/python_basics.md) | 在当天最小代码中遇到不认识的变量、函数、循环、字典、路径或异常时 |
 | [机器学习词典](ml_glossary.md) | 忘记 `X/y`、特征、标签、Epoch、OOF 等术语时 |
 | [统一实验协议](experiment_protocol.md) | 不确定能否调参、使用测试集或比较模型时 |

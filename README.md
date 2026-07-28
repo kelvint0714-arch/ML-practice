@@ -6,9 +6,9 @@
 
 1. 打开唯一导航：[一步一步学习目录](curriculum/PROGRESS.md)
 2. 永远从目录里的第一个 `[ ]` 开始，完成并通过自测后再勾选
-3. 目录会从 Day 1 的第一篇讲解，一直带你走到 Day 28；GNN 是通过门槛后才开始的可选内容
+3. 目录会从 Day 1 的第一篇讲解，一直带你走到 Day 35；Day 29–34 可用公开图学习 GNN，但把 GNN 用到粘合剂项目仍要通过 Day 35 门槛
 
-`Day` 是学习单元，不是必须一天完成的期限。路线先学算法概念和手算，再用最小代码验证理解；Day 2–28 均提供中文讲义、算法推演、练习、参考答案和可运行教学 Notebook。完整 ESOL 基线 Notebook 到 Day 7 才从头运行。
+`Day` 是学习单元，不是必须一天完成的期限。路线先学算法概念和手算，再用最小代码验证理解；Day 2–35 均提供中文讲义、算法推演、练习、参考答案和可运行教学 Notebook。完整 ESOL 基线 Notebook 到 Day 7 才从头运行；GNN 文件已经存在不等于现在必须跳过去，也不等于项目已有条件使用 GNN。
 
 ## 两条研究工作线
 
@@ -24,13 +24,14 @@
 ```text
 ML-practice/
 ├── .github/workflows/       # GitHub 自动仓库检查
-├── curriculum/             # 学习任务：核心 28 天、可选 GNN、共享词典
+├── curriculum/             # 学习任务：核心 Day 1–28、可选 GNN Day 29–35
 ├── data/                   # 公开数据说明与粘合剂数据接口
 ├── experiments/            # 真正运行过或正在执行的实验
 ├── docs/                   # 项目路线、参考资料和旧方案归档
 ├── scripts/                # 建立个人 Day、只读运行 Notebook、仓库检查
-├── requirements.txt        # 已复现实验的完整环境
-└── requirements-learning.txt
+├── requirements.txt        # 已复现实验的基础环境
+├── requirements-learning.txt
+└── requirements-gnn.txt    # Day 29–35 的独立 GNN 环境
 ```
 
 详细入口：
@@ -52,7 +53,7 @@ ML-practice/
 
 ## 环境与复现
 
-已验证环境为 Python 3.10.20、DeepChem 2.8.0、RDKit 2026.3.3 和 scikit-learn 1.7.2。
+核心路线已验证环境为 Python 3.10.20、DeepChem 2.8.0、RDKit 2026.3.3 和 scikit-learn 1.7.2。
 
 ```bash
 conda create -n esol python=3.10.20 -y
@@ -70,7 +71,7 @@ python -m nbconvert \
 
 首次运行可能需要联网下载 ESOL；缓存写入 `.cache/deepchem/`，不进入 Git。
 
-开始 Day 2–28 中的某一天时，先建立不覆盖教材的个人副本：
+开始 Day 2–35 中的某一天时，先建立不覆盖教材的个人副本：
 
 ```bash
 python scripts/start_day.py 2
@@ -78,14 +79,31 @@ python scripts/start_day.py 2
 
 脚本会把该日 `tutorial.ipynb` 复制到 `experiments/dayXX_topic/`，同时建立个人 `notes.md` 和 `results/` 说明。
 
+Day 29–35 使用单独的 GNN 环境，避免改变已经验证的核心环境。以下版本已在本仓库的全部 GNN 教学 Notebook 上验证：
+
+```bash
+conda create -n gnn python=3.10.20 -y
+conda activate gnn
+python -m pip install -r requirements-gnn.txt
+python -m ipykernel install --user --name gnn --display-name "Python 3 (gnn)"
+```
+
+安装原则来自 [PyTorch 官方安装页](https://pytorch.org/get-started/locally/) 和 [PyTorch Geometric 官方安装说明](https://pytorch-geometric.readthedocs.io/en/stable/notes/installation.html)。本课程只使用 PyG 的基础功能，不要求安装额外的编译扩展。
+
+Day 34 首次运行会下载公开 MUTAG 到 `.cache/pyg/`；该缓存不进入 Git。
+
 ## 仓库自检
 
 ```bash
 python scripts/check_repository.py
 python scripts/run_curriculum_notebooks.py --first-day 2 --last-day 28
+python scripts/run_curriculum_notebooks.py \
+  --first-day 29 \
+  --last-day 35 \
+  --kernel-name gnn
 ```
 
-第一条验证目录结构、35 个任务卡、Markdown 链接、Python 代码块、Notebook、ESOL 结果文件和 Excel 包结构；第二条从头执行 Day 2–28 教程，但默认只在内存中检查，不修改教材。只有课程维护者确实要刷新预存输出时才显式添加 `--in-place`。GitHub Actions 会运行结构检查，但不会把任何学习日自动标为完成。
+第一条验证目录结构、35 个任务卡、Markdown 链接、Python 代码块、34 份教学 Notebook、ESOL 结果文件和 Excel 包结构；后两条分别从头执行核心与 GNN 教程，但默认只在内存中检查，不修改教材。只有课程维护者确实要刷新预存输出时才显式添加 `--in-place`。GitHub Actions 会运行结构检查，但不会把任何学习日自动标为完成。
 
 ## 分支规则
 

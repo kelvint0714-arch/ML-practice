@@ -2,107 +2,145 @@
 
 ## 今天为什么学
 
-GCN 把节点自己的特征与邻居信息结合。今天使用公开的教学图数据理解消息传递，不接入真实粘合剂数据。
+今天在 PyTorch Geometric 的 `KarateClub` 教学图上完成一个两层 GCN。重点不是追求分数，而是第一次把“图数据 → 消息传递 → 节点类别分数 → 只在训练节点上计算 loss”完整走通。
+
+> 边界：KarateClub 是公开的社交网络教学数据，不是分子图，更不是粘合剂实验数据。今天得到的结果只能证明代码和概念能够运行。
 
 ## 前置条件
 
-- 已完成 Day 30；
-- 能解释 `x` 与 `edge_index`；
-- PyTorch/PyG 环境已经验证；
-- 能区分训练掩码和测试掩码。
+- 已完成 Day 29–30；
+- 能说出 `x`、`edge_index`、`y` 和布尔掩码的含义；
+- 当前 Python 环境已经安装 `torch` 与 `torch_geometric`；
+- 接受本日只使用 validation 观察学习过程，test 标签继续封存。
+
+环境检查：
+
+```bash
+python -c "import torch, torch_geometric; print(torch.__version__, torch_geometric.__version__)"
+```
+
+## 学习顺序
+
+严格按下列顺序完成：
+
+1. [概念讲义：GCN、shape、mask 与训练模式](01_concepts.md)
+2. [算法推演：两层 GCN 如何完成一次训练](02_algorithm_walkthrough.md)
+3. [教学 Notebook：从前向传播到 validation 曲线](tutorial.ipynb)
+4. [独立练习](03_exercises.md)
+5. [参考答案](04_reference_answers.md)
+
+## 今天完成后应该能做到
+
+- 沿着代码说出 `x → hidden → logits` 的 shape；
+- 解释一层 GCN 如何把邻居信息聚合到节点；
+- 解释为什么 loss 只能用 `train_mask` 中的节点；
+- 区分 `model.train()`、`model.eval()` 和 `torch.no_grad()`；
+- 统计模型可训练参数量；
+- 知道 validation 用于开发观察，而 test 仍不能查看。
 
 ## 今日产出
 
-- 一个两层 GCN 的结构记录；
-- 训练 loss 曲线；
-- 训练/验证/测试掩码用途说明；
-- `notes.md` 中的消息传递复述。
+以下内容应由你在个人实验副本中完成：
 
-## 今天的目标
+1. `x → hidden → logits` 的 shape 记录；
+2. train/validation/test 掩码互斥检查；
+3. 两层 GCN 的参数量；
+4. 120 个 epoch 的 train loss 与 validation accuracy 曲线；
+5. 一段“为什么 test 仍要封存”的中文说明。
 
-1. 看懂 `GCNConv` 的输入和输出；
-2. 理解节点嵌入会聚合邻居信息；
-3. 知道 `forward` 只定义前向计算；
-4. 不把节点分类结果当成分子性质预测。
+课程 Notebook 的预存输出是教师教学示例，不代表你的个人实验成果。
 
 ## 核心概念
 
-GCN 的核心动作是：让每个节点把自己的信息与邻居信息做归一化聚合，再通过可学习权重得到新的节点表示。`GCNConv` 同时需要节点特征 `x` 和连接关系 `edge_index`。
+```text
+x [N,F] + edge_index [2,E]
+→ GCNConv(F,16)
+→ ReLU
+→ Dropout
+→ GCNConv(16,C)
+→ logits [N,C]
+```
+
+loss 只使用 `logits[train_mask]` 与 `y[train_mask]`。validation 只评价，不反向传播；test 标签 Day 31–33 全程封存。
 
 ## 核心代码骨架
 
 ```python
-import torch
-from torch.nn import functional as F
-from torch_geometric.nn import GCNConv
+model.train()
+optimizer.zero_grad()
+logits = model(data.x, data.edge_index)
+loss = F.cross_entropy(
+    logits[train_mask],
+    data.y[train_mask],
+)
+loss.backward()
+optimizer.step()
 
-class SmallGCN(torch.nn.Module):
-    def __init__(self, in_channels, hidden_channels, out_channels):
-        super().__init__()
-        self.conv1 = GCNConv(in_channels, hidden_channels)
-        self.conv2 = GCNConv(hidden_channels, out_channels)
-
-    def forward(self, x, edge_index):
-        hidden = self.conv1(x, edge_index)
-        hidden = F.relu(hidden)
-        hidden = F.dropout(hidden, p=0.5, training=self.training)
-        return self.conv2(hidden, edge_index)
+model.eval()
+with torch.no_grad():
+    valid_logits = model(data.x, data.edge_index)
 ```
 
-## 新语法解释
+## 固定实验协议
 
-- `class SmallGCN(...)` 定义模型类型；
-- `super().__init__()` 初始化父类；
-- `self.conv1` 把一层保存到模型对象；
-- `forward` 接收节点特征和边；
-- `training=self.training` 让 Dropout 只在训练模式启用。
+后续 Day 32–33 也沿用这套协议：
+
+| 项目 | 固定值 |
+|---|---|
+| 数据 | PyG `KarateClub` |
+| 训练掩码 | 数据集自带的 `train_mask` |
+| validation/test 划分 | 对其余节点按固定掩码种子随机平分 |
+| 掩码种子 | `20260728` |
+| 隐藏表示宽度 | `16` |
+| 优化器 | Adam，`lr=0.01`，`weight_decay=5e-4` |
+| 外部 Dropout | `0.5` |
+| 训练轮数 | `120` |
+| 开发指标 | validation accuracy |
+| test | Day 31–33 全程封存 |
+
+固定协议不代表这是最优超参数。它只是让初学者能进行可解释的公平比较。
 
 ## 分步骤任务
 
-1. 使用 PyG 官方教学数据，例如 Karate Club；
-2. 打印节点数、边数、输入特征数和类别数；
-3. 创建两层 GCN；
-4. 运行一次前向传播，只检查输出 shape；
-5. 再编写训练循环；
-6. loss 只能在训练掩码上计算；
-7. 验证指标不参与 `backward()`；
-8. 保存每个 epoch 的 loss 和验证准确率。
-
-## 必须画出的数据流
-
-```text
-节点特征 x + 边 edge_index
-→ GCNConv
-→ ReLU
-→ Dropout
-→ GCNConv
-→ 每个节点的类别分数
-```
+1. 加载 KarateClub 并打印 `x`、`edge_index`、`y` 的 shape；
+2. 建立固定且互斥的三个布尔掩码；
+3. 定义两层 GCN；
+4. 先运行一次前向传播并检查 `[N,C]`；
+5. 统计可训练参数量；
+6. 训练 120 个 epoch，只在训练节点计算 loss；
+7. 用评价模式记录 validation accuracy；
+8. 画曲线并写清证据边界，不读取 test 标签。
 
 ## 常见错误
 
-- 忘记把模型切换到 `train()` 或 `eval()`；
-- 在所有节点上计算训练 loss；
-- 把 `out_channels` 写成节点数；
-- 输出 shape 不检查就直接算 loss；
-- 把公开社交图结果解释为材料结果。
+- 在所有节点上计算交叉熵；
+- 把 `out_channels` 误写成节点数；
+- 评价时忘记 `model.eval()`；
+- 把 `eval()` 误认为自动关闭梯度；
+- 查看 test accuracy 后继续调参；
+- 把社交网络教学结果解释成材料结论。
 
 ## 完成标准
 
-- [ ] 我能说出每层输入/输出 shape；
-- [ ] 我能解释训练掩码；
-- [ ] 我能说明 GCN 如何使用邻居；
-- [ ] 我保存了曲线而不是只看最后一个数字。
+- [ ] Notebook 能从头运行到尾；
+- [ ] 所有 shape 检查通过；
+- [ ] 三种掩码互斥且覆盖全部节点；
+- [ ] loss 只在训练节点上计算；
+- [ ] 画出 train loss 与 validation accuracy 曲线；
+- [ ] 没有读取或报告 test accuracy；
+- [ ] 独立完成练习后才查看答案。
 
 ## 自测问题
 
-1. 没有 `edge_index`，模型还能聚合邻居吗？
-2. 两层 GCN 大致能接收几跳邻居的信息？
-3. 节点分类和整图回归的输出有什么不同？
+1. `[N,F]` 中每个轴分别是什么？
+2. 为什么 logits 的 shape 是 `[N,C]`？
+3. `train_mask` 怎样控制哪些标签进入梯度？
+4. `model.eval()` 与 `torch.no_grad()` 有什么不同？
+5. 两层消息传递大致能融合几跳邻域？
 
 ## 导航
 
 - 上一天：[Day 30 PyG Data](../day30_pyg_data/README.md)
-- 完成验收后：[返回一步一步学习目录](../../PROGRESS.md)
 - 下一天：[Day 32 GraphSAGE](../day32_graphsage/README.md)
 - 总路线：[可选 GNN 课程](../README.md)
+- 学习进度：[一步一步学习目录](../../PROGRESS.md)

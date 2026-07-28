@@ -1,9 +1,10 @@
-"""Create a learner-owned experiment workspace for one core curriculum day.
+"""Create a learner-owned experiment workspace for one curriculum day.
 
 The curriculum keeps instructor-provided tutorial notebooks under
-``curriculum/core``.  This script copies exactly one tutorial into
-``experiments`` so that running or editing it does not alter the source
-lesson or pretend that every future day has already been completed.
+``curriculum/core`` and ``curriculum/optional_gnn``. This script copies
+exactly one tutorial into ``experiments`` so that running or editing it does
+not alter the source lesson or pretend that every future day has already
+been completed.
 """
 
 from __future__ import annotations
@@ -16,6 +17,8 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 CORE_ROOT = REPO_ROOT / "curriculum" / "core"
+OPTIONAL_GNN_ROOT = REPO_ROOT / "curriculum" / "optional_gnn"
+DAY_ROOTS = (CORE_ROOT, OPTIONAL_GNN_ROOT)
 EXPERIMENTS_ROOT = REPO_ROOT / "experiments"
 DAY_DIRECTORY_PATTERN = re.compile(r"day(?P<number>\d{2})_(?P<slug>.+)")
 
@@ -30,12 +33,16 @@ def readable_path(path: Path) -> str:
 
 
 def find_day_directory(day_number: int) -> Path:
-    """Return the unique core Day directory for ``day_number``."""
+    """Return the unique curriculum Day directory for ``day_number``."""
 
-    matches = sorted(CORE_ROOT.glob(f"day{day_number:02d}_*"))
+    matches = sorted(
+        match
+        for day_root in DAY_ROOTS
+        for match in day_root.glob(f"day{day_number:02d}_*")
+    )
     if len(matches) != 1:
         raise SystemExit(
-            f"Expected exactly one core directory for Day {day_number}, "
+            f"Expected exactly one curriculum directory for Day {day_number}, "
             f"found {len(matches)}."
         )
     return matches[0]
@@ -163,8 +170,8 @@ def copy_clean_notebook(source: Path, destination: Path, dry_run: bool) -> None:
 def create_workspace(day_number: int, dry_run: bool = False) -> Path:
     """Create one Day experiment workspace without overwriting learner work."""
 
-    if not 2 <= day_number <= 28:
-        raise SystemExit("Core learning workspaces are available for Day 2–28.")
+    if not 2 <= day_number <= 35:
+        raise SystemExit("Learning workspaces are available for Day 2–35.")
 
     day_directory = find_day_directory(day_number)
     match = DAY_DIRECTORY_PATTERN.fullmatch(day_directory.name)
@@ -220,9 +227,9 @@ def parse_args() -> argparse.Namespace:
     """Parse command-line arguments."""
 
     parser = argparse.ArgumentParser(
-        description="Create one learner-owned Day 2–28 experiment workspace."
+        description="Create one learner-owned Day 2–35 experiment workspace."
     )
-    parser.add_argument("day", type=int, help="Core Day number, from 2 to 28.")
+    parser.add_argument("day", type=int, help="Day number, from 2 to 35.")
     parser.add_argument(
         "--dry-run",
         action="store_true",

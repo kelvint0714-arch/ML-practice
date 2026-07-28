@@ -6,7 +6,7 @@
 |---|---|---|
 | [ESOL 参考基线 E01](esol/day01_baseline/README.md) | 复现 ECFP＋传统机器学习回归流程；课程 Day 7 使用 | 已运行，可复现 |
 
-Day 2–28 的完整教学材料和可运行 Notebook 位于 `curriculum/core/`，它们是教材，不代表本人完成。开始后续某一天时运行：
+Day 2–28 的核心材料位于 `curriculum/core/`，Day 29–35 的可选 GNN 材料位于 `curriculum/optional_gnn/`。两条路线都有完整教学材料和可运行 Notebook，但它们是教材，不代表本人完成。开始某一天时运行：
 
 ```bash
 python scripts/start_day.py 2

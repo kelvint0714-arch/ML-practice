@@ -34,6 +34,7 @@ REQUIRED_ROOT_FILES = (
     ".gitattributes",
     ".gitignore",
     "README.md",
+    "requirements-gnn.txt",
     "requirements-learning.txt",
     "requirements.txt",
 )
@@ -111,7 +112,7 @@ EXPECTED_GNN_DAY_DIRS = (
     "day34_gin_graph_classification",
     "day35_molecular_graph_gate",
 )
-CORE_PACKAGE_FILES = (
+LEARNING_PACKAGE_FILES = (
     "01_concepts.md",
     "02_algorithm_walkthrough.md",
     "tutorial.ipynb",
@@ -235,15 +236,15 @@ def check_task_card_sections(day_dirs: list[Path], errors: list[str]) -> None:
             errors.append(f"{relative(readme)}: missing next-day navigation.")
 
 
-def check_complete_core_packages(
-    core_days: list[Path],
+def check_complete_learning_packages(
+    day_dirs: list[Path],
     errors: list[str],
 ) -> tuple[int, int]:
-    """Validate the detailed Day 02–28 lesson files and tutorial notebooks."""
+    """Validate the detailed Day 02–35 lesson files and tutorial notebooks."""
 
     notebook_count = 0
     code_cell_count = 0
-    for day_dir in core_days:
+    for day_dir in day_dirs:
         match = DAY_PATTERN.fullmatch(day_dir.name)
         assert match is not None
         number = int(match.group(1))
@@ -251,7 +252,9 @@ def check_complete_core_packages(
             continue
 
         missing = [
-            name for name in CORE_PACKAGE_FILES if not (day_dir / name).is_file()
+            name
+            for name in LEARNING_PACKAGE_FILES
+            if not (day_dir / name).is_file()
         ]
         if missing:
             errors.append(
@@ -264,7 +267,7 @@ def check_complete_core_packages(
         linked_targets = local_link_targets(readme)
         linked_sequence = local_link_target_sequence(readme)
         package_positions: list[int] = []
-        for name in CORE_PACKAGE_FILES:
+        for name in LEARNING_PACKAGE_FILES:
             expected = (day_dir / name).resolve()
             if expected not in linked_targets:
                 errors.append(
@@ -274,12 +277,12 @@ def check_complete_core_packages(
                 continue
             package_positions.append(linked_sequence.index(expected))
         if (
-            len(package_positions) == len(CORE_PACKAGE_FILES)
+            len(package_positions) == len(LEARNING_PACKAGE_FILES)
             and package_positions != sorted(package_positions)
         ):
             errors.append(
                 f"{relative(readme)}: learning-package links must follow "
-                f"{list(CORE_PACKAGE_FILES)}."
+                f"{list(LEARNING_PACKAGE_FILES)}."
             )
 
         notebook_path = day_dir / "tutorial.ipynb"
@@ -306,6 +309,22 @@ def check_complete_core_packages(
             errors.append(
                 f"{relative(notebook_path)}: course tutorial metadata must set "
                 "learner_evidence=false."
+            )
+
+        kernelspec = notebook.get("metadata", {}).get("kernelspec", {})
+        expected_display_name = (
+            "Python 3 (gnn)" if number >= 29 else "Python 3 (esol)"
+        )
+        if kernelspec.get("display_name") != expected_display_name:
+            errors.append(
+                f"{relative(notebook_path)}: kernelspec.display_name must be "
+                f"{expected_display_name!r}; found "
+                f"{kernelspec.get('display_name')!r}."
+            )
+        if kernelspec.get("name") != "python3":
+            errors.append(
+                f"{relative(notebook_path)}: kernelspec.name must remain the "
+                "portable value 'python3'."
             )
 
         cells = notebook.get("cells", [])
@@ -356,7 +375,10 @@ def check_complete_core_packages(
                     )
 
         serialized = json.dumps(notebook, ensure_ascii=False)
-        if "/Users/" in serialized or "file://" in serialized:
+        if any(
+            marker in serialized
+            for marker in ("/Users/", "/tmp/", "/private/tmp/", "file://")
+        ):
             errors.append(
                 f"{relative(notebook_path)}: contains a machine-specific path."
             )
@@ -785,67 +807,90 @@ def check_summary_rows(
 
 
 def check_start_day_contract(errors: list[str]) -> None:
-    """Exercise the learner-copy transformation in an isolated directory."""
+    """Exercise core and GNN learner-copy transformations in isolation."""
 
     script = REPO_ROOT / "scripts" / "start_day.py"
-    source = CORE_ROOT / "day02_metrics" / "tutorial.ipynb"
-    if not script.is_file() or not source.is_file():
-        errors.append("Cannot check start_day.py contract: script or Day 2 tutorial missing.")
+    sources = (
+        CORE_ROOT / "day02_metrics" / "tutorial.ipynb",
+        OPTIONAL_GNN_ROOT / "day29_graph_basics" / "tutorial.ipynb",
+    )
+    missing = [source for source in sources if not source.is_file()]
+    if not script.is_file() or missing:
+        errors.append(
+            "Cannot check start_day.py contract: script or tutorials missing "
+            f"{[relative(path) for path in missing]}."
+        )
         return
 
     try:
         namespace = runpy.run_path(str(script))
         copy_clean_notebook = namespace["copy_clean_notebook"]
-        source_before = source.read_bytes()
-        with tempfile.TemporaryDirectory() as temporary_directory:
-            destination = Path(temporary_directory) / "learner.ipynb"
-            with contextlib.redirect_stdout(io.StringIO()):
-                copy_clean_notebook(source, destination, dry_run=False)
-            notebook = json.loads(destination.read_text(encoding="utf-8"))
-        if source.read_bytes() != source_before:
-            errors.append("scripts/start_day.py modified the source tutorial during copy.")
-    except (KeyError, OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+    except (KeyError, OSError) as exc:
         errors.append(f"scripts/start_day.py learner-copy contract failed: {exc}")
         return
 
-    metadata = notebook.get("metadata", {})
-    expected_source = relative(source)
-    expected_metadata = {
-        "artifact_role": "learner_workspace",
-        "learner_evidence": True,
-        "source_tutorial": expected_source,
-    }
-    for key, expected in expected_metadata.items():
-        if metadata.get(key) != expected:
+    for source in sources:
+        try:
+            source_before = source.read_bytes()
+            with tempfile.TemporaryDirectory() as temporary_directory:
+                destination = Path(temporary_directory) / "learner.ipynb"
+                with contextlib.redirect_stdout(io.StringIO()):
+                    copy_clean_notebook(source, destination, dry_run=False)
+                notebook = json.loads(destination.read_text(encoding="utf-8"))
+            if source.read_bytes() != source_before:
+                errors.append(
+                    "scripts/start_day.py modified the source tutorial during "
+                    f"copy: {relative(source)}."
+                )
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
             errors.append(
-                f"scripts/start_day.py learner copy must set {key}={expected!r}; "
-                f"found {metadata.get(key)!r}."
+                "scripts/start_day.py learner-copy contract failed for "
+                f"{relative(source)}: {exc}"
             )
-    if "course_artifact" in metadata:
-        errors.append(
-            "scripts/start_day.py learner copy must remove source course_artifact metadata."
-        )
+            continue
 
-    code_cells = [
-        cell for cell in notebook.get("cells", [])
-        if cell.get("cell_type") == "code"
-    ]
-    for cell_index, cell in enumerate(code_cells, start=1):
-        if cell.get("execution_count") is not None:
+        metadata = notebook.get("metadata", {})
+        expected_source = relative(source)
+        expected_metadata = {
+            "artifact_role": "learner_workspace",
+            "learner_evidence": True,
+            "source_tutorial": expected_source,
+        }
+        for key, expected in expected_metadata.items():
+            if metadata.get(key) != expected:
+                errors.append(
+                    f"scripts/start_day.py learner copy must set {key}={expected!r} "
+                    f"for {relative(source)}; found {metadata.get(key)!r}."
+                )
+        if "course_artifact" in metadata:
             errors.append(
-                f"scripts/start_day.py learner copy code cell {cell_index} "
-                "retains an execution count."
+                "scripts/start_day.py learner copy must remove source "
+                f"course_artifact metadata for {relative(source)}."
             )
-        if cell.get("outputs") != []:
-            errors.append(
-                f"scripts/start_day.py learner copy code cell {cell_index} "
-                "retains saved outputs."
-            )
-        if "execution" in cell.get("metadata", {}):
-            errors.append(
-                f"scripts/start_day.py learner copy code cell {cell_index} "
-                "retains execution timing metadata."
-            )
+
+        code_cells = [
+            cell
+            for cell in notebook.get("cells", [])
+            if cell.get("cell_type") == "code"
+        ]
+        for cell_index, cell in enumerate(code_cells, start=1):
+            if cell.get("execution_count") is not None:
+                errors.append(
+                    "scripts/start_day.py learner copy code cell "
+                    f"{cell_index} retains an execution count for "
+                    f"{relative(source)}."
+                )
+            if cell.get("outputs") != []:
+                errors.append(
+                    "scripts/start_day.py learner copy code cell "
+                    f"{cell_index} retains saved outputs for {relative(source)}."
+                )
+            if "execution" in cell.get("metadata", {}):
+                errors.append(
+                    "scripts/start_day.py learner copy code cell "
+                    f"{cell_index} retains execution timing metadata for "
+                    f"{relative(source)}."
+                )
 
 
 def check_markdown_files(errors: list[str]) -> None:
@@ -886,13 +931,14 @@ def check_python_fences(errors: list[str]) -> int:
     beginner_root = CORE_ROOT / "day01_beginner"
     markdown_files.update(beginner_root.glob("[0-9][0-9]_*.md"))
     markdown_files.add(beginner_root / "exercises.md")
-    for day_dir in CORE_ROOT.glob("day??_*"):
-        match = DAY_PATTERN.fullmatch(day_dir.name)
-        if match is None or int(match.group(1)) == 1:
-            continue
-        for name in CORE_PACKAGE_FILES:
-            if name.endswith(".md"):
-                markdown_files.add(day_dir / name)
+    for route_root in (CORE_ROOT, OPTIONAL_GNN_ROOT):
+        for day_dir in route_root.glob("day??_*"):
+            match = DAY_PATTERN.fullmatch(day_dir.name)
+            if match is None or int(match.group(1)) == 1:
+                continue
+            for name in LEARNING_PACKAGE_FILES:
+                if name.endswith(".md"):
+                    markdown_files.add(day_dir / name)
 
     for markdown in sorted(markdown_files):
         if not markdown.is_file():
@@ -1110,8 +1156,8 @@ def main() -> int:
     day_dirs = core_days + gnn_days
 
     check_task_card_sections(day_dirs, errors)
-    tutorial_count, tutorial_code_cells = check_complete_core_packages(
-        core_days, errors
+    tutorial_count, tutorial_code_cells = check_complete_learning_packages(
+        day_dirs, errors
     )
     check_curriculum_routes(core_days, gnn_days, errors)
     check_markdown_files(errors)

@@ -1,9 +1,9 @@
 # 完整 Day 学习包怎样使用
 
-Day 2–28 的每个核心学习单元都使用同一种结构。文件提前准备好，是为了让你可以连续学习；它们不代表你本人已经完成实验。
+Day 2–35 的每个学习单元都使用同一种结构。Day 2–28 位于核心路线，Day 29–35 位于受启动门槛约束的可选 GNN 路线。文件提前准备好，是为了让你可以连续学习；它们不代表你本人已经完成实验。
 
 ```text
-curriculum/core/dayXX_topic/
+curriculum/{core 或 optional_gnn}/dayXX_topic/
 ├── README.md                    # 当天任务卡与学习顺序
 ├── 01_concepts.md               # 先用中文理解算法
 ├── 02_algorithm_walkthrough.md  # 输入、动作、输出与伪代码
@@ -94,10 +94,38 @@ python -m jupyter nbconvert \
 
 若你的环境名称不同，只要其中安装了 `requirements-learning.txt` 的依赖即可。
 
+### Day 29–35 的 GNN 环境
+
+GNN 课程不要直接往已经验证的 `esol` 环境里追加依赖。建立独立环境：
+
+```bash
+conda create -n gnn python=3.10.20 -y
+conda activate gnn
+python -m pip install -r requirements-gnn.txt
+python -m ipykernel install --user --name gnn --display-name "Python 3 (gnn)"
+```
+
+创建个人副本和执行课程检查时分别使用：
+
+```bash
+python scripts/start_day.py 29
+python scripts/run_curriculum_notebooks.py \
+  --first-day 29 \
+  --last-day 35 \
+  --kernel-name gnn
+```
+
+这只表示环境和教材可以运行；是否把 GNN 用到粘合剂项目，仍要先通过
+[GNN 启动条件](../optional_gnn/README.md)。
+
+Day 34 首次运行需要联网下载 MUTAG，缓存写入 `.cache/pyg/`；Day 35
+读取仓库实际 v0.3 空白模板并得到当前 No-Go。两者都是教材输出，不是本人
+粘合剂实验结果。
+
 ## 不应做的事
 
 - 不要直接把参考答案复制到个人笔记；
 - 不要把教学 Notebook 的预存输出称为自己的实验；
-- 不要提前创建 27 份“已完成”结果；
+- 不要提前创建 34 份“已完成”结果；
 - 不要为了赶进度跳过验证集、数据泄漏和测试集边界；
 - 不要把 ESOL 或人工数据的教学结果写成粘合剂性能结论。
