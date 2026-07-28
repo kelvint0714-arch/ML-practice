@@ -2,6 +2,18 @@
 
 > 状态：待学习。本阶段不安装或要求 PyTorch。
 
+## 学习文件导航
+
+按顺序完成以下五个课程文件：
+
+1. [概念讲义](01_concepts.md)
+2. [算法推演](02_algorithm_walkthrough.md)
+3. [可运行教程 Notebook](tutorial.ipynb)
+4. [练习题](03_exercises.md)
+5. [参考答案](04_reference_answers.md)
+
+`tutorial.ipynb` 只使用 NumPy 演示 shape、矩阵乘法和广播，不训练模型。亲自运行后的理解与错误记录再写入 `experiments/day15_tensor_shape/`。
+
 ## 今天为什么学
 
 神经网络代码经常出现“张量”“批次”“隐藏维度”等词。

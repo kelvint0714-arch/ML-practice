@@ -16,6 +16,16 @@
 - 知道验证 RMSE 越小通常越好；
 - 今天继续使用人工小数据，不需要先运行完整 ESOL Notebook。
 
+## 完整学习包（按顺序）
+
+1. [概念：切分、叶节点与过拟合](01_concepts.md)
+2. [算法推演：只改变树深](02_algorithm_walkthrough.md)
+3. [课程提供的可运行 Tutorial](tutorial.ipynb)
+4. [独立练习](03_exercises.md)
+5. [折叠参考答案](04_reference_answers.md)
+
+课程 Tutorial 的预存输出只证明示例可运行。你的预判、实际运行表和结论应在学习当天保存到 `experiments/day04_decision_tree/`，不能直接复制课程结果冒充个人证据。
+
 ## 今日产出
 
 今天应完成：

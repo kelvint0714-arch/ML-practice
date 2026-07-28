@@ -26,7 +26,7 @@
 在仓库根目录执行：
 
 ```bash
-conda activate esol-repro
+conda activate esol
 python -m nbconvert \
   --to notebook \
   --execute \

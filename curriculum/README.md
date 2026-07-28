@@ -10,16 +10,17 @@
 
 当前课程已拆成 [Day 1–28 核心路线](core/README.md) 和 [Day 29–35 可选 GNN 路线](optional_gnn/README.md)。
 
-第一次学习只打开 [一步一步学习目录](PROGRESS.md)，找到第一个 `[ ]` 并按顺序执行。路线采用“算法概念 → 纸笔手算 → 中文伪代码 → 最小代码 → 真实 Notebook”的顺序。Day 1 不要求逐行阅读完整工程代码；Day 7 才把已经学过的算法映射回完整 ESOL 实验。
+第一次学习只打开 [一步一步学习目录](PROGRESS.md)，找到第一个 `[ ]` 并按顺序执行。路线采用“算法概念 → 纸笔手算 → 中文伪代码 → 最小代码 → 真实 Notebook”的顺序。Day 2–35 每天都配有分层中文讲义、练习、参考答案和教学 Notebook；Day 1 不要求逐行阅读完整工程代码，Day 7 才把已经学过的算法映射回完整 ESOL 实验。Day 29–34 可以在公开图上学习；Day 35 决定能否把 GNN 用到真实粘合剂项目。
 
 配套入口：
 
 - [一步一步学习目录（唯一任务清单）](PROGRESS.md)
 - [Day 1–28 核心课程](core/README.md)
 - [共享词典、实验协议与报错排查](shared/README.md)
+- [完整 Day 学习包使用方法](shared/day_package_guide.md)
 - [Day 29–35 可选 GNN 与启动条件](optional_gnn/README.md)
 
-需要运行代码时使用根目录的 [`requirements-learning.txt`](../requirements-learning.txt)。核心路线不要求安装 XGBoost、PyTorch 或 PyTorch Geometric；Day 29 以后再根据当时官方兼容说明建立独立 GNN 环境。
+核心路线运行代码时使用根目录的 [`requirements-learning.txt`](../requirements-learning.txt)，不要求安装 XGBoost、PyTorch 或 PyTorch Geometric。Day 29–35 使用单独的 [`requirements-gnn.txt`](../requirements-gnn.txt)；安装与运行命令见 [完整 Day 学习包使用方法](shared/day_package_guide.md)。
 
 ## 实验路线
 

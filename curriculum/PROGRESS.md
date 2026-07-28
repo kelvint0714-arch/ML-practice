@@ -12,6 +12,12 @@
 
 `Day` 表示一个学习单元，不要求在一个自然日内完成。一个 Day 学两三天完全正常，也不要为了赶日期跳过前置内容。仓库里已经存在的 Notebook 和结果是学习材料，不代表你本人已经完成，所以本页不会自动勾选。
 
+Day 2–35 的每个任务卡都链接到中文概念、算法推演、练习、参考答案和教学 Notebook。开始当天个人实验前，先阅读[完整 Day 学习包使用方法](shared/day_package_guide.md)，再运行：
+
+```bash
+python scripts/start_day.py 当天数字
+```
+
 > **你现在只做一件事：**从下面的 **1.1** 开始。
 >
 > **8 月 30 日前的建议目标：**尽量学到 Day 14，能够完成一套可信的传统机器学习比较；质量优先，不需要提前赶 MLP 或 GNN。
@@ -64,7 +70,7 @@ Day 1 特意拆成 6 个小步骤。先阅读 [Day 1 总说明](core/day01_begin
 - [ ] **Day 23｜OOF Stacking：**完成 [Day 23 任务卡](core/day23_oof_stacking/README.md)，实现无泄漏混合模型。
 - [ ] **Day 24｜混合模型消融：**完成 [Day 24 任务卡](core/day24_hybrid_ablation/README.md)，公平比较单模型和混合模型。
 - [ ] **Day 25｜预测不确定性：**完成 [Day 25 任务卡](core/day25_uncertainty/README.md)，得到预测均值与标准差。
-- [ ] **Day 26｜主动学习模拟：**完成 [Day 26 任务卡](core/day26_active_learning/README.md)，形成学习曲线和候选排序。
+- [ ] **Day 26｜主动学习模拟：**完成 [Day 26 任务卡](core/day26_active_learning/README.md)，跑通单轮无标签泄漏的候选排序与随机对照；多轮学习曲线作为后续正式实验扩展。
 - [ ] **Day 27｜从论文提取数据字段：**完成 [Day 27 任务卡](core/day27_paper_to_schema/README.md)，整理三篇论文的输入、输出和实验条件。
 - [ ] **Day 28｜粘合剂接入与总报告：**完成 [Day 28 任务卡](core/day28_capstone_handoff/README.md)，形成化学组数据接入清单和算法阶段总报告。
 
@@ -72,9 +78,8 @@ Day 1 特意拆成 6 个小步骤。先阅读 [Day 1 总说明](core/day01_begin
 
 ## 可选阶段：GNN（Day 29–35）
 
-先阅读 [GNN 启动条件](optional_gnn/README.md)。只有核心路线完成、项目拿到可靠分子结构表示，并且 GNN 确实回答当前研究问题时，才继续以下内容；否则停在 Day 28 是正确选择。
+先阅读 [GNN 路线与项目启动条件](optional_gnn/README.md)。核心路线完成后，Day 29–34 可以只在公开图上学习；是否用于真实粘合剂项目由 Day 35 评审，不能因为课程代码能运行就默认 Go。若当前学习优先级更高，停在 Day 28 继续巩固也完全正确。
 
-- [ ] **GNN 启动检查：**逐项满足 [GNN 启动条件](optional_gnn/README.md)，并记录为什么项目现在需要图模型。
 - [ ] **Day 29｜图、节点、边和邻接关系：**完成 [Day 29 任务卡](optional_gnn/day29_graph_basics/README.md)。
 - [ ] **Day 30｜PyTorch Geometric `Data`：**完成 [Day 30 任务卡](optional_gnn/day30_pyg_data/README.md)。
 - [ ] **Day 31｜GCN：**完成 [Day 31 任务卡](optional_gnn/day31_gcn/README.md)。

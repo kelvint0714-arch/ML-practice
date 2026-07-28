@@ -1,5 +1,17 @@
 # Day 9：K 折交叉验证
 
+## 学习文件导航
+
+按顺序完成以下五个课程文件：
+
+1. [概念讲义](01_concepts.md)
+2. [算法推演](02_algorithm_walkthrough.md)
+3. [可运行教程 Notebook](tutorial.ipynb)
+4. [练习题](03_exercises.md)
+5. [参考答案](04_reference_answers.md)
+
+`tutorial.ipynb` 是课程随附的确定性人工数据演示，不是学习者已经完成的实验。亲自运行、修改并解释后，再把本人的记录写入 `experiments/day09_cross_validation/`。
+
 ## 今天为什么学
 
 一次固定验证划分可能碰巧偏容易或偏困难。

@@ -2,6 +2,18 @@
 
 > 状态：待学习。阶段报告必须基于真实运行记录，不能照抄本任务说明。
 
+## 学习文件导航
+
+按顺序完成以下五个课程文件：
+
+1. [概念讲义](01_concepts.md)
+2. [算法推演](02_algorithm_walkthrough.md)
+3. [可运行教程 Notebook](tutorial.ipynb)
+4. [练习题](03_exercises.md)
+5. [参考答案](04_reference_answers.md)
+
+`tutorial.ipynb` 审计 Day 13 已实际运行的课程教程 CSV，并生成明确标注为人工数据的报告预览。它不能代替学习者基于本人 `experiments/` 证据撰写的阶段报告。
+
 ## 今天为什么学
 
 跑出很多数字不等于完成研究。
@@ -62,7 +74,7 @@ ESOL 的目标是分子水溶解度，不是粘合剂强度。
 2. 从 Day 13 的 `fold_metrics.csv` 找到公平比较的逐折指标，并把其他协议的结果作为单独证据引用。
 3. 检查所有结果是否使用相同目标空间和指标单位。
 4. 删除或隔离协议不一致、来源不明的行。
-5. 汇总模型、划分、种子、RMSE、MAE、R² 和耗时。
+5. 汇总模型、划分、种子、RMSE、MAE、R² 和折数。
 6. 标注每个数字是单次结果还是交叉验证汇总。
 7. 写三条有数字支持的观察。
 8. 写至少三条不能得出的结论。
@@ -92,7 +104,7 @@ if not fold_metrics_path.exists():
 
 fold_metrics = pd.read_csv(fold_metrics_path)
 required_columns = {
-    "model", "fold", "split", "mae", "rmse", "r2", "fit_seconds"
+    "model", "fold", "split", "mae", "rmse", "r2"
 }
 missing = required_columns - set(fold_metrics.columns)
 
@@ -106,6 +118,15 @@ if set(fold_metrics["split"]) != {"cv_valid"}:
 
 if fold_metrics.duplicated(["model", "fold"]).any():
     raise ValueError("Day 13 文件中存在重复的 model/fold。")
+
+expected_models = {
+    "dummy", "ridge", "decision_tree",
+    "random_forest", "gradient_boosting",
+}
+if len(fold_metrics) != 25:
+    raise ValueError("Day 13 文件必须恰好包含 5 个模型 × 5 折 = 25 行。")
+if set(fold_metrics["model"]) != expected_models:
+    raise ValueError("Day 13 文件的模型集合不完整或出现额外模型。")
 
 expected_folds = {1, 2, 3, 4, 5}
 if set(fold_metrics["fold"]) != expected_folds:
@@ -122,7 +143,6 @@ summary = (
         rmse_mean=("rmse", "mean"),
         rmse_std=("rmse", "std"),
         r2_mean=("r2", "mean"),
-        fit_seconds_mean=("fit_seconds", "mean"),
         n_folds=("fold", "count"),
     )
     .reset_index()
@@ -145,7 +165,7 @@ print("请把阶段报告写到：", report_path)
 - `set(fold_metrics["split"])` 检查文件中实际出现的划分名称。
 - `.duplicated(["model", "fold"])` 检查同一个模型、同一折是否重复；
 - `.nunique()` 检查每个模型是否恰好具有5个不同折；
-- `.agg(...)` 同时计算均值、标准差、耗时和折数。
+- `.agg(...)` 同时计算均值、标准差和折数。
 
 Day 1 的固定验证结果与 Day 13 的交叉验证结果采用不同协议，不应直接混成同一个平均值。报告中可以并列说明，但主比较表以 Day 13 的逐折文件为准。
 

@@ -1,10 +1,19 @@
 # Day 28 之后：GNN 启动条件
 
-GNN 是长期学习方向，但不是当前粘合剂项目的默认下一步。图神经网络只有在“图的含义”和“结构数据”都明确时才有意义。
+GNN 是长期学习方向，但不是当前粘合剂项目的默认下一步。Day 29–34 可以在公开图上学习算法；图神经网络只有在“图的含义”和“结构数据”都明确时，才能用于真实粘合剂项目。
+
+Day 29–35 的讲义、算法推演、Notebook、练习和参考答案已经完整提供。文件齐全只代表以后可以连续学习，不代表本人已经完成，也不代表粘合剂项目已经适合使用 GNN。学习包的区分和复制方法见[完整 Day 学习包使用方法](../shared/day_package_guide.md)，依赖保存在根目录的 [`requirements-gnn.txt`](../../requirements-gnn.txt)。
+
+```bash
+conda create -n gnn python=3.10.20 -y
+conda activate gnn
+python -m pip install -r requirements-gnn.txt
+python -m ipykernel install --user --name gnn --display-name "Python 3 (gnn)"
+```
 
 ## 课程入口
 
-只有下方启动检查全部通过，才按顺序学习：
+完成核心路线并具备基本 PyTorch/神经网络概念后，可按顺序用玩具图、KarateClub 和 MUTAG 学习 Day 29–34。Day 35 再读取实际粘合剂模板进行项目启用评审；当前评审为 No-Go 不妨碍学习公开图算法。
 
 | 天数 | 主题 | 任务卡 |
 |---:|---|---|
@@ -18,7 +27,7 @@ GNN 是长期学习方向，但不是当前粘合剂项目的默认下一步。�
 
 当前主线仍是 [Day 1–28 核心课程](../core/README.md)。
 
-## 五项启动检查
+## 粘合剂项目应用的五项启动检查
 
 | 检查项 | 通过标准 | 未通过时做什么 |
 |---|---|---|

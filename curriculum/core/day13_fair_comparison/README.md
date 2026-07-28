@@ -2,6 +2,18 @@
 
 > 状态：待学习。本文定义比较方法，不预告哪个模型会胜出。
 
+## 学习文件导航
+
+按顺序完成以下五个课程文件：
+
+1. [概念讲义](01_concepts.md)
+2. [算法推演](02_algorithm_walkthrough.md)
+3. [可运行教程 Notebook](tutorial.ipynb)
+4. [练习题](03_exercises.md)
+5. [参考答案](04_reference_answers.md)
+
+`tutorial.ipynb` 会把实际教程运行产物写入本课程目录的 `tutorial_outputs/`，用于 Day 14 审计；这些文件不是学习者 `experiments/` 证据，也不是 ESOL 或粘合剂模型排名。
+
 ## 今天为什么学
 
 两个模型的分数只有在数据、划分、输入信息和指标一致时才能比较。
@@ -22,7 +34,7 @@
 
 1. 一张模型比较协议表；
 2. `fold_metrics.csv`：每个模型相同五折下的逐折验证分数；
-3. `model_summary.csv`：均值、标准差和训练耗时汇总；
+3. `model_summary.csv`：均值、标准差和折数汇总；
 4. 一段不夸大“第一名”的结论。
 
 ## 核心概念
@@ -62,7 +74,7 @@ Day 12 是“怎样正确调参”的流程练习。今天不会把 Day 12 在�
 4. 为所有模型保留相同的缺失值策略。
 5. 用 `cross_validate` 一次记录多个指标。
 6. 把每一折结果保留下来，不只抄平均值。
-7. 汇总验证均值、验证标准差和拟合耗时。
+7. 汇总验证均值与验证标准差；拟合耗时只在 Notebook 中现场诊断。
 8. 检查复杂模型是否稳定超过 Dummy。
 9. 写明当前比较没有使用测试集。
 
@@ -140,7 +152,6 @@ model_summary = (
         rmse_mean=("rmse", "mean"),
         rmse_std=("rmse", "std"),
         r2_mean=("r2", "mean"),
-        fit_seconds_mean=("fit_seconds", "mean"),
     )
     .reset_index()
     .sort_values("rmse_mean")
@@ -149,7 +160,10 @@ model_summary = (
 results_dir = Path("experiments/day13_fair_comparison/results")
 results_dir.mkdir(parents=True, exist_ok=True)
 
-fold_metrics.to_csv(results_dir / "fold_metrics.csv", index=False)
+artifact_columns = ["model", "fold", "split", "mae", "rmse", "r2"]
+fold_metrics[artifact_columns].to_csv(
+    results_dir / "fold_metrics.csv", index=False
+)
 model_summary.to_csv(results_dir / "model_summary.csv", index=False)
 
 print(fold_metrics)
@@ -165,6 +179,7 @@ print(model_summary)
 - `.mean()` 计算折间平均值，`.std()` 计算折间标准差。
 - `sort_values("rmse_mean")` 只改变显示顺序，不证明第一名具有统计显著性。
 - 两个 CSV 分别保留逐折证据和便于阅读的汇总，Day 14 会直接读取它们。
+- `fit_seconds` 只保留在运行时内存变量中，不进入预存展示或持久化 CSV；墙钟时间不是严格复现字段。
 
 ## 常见错误
 
@@ -182,7 +197,7 @@ print(model_summary)
 - [ ] 五个模型共用同一批训练数据和同一个 `cv`；
 - [ ] 我保存了 `fold_metrics.csv`，而不只保存均值；
 - [ ] 我能解释负误差评分的符号；
-- [ ] 结果表包含均值、标准差和耗时；
+- [ ] 持久化结果表包含均值、标准差和折数，耗时只作现场诊断；
 - [ ] 我没有写“第一名一定最优”；
 - [ ] 测试集没有进入比较。
 

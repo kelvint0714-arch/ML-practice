@@ -2,6 +2,16 @@
 
 > 状态：待交接。空白模板只能检查结构，不能用于训练模型。
 
+## 本日完整学习包
+
+1. [概念精讲](01_concepts.md)
+2. [结构检查与交接走读](02_algorithm_walkthrough.md)
+3. [结构检查教程 Notebook](tutorial.ipynb)
+4. [练习](03_exercises.md)
+5. [参考答案](04_reference_answers.md)
+
+`tutorial.ipynb` 只检查 v0.3 空白模板结构，不训练模型。教程输出不是学习者实验记录，也不能证明已有真实粘合剂数据。
+
 ## 今天为什么学
 
 前 27 天完成的是算法学习流程和数据接口准备。

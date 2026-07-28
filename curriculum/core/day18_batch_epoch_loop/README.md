@@ -2,6 +2,18 @@
 
 > 状态：待学习。代码只提供训练骨架，运行结果需要你自己记录。
 
+## 学习文件导航
+
+按顺序完成以下五个课程文件：
+
+1. [概念讲义](01_concepts.md)
+2. [算法推演](02_algorithm_walkthrough.md)
+3. [可运行教程 Notebook](tutorial.ipynb)
+4. [练习题](03_exercises.md)
+5. [参考答案](04_reference_answers.md)
+
+`tutorial.ipynb` 用确定性人工数据演示 `partial_fit()` 的 batch/epoch 循环；课程保存的执行输出不等于学习者已完成实验。本人曲线与记录再写入 `experiments/day18_batch_epoch_loop/`。
+
 ## 今天为什么学
 
 真实数据通常不会只更新一次参数。

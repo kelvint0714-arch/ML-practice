@@ -2,6 +2,18 @@
 
 > 状态：待学习。代码是学习骨架，不表示已经得到最佳参数。
 
+## 学习文件导航
+
+按顺序完成以下五个课程文件：
+
+1. [概念讲义](01_concepts.md)
+2. [算法推演](02_algorithm_walkthrough.md)
+3. [可运行教程 Notebook](tutorial.ipynb)
+4. [练习题](03_exercises.md)
+5. [参考答案](04_reference_answers.md)
+
+`tutorial.ipynb` 只在人工训练区域内部选择参数，并进行一次外部验证；它不提供 ESOL、测试集或粘合剂最佳参数。本人记录应另存到 `experiments/day12_tuning_without_test/`。
+
 ## 今天为什么学
 
 模型参数不同，结果可能不同，但“把测试集分数最高的参数留下”是错误做法。

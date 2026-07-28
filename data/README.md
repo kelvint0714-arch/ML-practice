@@ -4,7 +4,7 @@
 
 | 目录 | 内容 | 是否包含真实项目数据 |
 |---|---|---|
-| [`public/`](public/esol.md) | ESOL 等公开练习数据的来源、许可和划分说明 | 否 |
+| [`public/`](public/esol.md) | [ESOL](public/esol.md)、[MUTAG](public/mutag.md) 等公开练习数据的来源、许可和划分说明 | 否 |
 | [`adhesive/`](adhesive/README.md) | 粘合剂字段讨论、空白模板和化学组待确认项 | 否 |
 
 真实配方、批次和实验记录只有在权限明确后才能进入指定存储位置。未经授权时，不上传仓库，也不使用虚构数值补齐空表。

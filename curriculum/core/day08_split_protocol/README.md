@@ -14,6 +14,16 @@
 - 已在正确的课程环境中从仓库根目录启动 Notebook；
 - 今天不增加新模型。
 
+## 完整学习包（按顺序）
+
+1. [概念：split 职责、泄漏与 test 边界](01_concepts.md)
+2. [算法推演：split 表与精确 ID 检查](02_algorithm_walkthrough.md)
+3. [课程提供的可运行 Tutorial](tutorial.ipynb)
+4. [独立练习](03_exercises.md)
+5. [折叠参考答案](04_reference_answers.md)
+
+`tutorial.ipynb` 只加载 split 做结构检查，不训练模型、不产生 test 预测。个人检查表、政策和笔记应在实际学习时保存到 `experiments/day08_split_protocol/`；课程预存输出不代表你已经完成。
+
 ## 今日产出
 
 今天应完成：
@@ -79,11 +89,11 @@ Day 8 的代码必须自包含，不能默认继承 Day 7 内核中的旧变量�
 
 ### 第三步：建立 split 表
 
-表中至少包含 split 名称、样本数、特征维数、标签数和当前用途。
+表中至少包含 split 名称、样本数、特征维数、ID 数和当前用途。train、validation 可以检查标签；test 只检查 `X`、样本数和 ID，不读取 `test_dataset.y`。
 
 ### 第四步：检查有限值
 
-确认各 split 的 `X` 和 `y` 没有无穷或 NaN。
+确认三个 split 的 `X` 没有无穷或 NaN，并只确认 train、validation 的 `y` 没有无穷或 NaN。这里主动不读取 test 标签，是把“暂不使用 test”落实到代码边界。
 
 ### 第五步：检查 ID 交集
 
@@ -128,15 +138,19 @@ rows = []
 
 for split_name, dataset in split_datasets.items():
     X = np.asarray(dataset.X)
-    y = np.asarray(dataset.y).reshape(-1)
+    ids = np.asarray(dataset.ids)
+    may_inspect_labels = split_name != "test"
+    y = np.asarray(dataset.y).reshape(-1) if may_inspect_labels else None
 
     rows.append({
         "split": split_name,
         "n_samples": X.shape[0],
         "n_features": X.shape[1],
-        "n_labels": y.shape[0],
+        "n_ids": ids.shape[0],
+        "n_labels_checked": y.shape[0] if may_inspect_labels else None,
         "all_X_finite": bool(np.isfinite(X).all()),
-        "all_y_finite": bool(np.isfinite(y).all()),
+        "all_y_finite": bool(np.isfinite(y).all()) if may_inspect_labels else None,
+        "label_policy": "允许完整性检查" if may_inspect_labels else "未读取",
     })
 
 split_table = pd.DataFrame(rows)
@@ -179,7 +193,8 @@ print(overlaps)
 ## 完成标准
 
 - 能准确说明三个 split 的职责；
-- split 表中样本数、特征数和标签数一致；
+- split 表中三个 split 的样本数、特征数和 ID 数一致，train/validation 的标签数也一致；
+- 代码没有读取 `test_dataset.y`；
 - 三组精确 ID 交集均被检查；
 - 能解释精确重叠检查的能力边界；
 - scaler 和模型只在训练数据上 fit；

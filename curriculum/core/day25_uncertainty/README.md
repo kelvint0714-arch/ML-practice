@@ -2,6 +2,16 @@
 
 > 状态：待学习、待运行。集成标准差只是启发式分歧，不是校准后的预测区间。
 
+## 本日完整学习包
+
+1. [概念精讲](01_concepts.md)
+2. [算法走读](02_algorithm_walkthrough.md)
+3. [可运行教程 Notebook](tutorial.ipynb)
+4. [练习](03_exercises.md)
+5. [参考答案](04_reference_answers.md)
+
+`tutorial.ipynb` 是课程附带的分歧诊断演示，不是校准研究，也不是学习者已完成的实验。
+
 ## 今天为什么学
 
 主动学习不能只给出一个预测值，
@@ -24,9 +34,9 @@
 ## 今日产出
 
 1. 一个由多个种子模型组成的小型集成；
-2. 每个验证样本的平均预测和预测标准差；
+2. 每个内部诊断样本的平均预测和预测标准差；
 3. 分歧最高的若干样本编号；
-4. 分歧与绝对误差的诊断图或表；
+4. 分歧与绝对误差的内部诊断图或表；
 5. 一段明确的局限性说明。
 
 ## 核心概念
@@ -53,13 +63,13 @@
 
 1. 固定模型类型和超参数。
 2. 只改变预先声明的随机种子。
-3. 每个模型只用训练数据拟合。
-4. 对同一验证集生成预测。
+3. 在原 train 内按分子骨架切出一次性诊断 holdout；外部 valid 不参与 Day 25。
+4. 每个模型只用内部拟合部分训练，并对同一内部诊断集生成预测。
 5. 将预测按“模型 × 样本”堆叠。
 6. 对每个样本计算平均值。
 7. 对每个样本计算标准差。
 8. 按标准差从高到低排序。
-9. 计算验证样本的绝对误差。
+9. 计算内部诊断样本的绝对误差。
 10. 比较高分歧组与低分歧组的误差。
 11. 记录分歧不能代表测量噪声。
 12. 为 Day 26 冻结采集分数计算方法。
@@ -76,27 +86,37 @@ from sklearn.pipeline import make_pipeline
 seeds = [11, 22, 33, 44, 55]
 member_predictions = []
 
+# 只在原 train 内再次做确定性的 scaffold split。
+fit_idx, diagnostic_idx, unused_idx = dc.splits.ScaffoldSplitter().split(
+    train_dataset,
+    frac_train=0.8,
+    frac_valid=0.2,
+    frac_test=0.0,
+)
+assert len(unused_idx) == 0
+
 for seed in seeds:
     member = make_pipeline(
         SimpleImputer(strategy="median"),
         RandomForestRegressor(
-            n_estimators=300,
+            n_estimators=120,
             max_features="sqrt",
             random_state=seed,
+            n_jobs=1,
         ),
     )
-    member.fit(X_train, y_train)
-    member_predictions.append(member.predict(X_valid))
+    member.fit(X_train[fit_idx], y_train[fit_idx])
+    member_predictions.append(member.predict(X_train[diagnostic_idx]))
 
 prediction_matrix = np.vstack(member_predictions)
 mean_prediction = prediction_matrix.mean(axis=0)
 disagreement = prediction_matrix.std(axis=0)
 
 diagnosis = pd.DataFrame({
-    "sample_id": valid_ids,
+    "sample_id": train_ids[diagnostic_idx],
     "prediction": mean_prediction,
     "disagreement": disagreement,
-    "absolute_error": np.abs(y_valid - mean_prediction),
+    "absolute_error": np.abs(y_train[diagnostic_idx] - mean_prediction),
 }).sort_values("disagreement", ascending=False)
 print(diagnosis.head(10))
 ```
@@ -139,9 +159,13 @@ print(diagnosis.head(10))
 算法分歧不能代替化学安全判断。
 候选必须先通过化学组的可行性审核。
 
-诊断时可把样本按分歧分成高、中、低三组并比较平均绝对误差。
+诊断时可把内部 holdout 样本按分歧分成高、中、低三组并比较平均绝对误差。
 若高分歧没有对应更大误差，应保留负结果，
 并在 Day 26 把随机选择作为必要对照。
+
+Day 25 不读取外部 ESOL valid 标签。这样不会先用同一批标签设计采集规则，
+再在 Day 26 把它包装成全新的策略评价证据。外部 valid 在整个课程中仍属于
+开发期反复使用的数据，不是严格未见的最终 test。
 
 ## 常见错误
 
@@ -155,7 +179,8 @@ print(diagnosis.head(10))
 
 ## 完成标准
 
-- [ ] 所有成员使用相同训练数据和参数；
+- [ ] 内部拟合集与诊断集的 scaffold group 没有交叉；
+- [ ] 所有成员使用相同内部拟合数据和参数；
 - [ ] 唯一计划内差异是随机种子；
 - [ ] 得到逐样本平均预测和标准差；
 - [ ] 检查了分歧与绝对误差关系；

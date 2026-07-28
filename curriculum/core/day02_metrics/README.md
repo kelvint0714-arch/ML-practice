@@ -20,6 +20,16 @@ MAE、RMSE、R²
 - 能运行一个独立代码单元；
 - 今天不比较新的复杂模型。
 
+## 完整学习包（按顺序）
+
+1. [概念：三个指标各自回答什么](01_concepts.md)
+2. [算法推演：从误差表到统一函数](02_algorithm_walkthrough.md)
+3. [课程提供的可运行 Tutorial](tutorial.ipynb)
+4. [独立练习](03_exercises.md)
+5. [折叠参考答案](04_reference_answers.md)
+
+`tutorial.ipynb` 是预先提供并验证过的教学示例，不代表你已经完成 Day 2。真正学习时应把个人副本、笔记和实际生成的结果保存到 `experiments/day02_metrics/`，不要把课程预存输出当作自己的实验结果。
+
 ## 今日产出
 
 今天应由你完成：
