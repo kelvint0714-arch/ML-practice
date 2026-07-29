@@ -200,4 +200,5 @@ print("仍需人工确认体系、单位、分组和权限。")
 
 - 上一天：[Day 27：论文到数据字段](../day27_paper_to_schema/README.md)
 - 完成验收后：[返回一步一步学习目录](../../PROGRESS.md)
+- 主动学习深化：[Unit 1–9 专题路线](../../active_learning/README.md)
 - 下一步（先检查门槛）：[GNN 启动条件](../../optional_gnn/README.md)

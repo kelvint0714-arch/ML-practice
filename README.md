@@ -6,9 +6,9 @@
 
 1. 打开唯一导航：[一步一步学习目录](curriculum/PROGRESS.md)
 2. 永远从目录里的第一个 `[ ]` 开始，完成并通过自测后再勾选
-3. 目录会从 Day 1 的第一篇讲解，一直带你走到 Day 35；Day 29–34 可用公开图学习 GNN，但把 GNN 用到粘合剂项目仍要通过 Day 35 门槛
+3. 目录会从 Day 1 带到 Day 35，并在核心路线后提供按 Unit 编排的主动学习专题；Day 29–34 可用公开图学习 GNN，但把 GNN 用到粘合剂项目仍要通过 Day 35 门槛
 
-`Day` 是学习单元，不是必须一天完成的期限。路线先学算法概念和手算，再用最小代码验证理解；Day 2–35 均提供中文讲义、算法推演、练习、参考答案和可运行教学 Notebook。完整 ESOL 基线 Notebook 到 Day 7 才从头运行；GNN 文件已经存在不等于现在必须跳过去，也不等于项目已有条件使用 GNN。
+`Day` 和 `Unit` 都是学习单元，不是必须一天完成的期限。路线先学算法概念和手算，再用最小代码验证理解；Day 2–35 和主动学习 Unit 1–9 均提供中文讲义、算法推演、练习、参考答案和可运行教学 Notebook。完整 ESOL 基线 Notebook 到 Day 7 才从头运行；GNN 或主动学习文件已经存在不等于本人已经完成。
 
 ## 两条研究工作线
 
@@ -24,13 +24,14 @@
 ```text
 ML-practice/
 ├── .github/workflows/       # GitHub 自动仓库检查
-├── curriculum/             # 学习任务：核心 Day 1–28、可选 GNN Day 29–35
+├── curriculum/             # 核心 Day、可选 GNN 与主动学习 Unit 专题
 ├── data/                   # 公开数据说明与粘合剂数据接口
 ├── experiments/            # 真正运行过或正在执行的实验
 ├── docs/                   # 项目路线、参考资料和旧方案归档
 ├── scripts/                # 建立个人 Day、只读运行 Notebook、仓库检查
 ├── requirements.txt        # 已复现实验的基础环境
 ├── requirements-learning.txt
+├── requirements-active-learning.txt
 └── requirements-gnn.txt    # Day 29–35 的独立 GNN 环境
 ```
 
@@ -40,7 +41,8 @@ ML-practice/
 - [课程总览](curriculum/README.md)
 - [Day 1–28 核心课程](curriculum/core/README.md)
 - [Day 29–35 可选 GNN](curriculum/optional_gnn/README.md)
-- [完整 Day 学习包使用方法](curriculum/shared/day_package_guide.md)
+- [主动学习 Unit 1–9 专题](curriculum/active_learning/README.md)
+- [完整 Day/Unit 学习包使用方法](curriculum/shared/day_package_guide.md)
 - [数据目录](data/README.md)
 - [实验目录](experiments/README.md)
 - [项目文档](docs/README.md)
@@ -79,6 +81,14 @@ python scripts/start_day.py 2
 
 脚本会把该日 `tutorial.ipynb` 复制到 `experiments/dayXX_topic/`，同时建立个人 `notes.md` 和 `results/` 说明。
 
+完成 Day 26 的桥接内容并达到专题先修要求后，主动学习课程按 Unit 开始：
+
+```bash
+python scripts/start_unit.py 1
+```
+
+个人 Unit 实验会放入 `experiments/active_learning/unitXX_topic/`，课程源文件保持不变。
+
 Day 29–35 使用单独的 GNN 环境，避免改变已经验证的核心环境。以下版本已在本仓库的全部 GNN 教学 Notebook 上验证：
 
 ```bash
@@ -101,9 +111,12 @@ python scripts/run_curriculum_notebooks.py \
   --first-day 29 \
   --last-day 35 \
   --kernel-name gnn
+python scripts/run_active_learning_notebooks.py \
+  --first-unit 1 \
+  --last-unit 9
 ```
 
-第一条验证目录结构、35 个任务卡、Markdown 链接、Python 代码块、34 份教学 Notebook、ESOL 结果文件和 Excel 包结构；后两条分别从头执行核心与 GNN 教程，但默认只在内存中检查，不修改教材。只有课程维护者确实要刷新预存输出时才显式添加 `--in-place`。GitHub Actions 会运行结构检查，但不会把任何学习日自动标为完成。
+第一条验证目录结构、35 个 Day、9 个主动学习 Unit、Markdown 链接、Python 代码块、43 份教学 Notebook、ESOL 结果文件和 Excel 包结构；其余命令从头执行核心、GNN 与主动学习教程，但默认只在内存中检查，不修改教材。只有课程维护者确实要刷新预存输出时才显式添加 `--in-place`。GitHub Actions 会运行结构检查，但不会自动标记任何 Day 或 Unit 完成。
 
 ## 分支规则
 

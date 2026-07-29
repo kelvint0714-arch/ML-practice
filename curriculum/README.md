@@ -8,7 +8,7 @@
 
 ## 从这里开始
 
-当前课程已拆成 [Day 1–28 核心路线](core/README.md) 和 [Day 29–35 可选 GNN 路线](optional_gnn/README.md)。
+当前课程已拆成 [Day 1–28 核心路线](core/README.md)、[Day 29–35 可选 GNN 路线](optional_gnn/README.md) 和 [主动学习 Unit 1–9 专题路线](active_learning/README.md)。Day 26 是主动学习桥接课，Unit 路线负责多轮基准、采集函数、批量约束、神经/图代理和物理闭环的系统深化。
 
 第一次学习只打开 [一步一步学习目录](PROGRESS.md)，找到第一个 `[ ]` 并按顺序执行。路线采用“算法概念 → 纸笔手算 → 中文伪代码 → 最小代码 → 真实 Notebook”的顺序。Day 2–35 每天都配有分层中文讲义、练习、参考答案和教学 Notebook；Day 1 不要求逐行阅读完整工程代码，Day 7 才把已经学过的算法映射回完整 ESOL 实验。Day 29–34 可以在公开图上学习；Day 35 决定能否把 GNN 用到真实粘合剂项目。
 
@@ -19,8 +19,10 @@
 - [共享词典、实验协议与报错排查](shared/README.md)
 - [完整 Day 学习包使用方法](shared/day_package_guide.md)
 - [Day 29–35 可选 GNN 与启动条件](optional_gnn/README.md)
+- [主动学习 Unit 1–9 与开始条件](active_learning/README.md)
+- [主动学习论文地图](active_learning/PAPER_MAP.md)
 
-核心路线运行代码时使用根目录的 [`requirements-learning.txt`](../requirements-learning.txt)，不要求安装 XGBoost、PyTorch 或 PyTorch Geometric。Day 29–35 使用单独的 [`requirements-gnn.txt`](../requirements-gnn.txt)；安装与运行命令见 [完整 Day 学习包使用方法](shared/day_package_guide.md)。
+核心路线运行代码时使用根目录的 [`requirements-learning.txt`](../requirements-learning.txt)，不要求安装 XGBoost、PyTorch 或 PyTorch Geometric。主动学习主路线复用 [`requirements-active-learning.txt`](../requirements-active-learning.txt)，先使用 scikit-learn GP/RF/MLP。Day 29–35 使用单独的 [`requirements-gnn.txt`](../requirements-gnn.txt)；安装与运行命令见 [完整 Day 学习包使用方法](shared/day_package_guide.md)。
 
 ## 实验路线
 
@@ -33,6 +35,7 @@
 | B4 实验推荐 | 集成不确定性、主动学习池模拟 | 候选选择逻辑及边界 | Day 25–26 |
 | B5 材料接入 | 论文字段映射、真实数据接口和阶段报告 | 可供导师与化学组确认的接入清单 | Day 27–28 |
 | B6 可选 GNN | 公开图任务、分子图和启用评审 | 只在门槛通过后执行 | Day 29–35 |
+| B7 主动学习专题 | 多采集函数、多轮基准、批量约束、神经/物理代理与闭环 | 逐轮日志、学习曲线和公开数据复现入口 | Unit 1–9 |
 
 ## 比较规则
 

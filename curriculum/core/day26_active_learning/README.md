@@ -176,6 +176,17 @@ print(random_ids)
 若要讨论策略有效性，必须另做多轮、多预先声明种子的学习曲线，
 不能只展示主动学习最好的一次和随机选择最差的一次。
 
+## 专题深化入口
+
+Day 26 是主动学习桥接课，不负责完整论文级比较。完成核心路线并满足先修条件后，进入 [主动学习 Unit 1–9 专题](../../active_learning/README.md)，继续学习：
+
+- GP/RF/神经网络代理模型与不确定性；
+- UCB、PI、EI、TS 等采集函数；
+- 多轮、多种子和 regret 学习曲线；
+- 批量、多样性、成本和化学约束；
+- GNN/PBNN/DKL 与物理先验在闭环中的位置；
+- 论文复现与真实实验 Oracle 接口。
+
 ## 常见错误
 
 | 错误 | 后果 | 正确处理 |
@@ -210,3 +221,4 @@ print(random_ids)
 - 上一天：[Day 25：启发式不确定性](../day25_uncertainty/README.md)
 - 完成验收后：[返回一步一步学习目录](../../PROGRESS.md)
 - 下一天：[Day 27：从论文映射到数据字段](../day27_paper_to_schema/README.md)
+- 后续专题：[主动学习 Unit 路线](../../active_learning/README.md)

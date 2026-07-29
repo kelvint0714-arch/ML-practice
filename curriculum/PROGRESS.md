@@ -10,12 +10,18 @@
 4. 确认自己能够解释，而不只是把代码运行出来，再把 `[ ]` 改成 `[x]`；
 5. 回到本页，继续下一个未勾选项。
 
-`Day` 表示一个学习单元，不要求在一个自然日内完成。一个 Day 学两三天完全正常，也不要为了赶日期跳过前置内容。仓库里已经存在的 Notebook 和结果是学习材料，不代表你本人已经完成，所以本页不会自动勾选。
+`Day` 和 `Unit` 都表示学习模块，不要求在一个自然日内完成。一个模块学两三天完全正常，也不要为了赶日期跳过前置内容。仓库里已经存在的 Notebook 和结果是学习材料，不代表你本人已经完成，所以本页不会自动勾选。
 
 Day 2–35 的每个任务卡都链接到中文概念、算法推演、练习、参考答案和教学 Notebook。开始当天个人实验前，先阅读[完整 Day 学习包使用方法](shared/day_package_guide.md)，再运行：
 
 ```bash
 python scripts/start_day.py 当天数字
+```
+
+主动学习专题使用独立个人副本：
+
+```bash
+python scripts/start_unit.py 单元数字
 ```
 
 > **你现在只做一件事：**从下面的 **1.1** 开始。
@@ -75,6 +81,23 @@ Day 1 特意拆成 6 个小步骤。先阅读 [Day 1 总说明](core/day01_begin
 - [ ] **Day 28｜粘合剂接入与总报告：**完成 [Day 28 任务卡](core/day28_capstone_handoff/README.md)，形成化学组数据接入清单和算法阶段总报告。
 
 完成 Day 28，代表核心路线结束。它不等于已经可以发表论文，而是代表你具备了接收真实粘合剂数据、建立基线和设计可信对照实验的基础。
+
+## 主动学习专题：按 Unit 系统深化（Unit 1–9）
+
+专题入口与开始条件见 [主动学习路线](active_learning/README.md)。Day 26 只完成单轮入门；本专题继续学习完整采集函数、多轮基准、批量约束、神经/GNN 代理、物理先验和真实实验接口。Unit 1–6 不要求 GNN，Unit 7 的 GNN 扩展需先完成 Day 29–35。
+
+- [ ] **Unit 01｜主动学习闭环与问题定义：**完成 [Unit 01 任务卡](active_learning/unit01_foundations/README.md)。
+- [ ] **Unit 02｜代理模型与不确定性：**完成 [Unit 02 任务卡](active_learning/unit02_surrogates_uncertainty/README.md)。
+- [ ] **Unit 03｜采集函数：**完成 [Unit 03 任务卡](active_learning/unit03_acquisition_functions/README.md)。
+- [ ] **Unit 04｜多轮主动学习循环：**完成 [Unit 04 任务卡](active_learning/unit04_multiround_loop/README.md)。
+- [ ] **Unit 05｜公平基准协议：**完成 [Unit 05 任务卡](active_learning/unit05_benchmark_protocol/README.md)。
+- [ ] **Unit 06｜批量、多样性与约束：**完成 [Unit 06 任务卡](active_learning/unit06_batch_diversity_constraints/README.md)。
+- [ ] **Unit 07｜神经网络与图代理模型：**完成 [Unit 07 任务卡](active_learning/unit07_neural_graph_surrogates/README.md)。
+- [ ] **Unit 08｜物理先验与真实闭环：**完成 [Unit 08 任务卡](active_learning/unit08_physics_closed_loop/README.md)。
+- [ ] **Unit 09｜人工综合演练与论文复现交接：**完成 [Unit 09 任务卡](active_learning/unit09_capstone/README.md)。
+
+专题阶段说明和论文对应关系分别见 [Unit 路线索引](active_learning/PROGRESS.md)
+与 [论文地图](active_learning/PAPER_MAP.md)；完成状态仍只在本页记录。
 
 ## 可选阶段：GNN（Day 29–35）
 

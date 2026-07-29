@@ -1,8 +1,9 @@
 """Validate the repository without running machine-learning training.
 
-The checker covers repository layout, curriculum continuity, Markdown links,
-Python code fences, saved Notebook state, ESOL result artifacts, and the
-tracked adhesive workbook package. It never marks a learning day complete.
+The checker covers repository layout, Day/Unit curriculum continuity,
+Markdown links, Python code fences, saved Notebook state, ESOL result
+artifacts, and the tracked adhesive workbook package. It never marks a
+learning Day or Unit complete.
 """
 
 from __future__ import annotations
@@ -25,7 +26,9 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 CURRICULUM_ROOT = REPO_ROOT / "curriculum"
 CORE_ROOT = CURRICULUM_ROOT / "core"
 OPTIONAL_GNN_ROOT = CURRICULUM_ROOT / "optional_gnn"
+ACTIVE_LEARNING_ROOT = CURRICULUM_ROOT / "active_learning"
 DAY_PATTERN = re.compile(r"day(\d{2})_[^/]+$")
+UNIT_PATTERN = re.compile(r"unit(\d{2})_[^/]+$")
 LINK_PATTERN = re.compile(r"!?\[[^\]]*\]\(([^)]+)\)")
 PYTHON_FENCE_PATTERN = re.compile(r"```python\n(.*?)```", re.DOTALL)
 
@@ -36,6 +39,7 @@ REQUIRED_ROOT_FILES = (
     "README.md",
     "requirements-gnn.txt",
     "requirements-learning.txt",
+    "requirements-active-learning.txt",
     "requirements.txt",
 )
 REQUIRED_TOP_LEVEL = (
@@ -111,6 +115,17 @@ EXPECTED_GNN_DAY_DIRS = (
     "day33_gat",
     "day34_gin_graph_classification",
     "day35_molecular_graph_gate",
+)
+EXPECTED_ACTIVE_LEARNING_UNIT_DIRS = (
+    "unit01_foundations",
+    "unit02_surrogates_uncertainty",
+    "unit03_acquisition_functions",
+    "unit04_multiround_loop",
+    "unit05_benchmark_protocol",
+    "unit06_batch_diversity_constraints",
+    "unit07_neural_graph_surrogates",
+    "unit08_physics_closed_loop",
+    "unit09_capstone",
 )
 LEARNING_PACKAGE_FILES = (
     "01_concepts.md",
@@ -210,6 +225,39 @@ def collect_day_directories(
     return [path for _, path in day_dirs]
 
 
+def collect_unit_directories(errors: list[str]) -> list[Path]:
+    """Return active-learning Unit directories and report gaps."""
+
+    if not ACTIVE_LEARNING_ROOT.is_dir():
+        errors.append(
+            "Missing curriculum route directory: "
+            f"{relative(ACTIVE_LEARNING_ROOT)}"
+        )
+        return []
+
+    unit_dirs: list[tuple[int, Path]] = []
+    for path in ACTIVE_LEARNING_ROOT.iterdir():
+        if not path.is_dir():
+            continue
+        match = UNIT_PATTERN.fullmatch(path.name)
+        if match:
+            unit_dirs.append((int(match.group(1)), path))
+
+    unit_dirs.sort()
+    numbers = [number for number, _ in unit_dirs]
+    expected = list(range(1, 10))
+    if numbers != expected:
+        errors.append(
+            f"{relative(ACTIVE_LEARNING_ROOT)}/ must contain Unit directories "
+            f"01–09; found {numbers}."
+        )
+
+    for number, path in unit_dirs:
+        if not (path / "README.md").exists():
+            errors.append(f"Unit {number:02d} is missing README.md: {path}")
+    return [path for _, path in unit_dirs]
+
+
 def check_task_card_sections(day_dirs: list[Path], errors: list[str]) -> None:
     """Check the common task-card structure for Day 02 onward."""
 
@@ -234,6 +282,34 @@ def check_task_card_sections(day_dirs: list[Path], errors: list[str]) -> None:
             errors.append(f"{relative(readme)}: missing previous-day navigation.")
         if number < 35 and "下一天" not in text:
             errors.append(f"{relative(readme)}: missing next-day navigation.")
+
+
+def check_unit_task_card_sections(
+    unit_dirs: list[Path],
+    errors: list[str],
+) -> None:
+    """Check the common active-learning Unit task-card structure."""
+
+    for unit_dir in unit_dirs:
+        match = UNIT_PATTERN.fullmatch(unit_dir.name)
+        assert match is not None
+        number = int(match.group(1))
+        readme = unit_dir / "README.md"
+        if not readme.exists():
+            continue
+        text = readme.read_text(encoding="utf-8")
+
+        for phrase in REQUIRED_PHRASES:
+            if phrase not in text:
+                errors.append(f"{relative(readme)}: missing section '{phrase}'.")
+        if "核心代码" not in text and "核心文档" not in text:
+            errors.append(f"{relative(readme)}: missing core code/document skeleton.")
+        if "上一单元" not in text:
+            errors.append(
+                f"{relative(readme)}: missing previous-Unit navigation."
+            )
+        if number < 9 and "下一单元" not in text:
+            errors.append(f"{relative(readme)}: missing next-Unit navigation.")
 
 
 def check_complete_learning_packages(
@@ -352,6 +428,160 @@ def check_complete_learning_packages(
             errors.append(
                 f"{relative(notebook_path)}: expected at least two focused code "
                 "cells."
+            )
+            continue
+
+        execution_counts = [
+            cell.get("execution_count") for cell in code_cells
+        ]
+        expected_counts = list(range(1, len(code_cells) + 1))
+        if execution_counts != expected_counts:
+            errors.append(
+                f"{relative(notebook_path)}: expected consecutive execution "
+                f"counts {expected_counts}; found {execution_counts}."
+            )
+
+        for cell_index, cell in enumerate(code_cells, start=1):
+            for output in cell.get("outputs", []):
+                if output.get("output_type") == "error":
+                    errors.append(
+                        f"{relative(notebook_path)}: code cell {cell_index} "
+                        f"contains saved error {output.get('ename')}: "
+                        f"{output.get('evalue')}"
+                    )
+
+        serialized = json.dumps(notebook, ensure_ascii=False)
+        if any(
+            marker in serialized
+            for marker in ("/Users/", "/tmp/", "/private/tmp/", "file://")
+        ):
+            errors.append(
+                f"{relative(notebook_path)}: contains a machine-specific path."
+            )
+
+    return notebook_count, code_cell_count
+
+
+def check_complete_unit_packages(
+    unit_dirs: list[Path],
+    errors: list[str],
+) -> tuple[int, int]:
+    """Validate Unit 01–09 files and executed tutorial notebooks."""
+
+    notebook_count = 0
+    code_cell_count = 0
+    for unit_dir in unit_dirs:
+        match = UNIT_PATTERN.fullmatch(unit_dir.name)
+        assert match is not None
+        number = int(match.group(1))
+
+        missing = [
+            name
+            for name in LEARNING_PACKAGE_FILES
+            if not (unit_dir / name).is_file()
+        ]
+        if missing:
+            errors.append(
+                f"{relative(unit_dir)}/: incomplete Unit learning package; "
+                f"missing {missing}."
+            )
+            continue
+
+        readme = unit_dir / "README.md"
+        linked_targets = local_link_targets(readme)
+        linked_sequence = local_link_target_sequence(readme)
+        package_positions: list[int] = []
+        for name in LEARNING_PACKAGE_FILES:
+            expected = (unit_dir / name).resolve()
+            if expected not in linked_targets:
+                errors.append(
+                    f"{relative(readme)}: must link to Unit package file "
+                    f"'{name}'."
+                )
+                continue
+            package_positions.append(linked_sequence.index(expected))
+        if (
+            len(package_positions) == len(LEARNING_PACKAGE_FILES)
+            and package_positions != sorted(package_positions)
+        ):
+            errors.append(
+                f"{relative(readme)}: Unit package links must follow "
+                f"{list(LEARNING_PACKAGE_FILES)}."
+            )
+
+        notebook_path = unit_dir / "tutorial.ipynb"
+        notebook_count += 1
+        try:
+            notebook = json.loads(notebook_path.read_text(encoding="utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            errors.append(f"{relative(notebook_path)}: invalid Notebook JSON: {exc}")
+            continue
+
+        if notebook.get("nbformat") != 4:
+            errors.append(
+                f"{relative(notebook_path)}: expected nbformat 4; "
+                f"found {notebook.get('nbformat')}."
+            )
+
+        course_artifact = notebook.get("metadata", {}).get("course_artifact", {})
+        expected_metadata = {
+            "kind": "supplied_tutorial",
+            "learner_evidence": False,
+            "route": "active_learning",
+            "unit": number,
+        }
+        for key, expected in expected_metadata.items():
+            if course_artifact.get(key) != expected:
+                errors.append(
+                    f"{relative(notebook_path)}: metadata.course_artifact."
+                    f"{key} must be {expected!r}; found "
+                    f"{course_artifact.get(key)!r}."
+                )
+
+        kernelspec = notebook.get("metadata", {}).get("kernelspec", {})
+        if kernelspec.get("display_name") != "Python 3 (esol)":
+            errors.append(
+                f"{relative(notebook_path)}: kernelspec.display_name must be "
+                "'Python 3 (esol)'."
+            )
+        if kernelspec.get("name") != "python3":
+            errors.append(
+                f"{relative(notebook_path)}: kernelspec.name must remain "
+                "'python3'."
+            )
+
+        cells = notebook.get("cells", [])
+        markdown_text = "\n".join(
+            "".join(cell.get("source", []))
+            for cell in cells
+            if cell.get("cell_type") == "markdown"
+        )
+        for heading in (
+            "## Goal",
+            "## Setup",
+            "## Steps",
+            "## Checks",
+            "## Next Steps",
+        ):
+            if heading not in markdown_text:
+                errors.append(
+                    f"{relative(notebook_path)}: missing tutorial section "
+                    f"'{heading}'."
+                )
+        if f"Unit {number:02d}" not in markdown_text:
+            errors.append(
+                f"{relative(notebook_path)}: must identify itself as "
+                f"Unit {number:02d}."
+            )
+
+        code_cells = [
+            cell for cell in cells if cell.get("cell_type") == "code"
+        ]
+        code_cell_count += len(code_cells)
+        if len(code_cells) < 2:
+            errors.append(
+                f"{relative(notebook_path)}: expected at least two focused "
+                "code cells."
             )
             continue
 
@@ -521,6 +751,91 @@ def check_curriculum_routes(
                 errors.append(
                     f"{relative(markdown)}: contains legacy Day slug "
                     f"'{legacy_slug}'."
+                )
+
+
+def check_active_learning_routes(
+    unit_dirs: list[Path],
+    errors: list[str],
+) -> None:
+    """Check Unit slugs, route coverage, and previous/next navigation."""
+
+    expected_unit_paths = [
+        ACTIVE_LEARNING_ROOT / name
+        for name in EXPECTED_ACTIVE_LEARNING_UNIT_DIRS
+    ]
+    if unit_dirs != expected_unit_paths:
+        errors.append(
+            "Active-learning Unit directory names do not match the canonical "
+            f"route: {[path.name for path in unit_dirs]}."
+        )
+
+    route_files = (
+        ACTIVE_LEARNING_ROOT / "README.md",
+        ACTIVE_LEARNING_ROOT / "PROGRESS.md",
+        CURRICULUM_ROOT / "PROGRESS.md",
+    )
+    expected_readmes = {
+        path / "README.md" for path in expected_unit_paths
+    }
+    for route_file in route_files:
+        if not route_file.is_file():
+            errors.append(
+                f"Missing active-learning route file: {relative(route_file)}."
+            )
+            continue
+        targets = local_link_targets(route_file)
+        missing = expected_readmes - targets
+        if missing:
+            errors.append(
+                f"{relative(route_file)}: missing canonical Unit links "
+                f"{[relative(path) for path in sorted(missing)]}."
+            )
+
+    topic_index = ACTIVE_LEARNING_ROOT / "PROGRESS.md"
+    if topic_index.is_file():
+        topic_text = topic_index.read_text(encoding="utf-8")
+        if re.search(r"^- \[[ xX]\].*Unit", topic_text, re.MULTILINE):
+            errors.append(
+                f"{relative(topic_index)}: must remain a route index without "
+                "duplicate Unit completion checkboxes; use curriculum/PROGRESS.md."
+            )
+
+    progress = (CURRICULUM_ROOT / "PROGRESS.md").resolve()
+    by_number = {
+        int(UNIT_PATTERN.fullmatch(path.name).group(1)): path
+        for path in unit_dirs
+        if UNIT_PATTERN.fullmatch(path.name)
+    }
+    for number, unit_dir in by_number.items():
+        readme = unit_dir / "README.md"
+        targets = local_link_targets(readme)
+        if progress not in targets:
+            errors.append(
+                f"{relative(readme)}: must link back to "
+                "curriculum/PROGRESS.md."
+            )
+
+        if number > 1:
+            previous_dir = by_number.get(number - 1)
+            if previous_dir is None:
+                continue
+            expected_previous = (previous_dir / "README.md").resolve()
+            if expected_previous not in targets:
+                errors.append(
+                    f"{relative(readme)}: missing canonical previous Unit "
+                    f"{relative(expected_previous)}."
+                )
+
+        if number < 9:
+            next_dir = by_number.get(number + 1)
+            if next_dir is None:
+                continue
+            expected_next = (next_dir / "README.md").resolve()
+            if expected_next not in targets:
+                errors.append(
+                    f"{relative(readme)}: missing canonical next Unit "
+                    f"{relative(expected_next)}."
                 )
 
 
@@ -893,6 +1208,91 @@ def check_start_day_contract(errors: list[str]) -> None:
                 )
 
 
+def check_start_unit_contract(errors: list[str]) -> None:
+    """Exercise the active-learning learner-copy transformation."""
+
+    script = REPO_ROOT / "scripts" / "start_unit.py"
+    source = (
+        ACTIVE_LEARNING_ROOT
+        / "unit01_foundations"
+        / "tutorial.ipynb"
+    )
+    if not script.is_file() or not source.is_file():
+        errors.append(
+            "Cannot check start_unit.py contract: script or Unit 01 tutorial "
+            "is missing."
+        )
+        return
+
+    try:
+        namespace = runpy.run_path(str(script))
+        copy_clean_notebook = namespace["copy_clean_notebook"]
+    except (KeyError, OSError) as exc:
+        errors.append(
+            f"scripts/start_unit.py learner-copy contract failed: {exc}"
+        )
+        return
+
+    try:
+        source_before = source.read_bytes()
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            destination = Path(temporary_directory) / "learner.ipynb"
+            with contextlib.redirect_stdout(io.StringIO()):
+                copy_clean_notebook(source, destination, dry_run=False)
+            notebook = json.loads(destination.read_text(encoding="utf-8"))
+        if source.read_bytes() != source_before:
+            errors.append(
+                "scripts/start_unit.py modified the source tutorial during "
+                f"copy: {relative(source)}."
+            )
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        errors.append(
+            "scripts/start_unit.py learner-copy contract failed for "
+            f"{relative(source)}: {exc}"
+        )
+        return
+
+    metadata = notebook.get("metadata", {})
+    expected_metadata = {
+        "artifact_role": "learner_workspace",
+        "learner_evidence": True,
+        "source_tutorial": relative(source),
+    }
+    for key, expected in expected_metadata.items():
+        if metadata.get(key) != expected:
+            errors.append(
+                f"scripts/start_unit.py learner copy must set "
+                f"{key}={expected!r}; found {metadata.get(key)!r}."
+            )
+    if "course_artifact" in metadata:
+        errors.append(
+            "scripts/start_unit.py learner copy must remove source "
+            "course_artifact metadata."
+        )
+
+    code_cells = [
+        cell
+        for cell in notebook.get("cells", [])
+        if cell.get("cell_type") == "code"
+    ]
+    for cell_index, cell in enumerate(code_cells, start=1):
+        if cell.get("execution_count") is not None:
+            errors.append(
+                "scripts/start_unit.py learner copy code cell "
+                f"{cell_index} retains an execution count."
+            )
+        if cell.get("outputs") != []:
+            errors.append(
+                "scripts/start_unit.py learner copy code cell "
+                f"{cell_index} retains saved outputs."
+            )
+        if "execution" in cell.get("metadata", {}):
+            errors.append(
+                "scripts/start_unit.py learner copy code cell "
+                f"{cell_index} retains execution timing metadata."
+            )
+
+
 def check_markdown_files(errors: list[str]) -> None:
     """Check local links, machine-specific paths, and control characters."""
 
@@ -939,6 +1339,12 @@ def check_python_fences(errors: list[str]) -> int:
             for name in LEARNING_PACKAGE_FILES:
                 if name.endswith(".md"):
                     markdown_files.add(day_dir / name)
+    for unit_dir in ACTIVE_LEARNING_ROOT.glob("unit??_*"):
+        if UNIT_PATTERN.fullmatch(unit_dir.name) is None:
+            continue
+        for name in LEARNING_PACKAGE_FILES:
+            if name.endswith(".md"):
+                markdown_files.add(unit_dir / name)
 
     for markdown in sorted(markdown_files):
         if not markdown.is_file():
@@ -1154,12 +1560,18 @@ def main() -> int:
     core_days = collect_day_directories(CORE_ROOT, range(1, 29), errors)
     gnn_days = collect_day_directories(OPTIONAL_GNN_ROOT, range(29, 36), errors)
     day_dirs = core_days + gnn_days
+    unit_dirs = collect_unit_directories(errors)
 
     check_task_card_sections(day_dirs, errors)
     tutorial_count, tutorial_code_cells = check_complete_learning_packages(
         day_dirs, errors
     )
+    check_unit_task_card_sections(unit_dirs, errors)
+    unit_tutorial_count, unit_code_cells = check_complete_unit_packages(
+        unit_dirs, errors
+    )
     check_curriculum_routes(core_days, gnn_days, errors)
+    check_active_learning_routes(unit_dirs, errors)
     check_markdown_files(errors)
     fence_count = check_python_fences(errors)
     check_json_files(errors)
@@ -1168,6 +1580,7 @@ def main() -> int:
     check_adhesive_workbook(errors)
     check_learning_artifact_contract(errors)
     check_start_day_contract(errors)
+    check_start_unit_contract(errors)
 
     if errors:
         print("Repository validation failed:")
@@ -1178,9 +1591,11 @@ def main() -> int:
     print(
         "Repository validation passed: "
         f"{len(core_days)} core days, {len(gnn_days)} optional GNN days, "
-        f"{fence_count} Python fences, {tutorial_count} curriculum notebooks "
-        f"with {tutorial_code_cells} code cells, {code_cell_count} ESOL "
-        "reference code cells, ESOL artifacts, and the adhesive workbook checked."
+        f"{len(unit_dirs)} active-learning Units, {fence_count} Python fences, "
+        f"{tutorial_count} Day notebooks with {tutorial_code_cells} code cells, "
+        f"{unit_tutorial_count} Unit notebooks with {unit_code_cells} code "
+        f"cells, {code_cell_count} ESOL reference code cells, ESOL artifacts, "
+        "and the adhesive workbook checked."
     )
     return 0
 
