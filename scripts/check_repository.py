@@ -27,6 +27,7 @@ CURRICULUM_ROOT = REPO_ROOT / "curriculum"
 CORE_ROOT = CURRICULUM_ROOT / "core"
 OPTIONAL_GNN_ROOT = CURRICULUM_ROOT / "optional_gnn"
 ACTIVE_LEARNING_ROOT = CURRICULUM_ROOT / "active_learning"
+EXPERIMENTS_ROOT = REPO_ROOT / "experiments"
 DAY_PATTERN = re.compile(r"day(\d{2})_[^/]+$")
 UNIT_PATTERN = re.compile(r"unit(\d{2})_[^/]+$")
 LINK_PATTERN = re.compile(r"!?\[[^\]]*\]\(([^)]+)\)")
@@ -1121,6 +1122,185 @@ def check_summary_rows(
             )
 
 
+def check_experiment_workspace_coverage(
+    day_dirs: list[Path],
+    unit_dirs: list[Path],
+    errors: list[str],
+) -> int:
+    """Validate the complete Day 02–35 and Unit 01–09 starter coverage.
+
+    A pristine workspace must be an exact, output-cleared copy of its source
+    tutorial and must not claim learner evidence. Later learner-owned states
+    may contain outputs or edited cells, but their status/evidence pair still
+    has to be honest.
+    """
+
+    index_path = EXPERIMENTS_ROOT / "INDEX.md"
+    if not index_path.is_file():
+        errors.append("experiments/INDEX.md: complete workspace index is missing.")
+    else:
+        index_text = index_path.read_text(encoding="utf-8")
+        indexed_starters = index_text.count("| 待本人运行 |")
+        if indexed_starters != 43:
+            errors.append(
+                "experiments/INDEX.md: expected 43 '待本人运行' starter rows; "
+                f"found {indexed_starters}."
+            )
+
+    entries: list[tuple[Path, Path]] = []
+    for day_directory in day_dirs:
+        match = DAY_PATTERN.fullmatch(day_directory.name)
+        if match is None or int(match.group(1)) == 1:
+            continue
+        entries.append(
+            (
+                day_directory,
+                EXPERIMENTS_ROOT / day_directory.name,
+            )
+        )
+    for unit_directory in unit_dirs:
+        entries.append(
+            (
+                unit_directory,
+                EXPERIMENTS_ROOT / "active_learning" / unit_directory.name,
+            )
+        )
+
+    required_workspace_files = ("README.md", "notes.md", "results/README.md")
+    allowed_statuses = {"not_started", "in_progress", "completed"}
+
+    for source_directory, workspace in entries:
+        for required in required_workspace_files:
+            path = workspace / required
+            if not path.is_file():
+                errors.append(
+                    f"{relative(workspace)}: missing experiment workspace "
+                    f"file {required}."
+                )
+
+        notebook_path = workspace / f"{source_directory.name}.ipynb"
+        source_path = source_directory / "tutorial.ipynb"
+        if not notebook_path.is_file():
+            errors.append(
+                f"{relative(workspace)}: missing complete starter Notebook "
+                f"{notebook_path.name}."
+            )
+            continue
+
+        try:
+            notebook = json.loads(notebook_path.read_text(encoding="utf-8"))
+            source_notebook = json.loads(source_path.read_text(encoding="utf-8"))
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+            errors.append(
+                f"{relative(notebook_path)}: cannot validate experiment "
+                f"Notebook: {exc}."
+            )
+            continue
+
+        metadata = notebook.get("metadata", {})
+        if metadata.get("artifact_role") != "learner_workspace":
+            errors.append(
+                f"{relative(notebook_path)}: artifact_role must be "
+                "'learner_workspace'."
+            )
+        if "course_artifact" in metadata:
+            errors.append(
+                f"{relative(notebook_path)}: learner workspace must remove "
+                "course_artifact metadata."
+            )
+        expected_source = relative(source_path)
+        if metadata.get("source_tutorial") != expected_source:
+            errors.append(
+                f"{relative(notebook_path)}: source_tutorial must be "
+                f"{expected_source!r}; found "
+                f"{metadata.get('source_tutorial')!r}."
+            )
+
+        status = metadata.get("workspace_status")
+        evidence = metadata.get("learner_evidence")
+        if status not in allowed_statuses:
+            errors.append(
+                f"{relative(notebook_path)}: workspace_status must be one of "
+                f"{sorted(allowed_statuses)}; found {status!r}."
+            )
+        if status == "completed" and evidence is not True:
+            errors.append(
+                f"{relative(notebook_path)}: a completed workspace must set "
+                "learner_evidence=true."
+            )
+        if status in {"not_started", "in_progress"} and evidence is not False:
+            errors.append(
+                f"{relative(notebook_path)}: {status} workspace must set "
+                "learner_evidence=false."
+            )
+
+        if status != "not_started":
+            continue
+
+        readme = workspace / "README.md"
+        if readme.is_file():
+            readme_text = readme.read_text(encoding="utf-8")
+            if "状态：**待本人运行**" not in readme_text:
+                errors.append(
+                    f"{relative(readme)}: pristine workspace must state "
+                    "'待本人运行'."
+                )
+        notes = workspace / "notes.md"
+        if notes.is_file():
+            notes_text = notes.read_text(encoding="utf-8")
+            if "状态：待本人填写" not in notes_text:
+                errors.append(
+                    f"{relative(notes)}: pristine notes must state "
+                    "'待本人填写'."
+                )
+
+        code_cells = [
+            cell
+            for cell in notebook.get("cells", [])
+            if cell.get("cell_type") == "code"
+        ]
+        for cell_index, cell in enumerate(code_cells, start=1):
+            if cell.get("execution_count") is not None:
+                errors.append(
+                    f"{relative(notebook_path)}: not_started code cell "
+                    f"{cell_index} has an execution count."
+                )
+            if cell.get("outputs") != []:
+                errors.append(
+                    f"{relative(notebook_path)}: not_started code cell "
+                    f"{cell_index} has saved outputs."
+                )
+            if "execution" in cell.get("metadata", {}):
+                errors.append(
+                    f"{relative(notebook_path)}: not_started code cell "
+                    f"{cell_index} retains execution timing metadata."
+                )
+
+        source_cells = source_notebook.get("cells", [])
+        workspace_cells = notebook.get("cells", [])
+        source_signature = [
+            (cell.get("cell_type"), cell.get("source"))
+            for cell in source_cells
+        ]
+        workspace_signature = [
+            (cell.get("cell_type"), cell.get("source"))
+            for cell in workspace_cells
+        ]
+        if workspace_signature != source_signature:
+            errors.append(
+                f"{relative(notebook_path)}: not_started workspace is not a "
+                "complete source-code copy of its tutorial."
+            )
+
+    expected_count = 34 + 9
+    if len(entries) != expected_count:
+        errors.append(
+            "Experiment workspace coverage expected 34 Day workspaces and "
+            f"9 Unit workspaces; collected {len(entries)} source entries."
+        )
+    return len(entries)
+
+
 def check_start_day_contract(errors: list[str]) -> None:
     """Exercise core and GNN learner-copy transformations in isolation."""
 
@@ -1168,7 +1348,8 @@ def check_start_day_contract(errors: list[str]) -> None:
         expected_source = relative(source)
         expected_metadata = {
             "artifact_role": "learner_workspace",
-            "learner_evidence": True,
+            "learner_evidence": False,
+            "workspace_status": "not_started",
             "source_tutorial": expected_source,
         }
         for key, expected in expected_metadata.items():
@@ -1255,7 +1436,8 @@ def check_start_unit_contract(errors: list[str]) -> None:
     metadata = notebook.get("metadata", {})
     expected_metadata = {
         "artifact_role": "learner_workspace",
-        "learner_evidence": True,
+        "learner_evidence": False,
+        "workspace_status": "not_started",
         "source_tutorial": relative(source),
     }
     for key, expected in expected_metadata.items():
@@ -1579,6 +1761,11 @@ def main() -> int:
     check_esol_results(errors)
     check_adhesive_workbook(errors)
     check_learning_artifact_contract(errors)
+    experiment_workspace_count = check_experiment_workspace_coverage(
+        day_dirs,
+        unit_dirs,
+        errors,
+    )
     check_start_day_contract(errors)
     check_start_unit_contract(errors)
 
@@ -1594,8 +1781,9 @@ def main() -> int:
         f"{len(unit_dirs)} active-learning Units, {fence_count} Python fences, "
         f"{tutorial_count} Day notebooks with {tutorial_code_cells} code cells, "
         f"{unit_tutorial_count} Unit notebooks with {unit_code_cells} code "
-        f"cells, {code_cell_count} ESOL reference code cells, ESOL artifacts, "
-        "and the adhesive workbook checked."
+        f"cells, {experiment_workspace_count} complete experiment starter "
+        f"workspaces, {code_cell_count} ESOL reference code cells, ESOL "
+        "artifacts, and the adhesive workbook checked."
     )
     return 0
 

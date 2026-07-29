@@ -26,7 +26,7 @@ ML-practice/
 ├── .github/workflows/       # GitHub 自动仓库检查
 ├── curriculum/             # 核心 Day、可选 GNN 与主动学习 Unit 专题
 ├── data/                   # 公开数据说明与粘合剂数据接口
-├── experiments/            # 真正运行过或正在执行的实验
+├── experiments/            # 已运行参考实验＋未开始的完整实验工作区
 ├── docs/                   # 项目路线、参考资料和旧方案归档
 ├── scripts/                # 建立个人 Day、只读运行 Notebook、仓库检查
 ├── requirements.txt        # 已复现实验的基础环境
@@ -51,7 +51,10 @@ ML-practice/
 
 已有 ESOL 参考基线使用固定 scaffold 划分、1024 维 ECFP，以及 Dummy、Ridge、决策树和随机森林。它作为 Day 7 的综合代码材料；实验说明、结果和证据边界保存在 [实验目录](experiments/esol/day01_baseline/README.md)，公开数据来源见 [ESOL 数据说明](data/public/esol.md)。
 
-任务卡已经写好不等于本人已经完成。`curriculum/` 描述“应该做什么”，`experiments/` 只保存“实际做过什么”。
+Day 02–35 和主动学习 Unit 01–09 的实验起始文件也已全部放入
+[`experiments/` 完整索引](experiments/INDEX.md)。这些工作区含完整代码，
+但保存输出已清空并统一标记为“待本人运行”。因此任务卡和工作区已经写好
+都不等于本人已经完成；只有亲自运行、检查、解释并保存的结果才是学习证据。
 
 ## 环境与复现
 
@@ -73,7 +76,8 @@ python -m nbconvert \
 
 首次运行可能需要联网下载 ESOL；缓存写入 `.cache/deepchem/`，不进入 Git。
 
-开始 Day 2–35 中的某一天时，先建立不覆盖教材的个人副本：
+Day 02–35 的个人起始副本已经预建。若某个目录被误删，可用下列命令
+安全补建，已有个人文件不会被覆盖：
 
 ```bash
 python scripts/start_day.py 2
@@ -81,13 +85,23 @@ python scripts/start_day.py 2
 
 脚本会把该日 `tutorial.ipynb` 复制到 `experiments/dayXX_topic/`，同时建立个人 `notes.md` 和 `results/` 说明。
 
-完成 Day 26 的桥接内容并达到专题先修要求后，主动学习课程按 Unit 开始：
+主动学习 Unit 01–09 的副本也已经预建；下列命令用于单独补建：
 
 ```bash
 python scripts/start_unit.py 1
 ```
 
 个人 Unit 实验会放入 `experiments/active_learning/unitXX_topic/`，课程源文件保持不变。
+
+真正开始和完成一个工作区时，用状态命令留下诚实边界：
+
+```bash
+python scripts/set_workspace_status.py day02 in_progress
+python scripts/set_workspace_status.py day02 completed
+```
+
+完成命令会检查 Notebook 是否全部执行且学习笔记是否已经填写，但不会替你
+勾选 `curriculum/PROGRESS.md`。
 
 Day 29–35 使用单独的 GNN 环境，避免改变已经验证的核心环境。以下版本已在本仓库的全部 GNN 教学 Notebook 上验证：
 
@@ -116,7 +130,12 @@ python scripts/run_active_learning_notebooks.py \
   --last-unit 9
 ```
 
-第一条验证目录结构、35 个 Day、9 个主动学习 Unit、Markdown 链接、Python 代码块、43 份教学 Notebook、ESOL 结果文件和 Excel 包结构；其余命令从头执行核心、GNN 与主动学习教程，但默认只在内存中检查，不修改教材。只有课程维护者确实要刷新预存输出时才显式添加 `--in-place`。GitHub Actions 会运行结构检查，但不会自动标记任何 Day 或 Unit 完成。
+第一条验证目录结构、35 个 Day、9 个主动学习 Unit、Markdown 链接、
+Python 代码块、43 份教学 Notebook、43 个完整实验起始工作区、ESOL
+结果文件和 Excel 包结构；其余命令从头执行核心、GNN 与主动学习教程，
+但默认只在内存中检查，不修改教材。只有课程维护者确实要刷新预存输出时
+才显式添加 `--in-place`。GitHub Actions 会运行结构检查，但不会自动
+标记任何 Day 或 Unit 完成。
 
 ## 分支规则
 

@@ -1,8 +1,10 @@
-"""Create a learner-owned workspace for one active-learning Unit.
+"""Create a learner-owned starter workspace for one active-learning Unit.
 
 The curriculum notebook remains an instructor-supplied artifact. This script
 copies it to ``experiments/active_learning`` with outputs cleared and never
-overwrites existing learner files.
+overwrites existing learner files. A new copy is explicitly marked
+``not_started`` and is not learner evidence until it has been run, checked,
+and explained.
 """
 
 from __future__ import annotations
@@ -54,9 +56,13 @@ def render_experiment_readme(title: str, unit_directory: Path) -> str:
     """Return the learner-facing workspace README."""
 
     curriculum_path = unit_directory.relative_to(REPO_ROOT)
-    return f"""# {title}：个人实验
+    return f"""# {title}：实验工作区
 
-本目录由 `scripts/start_unit.py` 建立，保存本人实际运行、修改和解释过的内容。
+> 状态：**待本人运行**
+
+本目录预先提供完整起始代码，方便按学习目录直接开始。Notebook 的教学
+预存输出已经清空；目录存在只表示“代码已准备”，不表示实验已经完成，
+也不表示其中结果已经由本人复现。
 
 ## 课程来源
 
@@ -72,7 +78,8 @@ def render_experiment_readme(title: str, unit_directory: Path) -> str:
 5. 写清结果能说明什么、不能说明什么；
 6. 完成自测后只更新全仓库唯一清单 `curriculum/PROGRESS.md`。
 
-教学人工数据不是粘合剂实验结果，离线 Oracle 也不代表真实实验已经完成。
+完成前不要改写上面的状态。教学人工数据不是粘合剂实验结果，离线
+Oracle 也不代表真实实验已经完成。
 """
 
 
@@ -80,6 +87,8 @@ def render_notes(title: str) -> str:
     """Return a structured but empty learning record."""
 
     return f"""# {title}：学习记录
+
+> 状态：待本人填写
 
 ## 今天完成了什么
 
@@ -153,7 +162,8 @@ def copy_clean_notebook(
     metadata = notebook.setdefault("metadata", {})
     metadata.pop("course_artifact", None)
     metadata["artifact_role"] = "learner_workspace"
-    metadata["learner_evidence"] = True
+    metadata["learner_evidence"] = False
+    metadata["workspace_status"] = "not_started"
     metadata["source_tutorial"] = source.relative_to(REPO_ROOT).as_posix()
     for cell in notebook.get("cells", []):
         if cell.get("cell_type") != "code":

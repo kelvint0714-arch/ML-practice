@@ -1,10 +1,11 @@
-"""Create a learner-owned experiment workspace for one curriculum day.
+"""Create a learner-owned starter workspace for one curriculum day.
 
 The curriculum keeps instructor-provided tutorial notebooks under
 ``curriculum/core`` and ``curriculum/optional_gnn``. This script copies
 exactly one tutorial into ``experiments`` so that running or editing it does
-not alter the source lesson or pretend that every future day has already
-been completed.
+not alter the source lesson. A newly copied notebook is explicitly marked
+``not_started`` and is not learner evidence until the learner runs, checks,
+and explains it.
 """
 
 from __future__ import annotations
@@ -62,9 +63,13 @@ def render_experiment_readme(title: str, day_directory: Path) -> str:
     """Return a learner-facing experiment README."""
 
     curriculum_path = day_directory.relative_to(REPO_ROOT)
-    return f"""# {title}：个人实验
+    return f"""# {title}：实验工作区
 
-本目录由 `scripts/start_day.py` 建立，保存本人实际运行和解释过的内容。
+> 状态：**待本人运行**
+
+本目录预先提供完整起始代码，方便按学习目录直接开始。Notebook 的教学
+预存输出已经清空；目录存在只表示“代码已准备”，不表示实验已经完成，
+也不表示其中结果已经由本人复现。
 
 ## 课程来源
 
@@ -80,7 +85,8 @@ def render_experiment_readme(title: str, day_directory: Path) -> str:
 5. 写清结果能说明什么、不能说明什么；
 6. 完成自测后再更新 `curriculum/PROGRESS.md`。
 
-教学示例不是粘合剂实验结果，也不能替代本人运行记录。
+完成前不要改写上面的状态。教学示例不是粘合剂实验结果，也不能替代
+本人运行记录。
 """
 
 
@@ -88,6 +94,8 @@ def render_notes(title: str) -> str:
     """Return an empty but structured learning record."""
 
     return f"""# {title}：学习记录
+
+> 状态：待本人填写
 
 ## 今天完成了什么
 
@@ -152,7 +160,8 @@ def copy_clean_notebook(source: Path, destination: Path, dry_run: bool) -> None:
     notebook_metadata = notebook.setdefault("metadata", {})
     notebook_metadata.pop("course_artifact", None)
     notebook_metadata["artifact_role"] = "learner_workspace"
-    notebook_metadata["learner_evidence"] = True
+    notebook_metadata["learner_evidence"] = False
+    notebook_metadata["workspace_status"] = "not_started"
     notebook_metadata["source_tutorial"] = source.relative_to(REPO_ROOT).as_posix()
     for cell in notebook.get("cells", []):
         if cell.get("cell_type") != "code":

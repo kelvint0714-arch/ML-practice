@@ -40,19 +40,23 @@ curriculum/active_learning/unitXX_topic/
 | 位置 | 含义 | 能否当作你的实验成果 |
 |---|---|---|
 | `curriculum/` | 仓库提前提供的教材、示例与参考输出 | 不能 |
-| `experiments/` | 你实际运行、修改并解释过的代码和结果 | 可以 |
+| `experiments/` 中标为“待本人运行”的工作区 | 完整起始代码，输出已清空 | 不能 |
+| `experiments/` 中本人运行、修改并解释过的内容 | 个人 Notebook、笔记与结果 | 通过自测后可以 |
 
 教学 Notebook 中出现的数字只说明示例代码运行正常。你只有在自己从空内核运行、核对输出并写出解释后，才能把个人实验标为完成。
 
 ## 开始某一天
 
-在仓库根目录运行：
+Day 02–35 的个人起始工作区已经全部预建，可从
+[`experiments/INDEX.md`](../../experiments/INDEX.md) 直接进入。若某一个
+目录被误删，可在仓库根目录安全补建：
 
 ```bash
 python scripts/start_day.py 2
 ```
 
-脚本会把 Day 2 的教学 Notebook 复制到对应的个人实验目录，清除教师预存的执行编号与输出，并建立：
+脚本会把 Day 2 的教学 Notebook 复制到对应的个人实验目录，清除教师
+预存的执行编号与输出，并建立：
 
 ```text
 experiments/day02_metrics/
@@ -70,12 +74,15 @@ python scripts/start_day.py 2 --dry-run
 ```
 
 个人副本会记录原始教学 Notebook 的相对路径，并标记为
-`artifact_role=learner_workspace`。这个标记表示该文件应由学习者亲自运行；
+`artifact_role=learner_workspace`、`workspace_status=not_started` 和
+`learner_evidence=false`。这些标记表示该文件应由学习者亲自运行；
 刚复制完成、尚未运行的空输出本身仍不能算实验完成证据。
 
 ## 开始主动学习 Unit
 
-完成 Day 26 桥接内容并满足 [专题开始条件](../active_learning/README.md#开始条件) 后运行：
+Unit 01–09 的个人起始工作区也已经预建。完成 Day 26 桥接内容并满足
+[专题开始条件](../active_learning/README.md#开始条件) 后直接打开对应目录；
+下列命令用于单独补建缺失目录：
 
 ```bash
 python scripts/start_unit.py 1
@@ -107,6 +114,33 @@ python scripts/run_active_learning_notebooks.py \
 ```
 
 默认只在内存中执行，不改变课程源文件。个人实际结果仍应保存在 `experiments/active_learning/`。
+
+## 更新个人工作区状态
+
+开始运行某个副本前，可把状态改成“进行中”：
+
+```bash
+python scripts/set_workspace_status.py day02 in_progress
+```
+
+运行所有代码单元、确认没有 error output，并在 `notes.md` 写出自己的解释
+以后，才允许标为完成：
+
+```bash
+python scripts/set_workspace_status.py day02 completed
+```
+
+主动学习使用 `unit01` 这样的编号。状态脚本只更新个人实验副本，不会替你
+勾选 `curriculum/PROGRESS.md`；完成任务卡自测以后仍需本人更新唯一进度表。
+
+一次性检查并补建全部起始工作区可运行：
+
+```bash
+python scripts/bootstrap_experiment_workspaces.py
+```
+
+该命令只刷新仍处于 `not_started` 且没有运行输出的生成说明，不覆盖已执行
+Notebook 或本人笔记。
 
 Day 13 和 Day 14 会根据 Notebook 的当前目录自动选择安全路径：
 
@@ -173,6 +207,6 @@ Day 34 首次运行需要联网下载 MUTAG，缓存写入 `.cache/pyg/`；Day 3
 
 - 不要直接把参考答案复制到个人笔记；
 - 不要把教学 Notebook 的预存输出称为自己的实验；
-- 不要提前创建 34 份“已完成”结果；
+- 不要把 34 个预建工作区写成“已完成”结果；
 - 不要为了赶进度跳过验证集、数据泄漏和测试集边界；
 - 不要把 ESOL 或人工数据的教学结果写成粘合剂性能结论。
