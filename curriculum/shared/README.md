@@ -4,7 +4,11 @@
 
 | 文件 | 什么时候查 |
 |---|---|
-| [完整 Day 学习包使用方法](day_package_guide.md) | 不清楚教材、教学 Notebook 与个人实验目录有什么区别，或准备开始 Day 2–35 时 |
+| [完整 Day/Unit 学习包使用方法](day_package_guide.md) | 不清楚教材、教学 Notebook 与个人实验目录有什么区别，或准备开始 Day/Unit 时 |
+| [主动学习术语表](../active_learning/shared/glossary.md) | 学习 labeled set、pool、Oracle、采集函数和 regret 时 |
+| [主动学习实验协议](../active_learning/shared/experiment_protocol.md) | 比较 Random、UCB、EI 或不同代理模型时 |
+| [主动学习泄漏检查表](../active_learning/shared/leakage_checklist.md) | 写 query 代码或审核候选标签权限时 |
+| [主动学习 Python 语法速查](../active_learning/shared/python_patterns.md) | Unit 4–9 遇到函数参数、回调、列表推导、`groupby/agg`、`.loc` 或 `zip` 时 |
 | [Python 语法字典](../core/day01_beginner/python_basics.md) | 在当天最小代码中遇到不认识的变量、函数、循环、字典、路径或异常时 |
 | [机器学习词典](ml_glossary.md) | 忘记 `X/y`、特征、标签、Epoch、OOF 等术语时 |
 | [统一实验协议](experiment_protocol.md) | 不确定能否调参、使用测试集或比较模型时 |

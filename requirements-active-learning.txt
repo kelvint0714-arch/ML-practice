@@ -1,0 +1,3 @@
+# Active-learning Units 1–9 use the verified core learning environment.
+# No BoTorch, GPyTorch, JAX, or GNN dependency is required for the main route.
+-r requirements-learning.txt

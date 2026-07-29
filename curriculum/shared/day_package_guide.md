@@ -1,4 +1,4 @@
-# 完整 Day 学习包怎样使用
+# 完整 Day/Unit 学习包怎样使用
 
 Day 2–35 的每个学习单元都使用同一种结构。Day 2–28 位于核心路线，Day 29–35 位于受启动门槛约束的可选 GNN 路线。文件提前准备好，是为了让你可以连续学习；它们不代表你本人已经完成实验。
 
@@ -10,6 +10,18 @@ curriculum/{core 或 optional_gnn}/dayXX_topic/
 ├── tutorial.ipynb               # 可从头运行的教学 Notebook
 ├── 03_exercises.md              # 不看答案完成的练习
 └── 04_reference_answers.md      # 做完以后才核对
+```
+
+主动学习专题使用相同学习顺序，但目录按 Unit 编号：
+
+```text
+curriculum/active_learning/unitXX_topic/
+├── README.md
+├── 01_concepts.md
+├── 02_algorithm_walkthrough.md
+├── tutorial.ipynb
+├── 03_exercises.md
+└── 04_reference_answers.md
 ```
 
 ## 推荐顺序
@@ -60,6 +72,41 @@ python scripts/start_day.py 2 --dry-run
 个人副本会记录原始教学 Notebook 的相对路径，并标记为
 `artifact_role=learner_workspace`。这个标记表示该文件应由学习者亲自运行；
 刚复制完成、尚未运行的空输出本身仍不能算实验完成证据。
+
+## 开始主动学习 Unit
+
+完成 Day 26 桥接内容并满足 [专题开始条件](../active_learning/README.md#开始条件) 后运行：
+
+```bash
+python scripts/start_unit.py 1
+```
+
+脚本会清除课程预存输出，并建立：
+
+```text
+experiments/active_learning/unit01_foundations/
+├── README.md
+├── unit01_foundations.ipynb
+├── notes.md
+└── results/
+    └── README.md
+```
+
+查看而不创建：
+
+```bash
+python scripts/start_unit.py 1 --dry-run
+```
+
+Unit 1–9 主路线使用 `requirements-active-learning.txt`，复用 `esol` 环境。维护者可从头检查全部专题 Notebook：
+
+```bash
+python scripts/run_active_learning_notebooks.py \
+  --first-unit 1 \
+  --last-unit 9
+```
+
+默认只在内存中执行，不改变课程源文件。个人实际结果仍应保存在 `experiments/active_learning/`。
 
 Day 13 和 Day 14 会根据 Notebook 的当前目录自动选择安全路径：
 
