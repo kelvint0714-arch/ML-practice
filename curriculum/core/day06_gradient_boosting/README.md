@@ -24,7 +24,7 @@
 4. [独立练习](03_exercises.md)
 5. [折叠参考答案](04_reference_answers.md)
 
-课程 Tutorial 提供可复查示例输出，但不代表学习者已运行。个人 `staged_metrics.csv`、Notebook 和解释只在实际学习时保存到 `experiments/day06_gradient_boosting/`。
+课程 Tutorial 提供可复查示例输出，但不代表学习者已运行。个人 `staged_metrics.csv`、Notebook 和解释只在实际学习时保存到 `learning_outputs/day06_gradient_boosting/`。
 
 ## 今日产出
 
@@ -177,7 +177,7 @@ print("valid R²:", valid_r2)
 - 使用最终测试集选择学习率；
 - 把 sklearn 的梯度提升直接说成 XGBoost；
 - 只看训练误差；
-- 把人工数据结果当成 ESOL 或粘合剂结论。
+- 把人工数据结果当成 ESOL 或下游任务结论。
 
 ## 完成标准
 

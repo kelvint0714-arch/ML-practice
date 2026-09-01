@@ -1,6 +1,6 @@
 # Day 7.2：把 10 个代码单元映射回算法主线
 
-本页不新增模型参数。先用 [tutorial.ipynb](tutorial.ipynb) 审计文件结构，再从空内核运行 [真实 ESOL 基线](../../../experiments/esol/day01_baseline/esol_baseline.ipynb)。
+本页不新增模型参数。先用 [tutorial.ipynb](tutorial.ipynb) 审计文件结构，再从空内核运行 [真实 ESOL 基线](../../../curriculum/core/day07_integrated_baseline/reference_baseline/esol_baseline.ipynb)。
 
 ## 1. 运行前环境检查
 
@@ -68,7 +68,7 @@ python -m jupyter nbconvert \
   --ExecutePreprocessor.kernel_name=python3 \
   --ExecutePreprocessor.timeout=600 \
   --inplace \
-  experiments/esol/day01_baseline/esol_baseline.ipynb
+  curriculum/core/day07_integrated_baseline/reference_baseline/esol_baseline.ipynb
 ```
 
 执行期间不修改参数、不插入 test 预测。
@@ -108,13 +108,13 @@ python -m jupyter nbconvert \
 机读指标：
 
 ```text
-experiments/esol/day01_baseline/results/baseline_metrics.csv
+curriculum/core/day07_integrated_baseline/reference_baseline/results/baseline_metrics.csv
 ```
 
 运行配置：
 
 ```text
-experiments/esol/day01_baseline/results/run_config.json
+curriculum/core/day07_integrated_baseline/reference_baseline/results/run_config.json
 ```
 
 核对：
@@ -145,17 +145,17 @@ train/valid RMSE
 不能推出：
 ```
 
-“诊断”可以是明显过拟合信号；“不能推出”至少包括真实粘合剂表现。
+“诊断”可以是明显过拟合信号；“不能推出”至少包括真实下游任务表现。
 
 ## 9. 为什么不新建另一个 Day 7 实验目录
 
 Day 7 使用已有的历史参考实验：
 
 ```text
-experiments/esol/day01_baseline/
+curriculum/core/day07_integrated_baseline/reference_baseline/
 ```
 
-目录名中的 `day01` 是早期实验编号。不要复制一份相同结果到 `experiments/day07...`，否则同一证据会被误认为两次独立实验。
+目录名中的 `day01` 是早期实验编号。不要复制一份相同结果到 `learning_outputs/day07...`，否则同一证据会被误认为两次独立实验。
 
 你的学习证据可以追加到个人学习记录，但不能把预存输出标记成自己重跑的日期。只有实际 Run All 成功后，才记录本次重跑状态。
 
@@ -163,6 +163,6 @@ experiments/esol/day01_baseline/
 
 1. **算法主线：**指出 X/y、模型、fit、predict、metric 的位置；
 2. **本次观察：**引用实际重跑生成的 train/valid 指标；
-3. **证据边界：**一次 validation、原 test 已暴露、不是粘合剂结果。
+3. **证据边界：**一次 validation、原 test 已暴露、不是下游任务结果。
 
 下一步：[Day 7 练习与验收](03_exercises.md)。

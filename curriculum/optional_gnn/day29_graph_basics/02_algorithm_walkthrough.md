@@ -229,7 +229,7 @@ def build_undirected_adjacency(number_of_nodes, edges):
 开始 Day 29 时再创建个人目录：
 
 ```text
-experiments/day29_graph_basics/
+learning_outputs/day29_graph_basics/
 ├── README.md
 ├── day29_graph_basics.ipynb
 ├── notes.md
@@ -237,4 +237,4 @@ experiments/day29_graph_basics/
     └── 可选的个人检查结果
 ```
 
-课程教程留在 `curriculum/`；你的尝试与解释留在 `experiments/`。完成推演后再做：[Day 29 练习](03_exercises.md)。
+课程教程留在 `curriculum/`；你的尝试与解释留在 `learning_outputs/`。完成推演后再做：[Day 29 练习](03_exercises.md)。

@@ -1,23 +1,17 @@
-"""Validate the repository without running machine-learning training.
+"""Validate the ML-Learning curriculum without running model training.
 
-The checker covers repository layout, Day/Unit curriculum continuity,
-Markdown links, Python code fences, saved Notebook state, ESOL result
-artifacts, and the tracked adhesive workbook package. It never marks a
-learning Day or Unit complete.
+The checker covers repository layout, Day/Unit continuity, Markdown links,
+Python code fences, saved Notebook state, tutorial outputs, and the retained
+ESOL teaching baseline. It never edits learner progress.
 """
 
 from __future__ import annotations
 
-import contextlib
 import csv
-import io
 import json
 import math
 import re
-import runpy
 import sys
-import tempfile
-import zipfile
 from pathlib import Path
 from urllib.parse import unquote
 
@@ -27,7 +21,6 @@ CURRICULUM_ROOT = REPO_ROOT / "curriculum"
 CORE_ROOT = CURRICULUM_ROOT / "core"
 OPTIONAL_GNN_ROOT = CURRICULUM_ROOT / "optional_gnn"
 ACTIVE_LEARNING_ROOT = CURRICULUM_ROOT / "active_learning"
-EXPERIMENTS_ROOT = REPO_ROOT / "experiments"
 DAY_PATTERN = re.compile(r"day(\d{2})_[^/]+$")
 UNIT_PATTERN = re.compile(r"unit(\d{2})_[^/]+$")
 LINK_PATTERN = re.compile(r"!?\[[^\]]*\]\(([^)]+)\)")
@@ -49,7 +42,7 @@ REQUIRED_TOP_LEVEL = (
     "curriculum",
     "data",
     "docs",
-    "experiments",
+    "learning_outputs",
     "scripts",
     "tests",
 )
@@ -64,7 +57,7 @@ REQUIRED_PUBLIC_GUIDES = {
     "curriculum/LEARNING_PATHS.md": (
         "## 先做 30 秒选择",
         "## 每个学习单元怎样算完成",
-        "## 路线 D：材料主动学习",
+        "## 路线 D：主动学习",
     ),
     "docs/getting_started.md": (
         "## 第二步：建立核心课程环境",
@@ -92,22 +85,10 @@ REQUIRED_PHRASES = (
     "## 自测问题",
 )
 
-ESOL_ROOT = REPO_ROOT / "experiments" / "esol" / "day01_baseline"
+ESOL_ROOT = CORE_ROOT / "day07_integrated_baseline" / "reference_baseline"
 ESOL_NOTEBOOK = ESOL_ROOT / "esol_baseline.ipynb"
 ESOL_METRICS = ESOL_ROOT / "results" / "baseline_metrics.csv"
 ESOL_CONFIG = ESOL_ROOT / "results" / "run_config.json"
-ADHESIVE_WORKBOOK = (
-    REPO_ROOT
-    / "data"
-    / "adhesive"
-    / "templates"
-    / "粘合剂重要化学性质_数据格式_v0.3.xlsx"
-)
-EXPECTED_WORKSHEETS = (
-    "01_核心化学性质",
-    "02_字段说明",
-    "03_公开依据",
-)
 EXPECTED_CORE_DAY_DIRS = (
     "day01_beginner",
     "day02_metrics",
@@ -175,7 +156,7 @@ TUTORIAL_OUTPUT_PROVENANCE_MARKERS = (
     "artifact_kind: deterministic_synthetic_tutorial",
     "learner_evidence: false",
     "不是 ESOL",
-    "真实粘合剂研究成果",
+    "下游任务",
 )
 EXPECTED_TUTORIAL_MODELS = {
     "dummy",
@@ -723,18 +704,17 @@ def check_curriculum_routes(
             f"{[path.name for path in gnn_days]}."
         )
 
-    route_files = (
-        CURRICULUM_ROOT / "PROGRESS.md",
-        CORE_ROOT / "README.md",
-    )
-    expected_readmes = {
-        path / "README.md" for path in expected_core_paths + expected_gnn_paths
+    route_expectations = {
+        CURRICULUM_ROOT / "PROGRESS.md": expected_core_paths + expected_gnn_paths,
+        CORE_ROOT / "README.md": expected_core_paths,
+        OPTIONAL_GNN_ROOT / "README.md": expected_gnn_paths,
     }
-    for route_file in route_files:
+    for route_file, expected_paths in route_expectations.items():
         if not route_file.is_file():
             errors.append(f"Missing curriculum route file: {relative(route_file)}.")
             continue
         targets = local_link_targets(route_file)
+        expected_readmes = {path / "README.md" for path in expected_paths}
         missing = expected_readmes - targets
         if missing:
             errors.append(
@@ -898,7 +878,7 @@ def check_learning_artifact_contract(errors: list[str]) -> None:
     day13 = day13_path.read_text(encoding="utf-8")
     day14 = day14_path.read_text(encoding="utf-8")
     shared_markers = (
-        "experiments/day13_fair_comparison/results",
+        "learning_outputs/day13_fair_comparison/results",
         "fold_metrics.csv",
         '"model"',
         '"fold"',
@@ -1077,7 +1057,7 @@ def check_learning_artifact_contract(errors: list[str]) -> None:
         report_markers = (
             "人工教程",
             "不代表 ESOL",
-            "真实粘合剂",
+            "下游任务",
             expected_source,
             "计时：只保留在 Day 13 运行时内存变量中，不进入预存展示或 CSV fixture",
         )
@@ -1165,359 +1145,6 @@ def check_summary_rows(
                 column,
                 row.get(column),
                 errors,
-            )
-
-
-def check_experiment_workspace_coverage(
-    day_dirs: list[Path],
-    unit_dirs: list[Path],
-    errors: list[str],
-) -> int:
-    """Validate the complete Day 02–35 and Unit 01–09 starter coverage.
-
-    A pristine workspace must be an exact, output-cleared copy of its source
-    tutorial and must not claim learner evidence. Later learner-owned states
-    may contain outputs or edited cells, but their status/evidence pair still
-    has to be honest.
-    """
-
-    index_path = EXPERIMENTS_ROOT / "INDEX.md"
-    if not index_path.is_file():
-        errors.append("experiments/INDEX.md: complete workspace index is missing.")
-    else:
-        index_text = index_path.read_text(encoding="utf-8")
-        indexed_starters = index_text.count("| 待本人运行 |")
-        if indexed_starters != 43:
-            errors.append(
-                "experiments/INDEX.md: expected 43 '待本人运行' starter rows; "
-                f"found {indexed_starters}."
-            )
-
-    entries: list[tuple[Path, Path]] = []
-    for day_directory in day_dirs:
-        match = DAY_PATTERN.fullmatch(day_directory.name)
-        if match is None or int(match.group(1)) == 1:
-            continue
-        entries.append(
-            (
-                day_directory,
-                EXPERIMENTS_ROOT / day_directory.name,
-            )
-        )
-    for unit_directory in unit_dirs:
-        entries.append(
-            (
-                unit_directory,
-                EXPERIMENTS_ROOT / "active_learning" / unit_directory.name,
-            )
-        )
-
-    required_workspace_files = ("README.md", "notes.md", "results/README.md")
-    allowed_statuses = {"not_started", "in_progress", "completed"}
-
-    for source_directory, workspace in entries:
-        for required in required_workspace_files:
-            path = workspace / required
-            if not path.is_file():
-                errors.append(
-                    f"{relative(workspace)}: missing experiment workspace "
-                    f"file {required}."
-                )
-
-        notebook_path = workspace / f"{source_directory.name}.ipynb"
-        source_path = source_directory / "tutorial.ipynb"
-        if not notebook_path.is_file():
-            errors.append(
-                f"{relative(workspace)}: missing complete starter Notebook "
-                f"{notebook_path.name}."
-            )
-            continue
-
-        try:
-            notebook = json.loads(notebook_path.read_text(encoding="utf-8"))
-            source_notebook = json.loads(source_path.read_text(encoding="utf-8"))
-        except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
-            errors.append(
-                f"{relative(notebook_path)}: cannot validate experiment "
-                f"Notebook: {exc}."
-            )
-            continue
-
-        metadata = notebook.get("metadata", {})
-        if metadata.get("artifact_role") != "learner_workspace":
-            errors.append(
-                f"{relative(notebook_path)}: artifact_role must be "
-                "'learner_workspace'."
-            )
-        if "course_artifact" in metadata:
-            errors.append(
-                f"{relative(notebook_path)}: learner workspace must remove "
-                "course_artifact metadata."
-            )
-        expected_source = relative(source_path)
-        if metadata.get("source_tutorial") != expected_source:
-            errors.append(
-                f"{relative(notebook_path)}: source_tutorial must be "
-                f"{expected_source!r}; found "
-                f"{metadata.get('source_tutorial')!r}."
-            )
-
-        status = metadata.get("workspace_status")
-        evidence = metadata.get("learner_evidence")
-        if status not in allowed_statuses:
-            errors.append(
-                f"{relative(notebook_path)}: workspace_status must be one of "
-                f"{sorted(allowed_statuses)}; found {status!r}."
-            )
-        if status == "completed" and evidence is not True:
-            errors.append(
-                f"{relative(notebook_path)}: a completed workspace must set "
-                "learner_evidence=true."
-            )
-        if status in {"not_started", "in_progress"} and evidence is not False:
-            errors.append(
-                f"{relative(notebook_path)}: {status} workspace must set "
-                "learner_evidence=false."
-            )
-
-        if status != "not_started":
-            continue
-
-        readme = workspace / "README.md"
-        if readme.is_file():
-            readme_text = readme.read_text(encoding="utf-8")
-            if "状态：**待本人运行**" not in readme_text:
-                errors.append(
-                    f"{relative(readme)}: pristine workspace must state "
-                    "'待本人运行'."
-                )
-        notes = workspace / "notes.md"
-        if notes.is_file():
-            notes_text = notes.read_text(encoding="utf-8")
-            if "状态：待本人填写" not in notes_text:
-                errors.append(
-                    f"{relative(notes)}: pristine notes must state "
-                    "'待本人填写'."
-                )
-
-        code_cells = [
-            cell
-            for cell in notebook.get("cells", [])
-            if cell.get("cell_type") == "code"
-        ]
-        for cell_index, cell in enumerate(code_cells, start=1):
-            if cell.get("execution_count") is not None:
-                errors.append(
-                    f"{relative(notebook_path)}: not_started code cell "
-                    f"{cell_index} has an execution count."
-                )
-            if cell.get("outputs") != []:
-                errors.append(
-                    f"{relative(notebook_path)}: not_started code cell "
-                    f"{cell_index} has saved outputs."
-                )
-            if "execution" in cell.get("metadata", {}):
-                errors.append(
-                    f"{relative(notebook_path)}: not_started code cell "
-                    f"{cell_index} retains execution timing metadata."
-                )
-
-        source_cells = source_notebook.get("cells", [])
-        workspace_cells = notebook.get("cells", [])
-        source_signature = [
-            (cell.get("cell_type"), cell.get("source"))
-            for cell in source_cells
-        ]
-        workspace_signature = [
-            (cell.get("cell_type"), cell.get("source"))
-            for cell in workspace_cells
-        ]
-        if workspace_signature != source_signature:
-            errors.append(
-                f"{relative(notebook_path)}: not_started workspace is not a "
-                "complete source-code copy of its tutorial."
-            )
-
-    expected_count = 34 + 9
-    if len(entries) != expected_count:
-        errors.append(
-            "Experiment workspace coverage expected 34 Day workspaces and "
-            f"9 Unit workspaces; collected {len(entries)} source entries."
-        )
-    return len(entries)
-
-
-def check_start_day_contract(errors: list[str]) -> None:
-    """Exercise core and GNN learner-copy transformations in isolation."""
-
-    script = REPO_ROOT / "scripts" / "start_day.py"
-    sources = (
-        CORE_ROOT / "day02_metrics" / "tutorial.ipynb",
-        OPTIONAL_GNN_ROOT / "day29_graph_basics" / "tutorial.ipynb",
-    )
-    missing = [source for source in sources if not source.is_file()]
-    if not script.is_file() or missing:
-        errors.append(
-            "Cannot check start_day.py contract: script or tutorials missing "
-            f"{[relative(path) for path in missing]}."
-        )
-        return
-
-    try:
-        namespace = runpy.run_path(str(script))
-        copy_clean_notebook = namespace["copy_clean_notebook"]
-    except (KeyError, OSError) as exc:
-        errors.append(f"scripts/start_day.py learner-copy contract failed: {exc}")
-        return
-
-    for source in sources:
-        try:
-            source_before = source.read_bytes()
-            with tempfile.TemporaryDirectory() as temporary_directory:
-                destination = Path(temporary_directory) / "learner.ipynb"
-                with contextlib.redirect_stdout(io.StringIO()):
-                    copy_clean_notebook(source, destination, dry_run=False)
-                notebook = json.loads(destination.read_text(encoding="utf-8"))
-            if source.read_bytes() != source_before:
-                errors.append(
-                    "scripts/start_day.py modified the source tutorial during "
-                    f"copy: {relative(source)}."
-                )
-        except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
-            errors.append(
-                "scripts/start_day.py learner-copy contract failed for "
-                f"{relative(source)}: {exc}"
-            )
-            continue
-
-        metadata = notebook.get("metadata", {})
-        expected_source = relative(source)
-        expected_metadata = {
-            "artifact_role": "learner_workspace",
-            "learner_evidence": False,
-            "workspace_status": "not_started",
-            "source_tutorial": expected_source,
-        }
-        for key, expected in expected_metadata.items():
-            if metadata.get(key) != expected:
-                errors.append(
-                    f"scripts/start_day.py learner copy must set {key}={expected!r} "
-                    f"for {relative(source)}; found {metadata.get(key)!r}."
-                )
-        if "course_artifact" in metadata:
-            errors.append(
-                "scripts/start_day.py learner copy must remove source "
-                f"course_artifact metadata for {relative(source)}."
-            )
-
-        code_cells = [
-            cell
-            for cell in notebook.get("cells", [])
-            if cell.get("cell_type") == "code"
-        ]
-        for cell_index, cell in enumerate(code_cells, start=1):
-            if cell.get("execution_count") is not None:
-                errors.append(
-                    "scripts/start_day.py learner copy code cell "
-                    f"{cell_index} retains an execution count for "
-                    f"{relative(source)}."
-                )
-            if cell.get("outputs") != []:
-                errors.append(
-                    "scripts/start_day.py learner copy code cell "
-                    f"{cell_index} retains saved outputs for {relative(source)}."
-                )
-            if "execution" in cell.get("metadata", {}):
-                errors.append(
-                    "scripts/start_day.py learner copy code cell "
-                    f"{cell_index} retains execution timing metadata for "
-                    f"{relative(source)}."
-                )
-
-
-def check_start_unit_contract(errors: list[str]) -> None:
-    """Exercise the active-learning learner-copy transformation."""
-
-    script = REPO_ROOT / "scripts" / "start_unit.py"
-    source = (
-        ACTIVE_LEARNING_ROOT
-        / "unit01_foundations"
-        / "tutorial.ipynb"
-    )
-    if not script.is_file() or not source.is_file():
-        errors.append(
-            "Cannot check start_unit.py contract: script or Unit 01 tutorial "
-            "is missing."
-        )
-        return
-
-    try:
-        namespace = runpy.run_path(str(script))
-        copy_clean_notebook = namespace["copy_clean_notebook"]
-    except (KeyError, OSError) as exc:
-        errors.append(
-            f"scripts/start_unit.py learner-copy contract failed: {exc}"
-        )
-        return
-
-    try:
-        source_before = source.read_bytes()
-        with tempfile.TemporaryDirectory() as temporary_directory:
-            destination = Path(temporary_directory) / "learner.ipynb"
-            with contextlib.redirect_stdout(io.StringIO()):
-                copy_clean_notebook(source, destination, dry_run=False)
-            notebook = json.loads(destination.read_text(encoding="utf-8"))
-        if source.read_bytes() != source_before:
-            errors.append(
-                "scripts/start_unit.py modified the source tutorial during "
-                f"copy: {relative(source)}."
-            )
-    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
-        errors.append(
-            "scripts/start_unit.py learner-copy contract failed for "
-            f"{relative(source)}: {exc}"
-        )
-        return
-
-    metadata = notebook.get("metadata", {})
-    expected_metadata = {
-        "artifact_role": "learner_workspace",
-        "learner_evidence": False,
-        "workspace_status": "not_started",
-        "source_tutorial": relative(source),
-    }
-    for key, expected in expected_metadata.items():
-        if metadata.get(key) != expected:
-            errors.append(
-                f"scripts/start_unit.py learner copy must set "
-                f"{key}={expected!r}; found {metadata.get(key)!r}."
-            )
-    if "course_artifact" in metadata:
-        errors.append(
-            "scripts/start_unit.py learner copy must remove source "
-            "course_artifact metadata."
-        )
-
-    code_cells = [
-        cell
-        for cell in notebook.get("cells", [])
-        if cell.get("cell_type") == "code"
-    ]
-    for cell_index, cell in enumerate(code_cells, start=1):
-        if cell.get("execution_count") is not None:
-            errors.append(
-                "scripts/start_unit.py learner copy code cell "
-                f"{cell_index} retains an execution count."
-            )
-        if cell.get("outputs") != []:
-            errors.append(
-                "scripts/start_unit.py learner copy code cell "
-                f"{cell_index} retains saved outputs."
-            )
-        if "execution" in cell.get("metadata", {}):
-            errors.append(
-                "scripts/start_unit.py learner copy code cell "
-                f"{cell_index} retains execution timing metadata."
             )
 
 
@@ -1727,61 +1354,6 @@ def check_esol_results(errors: list[str]) -> None:
         )
 
 
-def check_adhesive_workbook(errors: list[str]) -> None:
-    """Validate the XLSX package and reject hidden author/software metadata."""
-
-    required_members = {
-        "[Content_Types].xml",
-        "_rels/.rels",
-        "xl/workbook.xml",
-        "xl/styles.xml",
-    }
-    try:
-        with zipfile.ZipFile(ADHESIVE_WORKBOOK) as workbook:
-            names = set(workbook.namelist())
-            missing = required_members - names
-            if missing:
-                errors.append(
-                    f"{relative(ADHESIVE_WORKBOOK)}: missing XLSX members "
-                    f"{sorted(missing)}."
-                )
-            corrupt_member = workbook.testzip()
-            if corrupt_member is not None:
-                errors.append(
-                    f"{relative(ADHESIVE_WORKBOOK)}: corrupt member "
-                    f"{corrupt_member}."
-                )
-
-            workbook_xml = workbook.read("xl/workbook.xml").decode(
-                "utf-8", errors="replace"
-            )
-            for sheet_name in EXPECTED_WORKSHEETS:
-                if sheet_name not in workbook_xml:
-                    errors.append(
-                        f"{relative(ADHESIVE_WORKBOOK)}: missing worksheet "
-                        f"'{sheet_name}'."
-                    )
-
-            forbidden_metadata = (
-                "lastModifiedBy",
-                "dc:creator",
-                "KSOProductBuildVer",
-                'name="ICV"',
-            )
-            for name in names:
-                if not name.startswith("docProps/") or not name.endswith(".xml"):
-                    continue
-                metadata = workbook.read(name).decode("utf-8", errors="replace")
-                for marker in forbidden_metadata:
-                    if marker in metadata:
-                        errors.append(
-                            f"{relative(ADHESIVE_WORKBOOK)}: hidden metadata "
-                            f"'{marker}' remains in {name}."
-                        )
-    except (OSError, zipfile.BadZipFile, KeyError) as exc:
-        errors.append(f"{relative(ADHESIVE_WORKBOOK)}: invalid XLSX package: {exc}")
-
-
 def main() -> int:
     errors: list[str] = []
     check_repository_layout(errors)
@@ -1806,15 +1378,7 @@ def main() -> int:
     check_json_files(errors)
     code_cell_count = check_esol_notebook(errors)
     check_esol_results(errors)
-    check_adhesive_workbook(errors)
     check_learning_artifact_contract(errors)
-    experiment_workspace_count = check_experiment_workspace_coverage(
-        day_dirs,
-        unit_dirs,
-        errors,
-    )
-    check_start_day_contract(errors)
-    check_start_unit_contract(errors)
 
     if errors:
         print("Repository validation failed:")
@@ -1828,9 +1392,8 @@ def main() -> int:
         f"{len(unit_dirs)} active-learning Units, {fence_count} Python fences, "
         f"{tutorial_count} Day notebooks with {tutorial_code_cells} code cells, "
         f"{unit_tutorial_count} Unit notebooks with {unit_code_cells} code "
-        f"cells, {experiment_workspace_count} complete experiment starter "
-        f"workspaces, {code_cell_count} ESOL reference code cells, ESOL "
-        "artifacts, and the adhesive workbook checked."
+        f"cells, {code_cell_count} ESOL reference code cells, retained ESOL "
+        "artifacts, public guides, and tutorial outputs checked."
     )
     return 0
 

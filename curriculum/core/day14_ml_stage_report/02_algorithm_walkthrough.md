@@ -8,10 +8,10 @@
 curriculum/core/day13_fair_comparison/tutorial_outputs/fold_metrics.csv
 ```
 
-它是课程教程输出，不是学习者 `experiments/` 证据。学习者正式报告应改为读取本人运行得到的：
+它是课程教程输出，不是学习者 `learning_outputs/` 证据。学习者正式报告应改为读取本人运行得到的：
 
 ```text
-experiments/day13_fair_comparison/results/fold_metrics.csv
+learning_outputs/day13_fair_comparison/results/fold_metrics.csv
 ```
 
 教程不会在源文件缺失时生成随机替代分数。
@@ -104,7 +104,7 @@ notebook 可以生成一个基于真实教程输出的 `report_preview.md`，但
 - 数据名称没有被错误替换；
 - “可能原因”明确标为假设；
 - 未完成项没有被代码自动填成完成；
-- 输出路径没有冒充 `experiments/`。
+- 输出路径没有冒充 `learning_outputs/`。
 
 ## 7. 缺失证据清单
 
@@ -115,7 +115,7 @@ notebook 可以生成一个基于真实教程输出的 `report_preview.md`，但
 - 普通随机 KFold 不代表新骨架泛化；
 - 未执行嵌套交叉验证；
 - 未评估严格未见测试集；
-- 尚未获得真实粘合剂数据。
+- 尚未获得真实下游任务数据。
 ```
 
 缺失项不是失败，而是报告可信度的一部分。
@@ -125,7 +125,7 @@ notebook 可以生成一个基于真实教程输出的 `report_preview.md`，但
 正式学习者交付应至少包含：
 
 ```text
-experiments/day14_ml_stage_report/
+learning_outputs/day14_ml_stage_report/
 ├── README.md
 ├── notes.md
 ├── report.md

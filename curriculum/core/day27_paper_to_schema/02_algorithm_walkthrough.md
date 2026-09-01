@@ -1,94 +1,49 @@
-# Day 27 文档走读：逐篇映射到 schema
+# Day 27.2：来源到数据字典的算法走读
 
-> 本流程只创建**文献字段映射示例**。任何 `example_*`、`待确认` 或空值都不得用于模型训练。
+## 输入、变换、输出
 
-## 步骤 1：建立证据表
+| 项目 | 内容 |
+|---|---|
+| 输入 | 一篇论文或数据卡中的任务描述 |
+| 变换 | 拆分任务、样本、字段、单位、可见性和许可 |
+| 输出 | 来源表、字段表、合并检查表 |
 
-每篇论文一行，至少记录：
+## 步骤 1：记录来源
 
-```text
-paper_id
-doi
-adhesive_system
-input_formulation
-input_process
-substrate_or_joint
-target_property
-test_context
-data_availability_checked
-notes
-```
+至少记录 source_id、title、task_type、sample_definition、target_definition、data_access 和 license_status。unknown 比猜测更安全。
 
-最后一列明确区分“论文提到”与“本组已取得数据”。
+## 步骤 2：建立字段表
 
-## 步骤 2：拆分输入、条件和标签
+每个字段一行，至少包含 field、role、dtype、unit、source、missing_rule 和 visible_during_query。
 
-不要把所有词放进一个“features”单元格：
+## 步骤 3：检查标签权限
 
-- 配方：组分身份、分子量、比例或用量；
-- 工艺：固化温度/时间、预处理；
-- 接头：基材、表面、胶层；
-- 标签：性能名、数值、单位、标准、温度；
-- 质量：重复、批次、误差与来源。
+如果字段由目标直接计算、在 query 后才产生、或只用于最终评价，应标记为不可用于候选选择。
 
-## 步骤 3：标记候选字段状态
+## 步骤 4：建立合并矩阵
 
-```text
-common_candidate：跨体系可保留的类别
-system_specific：只对某体系适用
-pending_chemistry：含义或可用性待确认
-exclude_for_now：当前范围不使用
-```
+~~~python
+merge_checks = {
+    "same_sample_definition": False,
+    "same_target_meaning": False,
+    "unit_compatible": False,
+    "protocol_compatible": False,
+    "license_checked": False,
+}
 
-状态来自项目范围，不来自模型喜欢什么。
+may_merge = all(merge_checks.values())
+~~~
 
-## 步骤 4：建立不可拼表记录
+只有全部关键检查为真时，may_merge 才能为真。
 
-为每对来源回答：
+## 步骤 5：输出缺失信息
 
-1. 目标物理量是否相同？
-2. 单位能否合法转换？
-3. 测试标准和环境是否可比？
-4. 行定义是否一致？
-5. 材料体系是否在共同研究范围？
-6. 数据许可是否允许使用？
-
-任一关键项未确认时，默认不合并。
-
-## 步骤 5：形成 draft schema
-
-```yaml
-schema_version: draft-v1.0
-status: example_template_not_data
-research_scope:
-  adhesive_family: 待化学组确认
-  row_definition: 待确认
-target:
-  property_name: 待确认
-  unit: 待确认
-  test_standard: 待确认
-permissions:
-  may_use_for_modeling: 待确认
-  may_upload_to_github: false
-```
-
-显著的 `status` 防止模板被误读为数据集。
-
-## 步骤 6：化学组评审
-
-优先问：
-
-- 首个材料体系和首要性能是什么？
-- 一行代表什么？
-- 哪些配方/工艺信息实际可提供？
-- 测试标准和单位是否统一？
-- 重复与批次如何追溯？
-- 哪些数据可建模、组内共享或公开？
+把所有 pending 字段集中成清单。下一步是查原文、补数据卡或缩小任务，不是编造默认值。
 
 ## 验收
 
-- 每个字段能追溯到业务需要或文献依据；
-- 专用字段没有强加给不相关体系；
-- 未声称 DOI 等于开放数据；
-- 未从不同论文抄数值拼接；
-- 本日没有调用任何模型。
+- 来源和数据行没有混淆；
+- 字段角色与可见性明确；
+- 合并结论来自检查项；
+- 未获得的信息保持 pending；
+- 本节没有模型训练。

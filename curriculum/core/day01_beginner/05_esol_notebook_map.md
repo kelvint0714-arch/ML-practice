@@ -1,6 +1,6 @@
 # Day 1.5：把算法映射到真实 ESOL Notebook
 
-现在才打开 [ESOL 参考基线 E01 Notebook](../../../experiments/esol/day01_baseline/esol_baseline.ipynb)。
+现在才打开 [ESOL 参考基线 E01 Notebook](../../../curriculum/core/day07_integrated_baseline/reference_baseline/esol_baseline.ipynb)。
 
 今天不要逐行读完整代码，也不要修改或重新运行。只在 Notebook 中找到算法主线对应的位置。
 

@@ -28,7 +28,7 @@ MAE、RMSE、R²
 4. [独立练习](03_exercises.md)
 5. [折叠参考答案](04_reference_answers.md)
 
-`tutorial.ipynb` 是预先提供并验证过的教学示例，不代表你已经完成 Day 2。真正学习时应把个人副本、笔记和实际生成的结果保存到 `experiments/day02_metrics/`，不要把课程预存输出当作自己的实验结果。
+`tutorial.ipynb` 是预先提供并验证过的教学示例，不代表你已经完成 Day 2。真正学习时应把个人副本、笔记和实际生成的结果保存到 `learning_outputs/day02_metrics/`，不要把课程预存输出当作自己的实验结果。
 
 ## 今日产出
 
@@ -158,7 +158,7 @@ assert np.isclose(manual_mae, scores["mae"])
 - 把训练指标与验证指标放在同一列却不标 split；
 - 忘记 RMSE 中的平方根；
 - 用四舍五入后的显示值继续计算；
-- 根据一个指标就断言模型已经适合真实粘合剂数据。
+- 根据一个指标就断言模型已经适合真实下游任务数据。
 
 ## 完成标准
 

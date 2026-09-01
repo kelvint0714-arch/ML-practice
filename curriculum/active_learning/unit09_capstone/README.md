@@ -19,7 +19,7 @@
 - 完成 Unit 01–08；
 - 能运行多种子、多策略实验；
 - 能借助 [Python 语法速查](../shared/python_patterns.md)解释函数参数、回调和 `groupby/agg`；
-- 理解课程教材与个人实验的区别；
+- 理解课程教材与个人练习的区别；
 - 阅读 [统一实验协议](../shared/experiment_protocol.md)。
 
 ## 今日产出
@@ -29,7 +29,7 @@
 3. 逐轮 query log；
 4. 策略指标汇总和学习曲线；
 5. 能处理策略并列的结构化中文报告；
-6. 真实化学组 Oracle 接口字段。
+6. 真实领域团队 Oracle 接口字段。
 
 ## 核心概念
 
@@ -45,7 +45,7 @@ config
 → limitations and handoff
 ```
 
-课程 Notebook 只在内存中生成这些对象。个人项目应保存到自己的 `experiments/active_learning/unit09_capstone/results/`。
+课程 Notebook 只在内存中生成这些对象。个人项目应保存到自己的 `learning_outputs/active_learning/unit09_capstone/results/`。
 
 ## 分步骤任务
 
@@ -92,7 +92,7 @@ config
 - [ ] 所有策略同初始集、预算和评价；
 - [ ] Greedy/UCB/EI 探索消融完成，并正确报告并列或无优势结果；
 - [ ] 课程结果没有被称为公开数据基线；
-- [ ] 没有声称完成真实粘合剂实验；
+- [ ] 没有声称完成真实下游任务实验；
 - [ ] 能说明下一篇要复现 P01 还是 P02 及原因。
 
 ## 自测问题

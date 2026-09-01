@@ -36,4 +36,4 @@ a_{\text{cost}}(x)=\frac{a(x)}{c(x)}
 
 ## 6. 人工审核
 
-算法推荐状态应为 `proposed`，化学组审核后才变为 `approved`。排名不是实验指令。
+算法推荐状态应为 `proposed`，领域团队审核后才变为 `approved`。排名不是实验指令。

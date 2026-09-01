@@ -14,7 +14,7 @@
 - 能解释二维数组的行、列与 `shape`；
 - 能看懂 `for` 循环和列表；
 - 已阅读 [GNN 启动条件](../README.md)；
-- 知道这个玩具图不是分子数据或粘合剂实验数据。
+- 知道这个玩具图不是分子数据或下游任务实验数据。
 
 ## 完整学习包（按顺序）
 
@@ -24,7 +24,7 @@
 4. [独立练习](03_exercises.md)
 5. [折叠参考答案](04_reference_answers.md)
 
-`tutorial.ipynb` 是课程提供的教学示例，不代表你已经完成 Day 29。真正学习时，应把个人副本和自己的解释保存到 `experiments/day29_graph_basics/`。
+`tutorial.ipynb` 是课程提供的教学示例，不代表你已经完成 Day 29。真正学习时，应把个人副本和自己的解释保存到 `learning_outputs/day29_graph_basics/`。
 
 ## 今天的目标
 
@@ -39,7 +39,7 @@
 
 ## 今日产出
 
-以下内容应由你在个人实验目录中完成：
+以下内容应由你在个人练习目录中完成：
 
 1. 一张手画的四节点无向图；
 2. 对应的边列表和邻接矩阵；
@@ -47,7 +47,7 @@
 4. 一次邻居特征求和的纸笔核对；
 5. 一段“表格样本与图样本有什么不同”的中文说明。
 
-不要把课程 Notebook 中预存的输出当成个人实验结果。
+不要把课程 Notebook 中预存的输出当成个人练习结果。
 
 ## 核心概念
 
@@ -120,7 +120,7 @@ print("neighbor_message_sum:\n", neighbor_message_sum)
 - 把节点的编号 `0、1、2、3` 当成节点特征；
 - 认为矩阵相乘已经包含可学习参数；
 - 把邻居之和误说成节点自己的特征；
-- 把玩具图结论解释成分子或粘合剂研究结论。
+- 把玩具图结论解释成分子或下游任务研究结论。
 
 ## 完成标准
 
@@ -129,7 +129,7 @@ print("neighbor_message_sum:\n", neighbor_message_sum)
 - [ ] 能手算一个节点的 `degree`；
 - [ ] 能手算一个节点收到的邻居消息之和；
 - [ ] 能区分节点特征、边结构和整图标签；
-- [ ] 明确今天没有训练模型，也没有使用真实材料数据。
+- [ ] 明确今天没有训练模型，也没有使用真实下游任务数据。
 
 ## 自测问题
 
@@ -141,7 +141,7 @@ print("neighbor_message_sum:\n", neighbor_message_sum)
 
 ## 导航
 
-- 上一天：[Day 28 粘合剂接入与总报告](../../core/day28_capstone_handoff/README.md)
+- 上一天：[Day 28 下游任务接入与总报告](../../core/day28_capstone_handoff/README.md)
 - 开始本日前必须通过：[GNN 启动条件](../README.md)
 - 下一天：[Day 30 PyTorch Geometric Data](../day30_pyg_data/README.md)
 - 总路线：[可选 GNN 课程](../README.md)

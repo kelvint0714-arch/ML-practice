@@ -24,7 +24,7 @@ PyTorch Geometric（PyG）通常使用 `Data` 对象保存一张图。它把节�
 4. [独立练习](03_exercises.md)
 5. [折叠参考答案](04_reference_answers.md)
 
-`tutorial.ipynb` 是课程提供的教学示例，不代表你已经完成 Day 30。真正学习时，应把个人副本与自己的字段解释保存到 `experiments/day30_pyg_data/`。
+`tutorial.ipynb` 是课程提供的教学示例，不代表你已经完成 Day 30。真正学习时，应把个人副本与自己的字段解释保存到 `learning_outputs/day30_pyg_data/`。
 
 ## 环境检查
 
@@ -56,7 +56,7 @@ print("torch_geometric:", torch_geometric.__version__)
 
 ## 今日产出
 
-以下内容应由你在个人实验目录中完成：
+以下内容应由你在个人练习目录中完成：
 
 1. 一个四节点 `Data` 对象；
 2. 一张字段、shape、dtype、语义检查表；
@@ -142,7 +142,7 @@ print("num_nodes:", graph.num_nodes)
 - 标签有一个值，却说成四个节点各有一个标签；
 - 只打印 `Data`，不检查各字段 shape 和 dtype；
 - 认为 `Data` 创建完成就等于模型已经训练；
-- 把玩具标签解释成真实材料性能。
+- 把玩具标签解释成真实下游任务性能。
 
 ## 完成标准
 

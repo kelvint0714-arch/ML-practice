@@ -4,7 +4,7 @@
 
 | 文件 | 什么时候查 |
 |---|---|
-| [完整 Day/Unit 学习包使用方法](day_package_guide.md) | 不清楚教材、教学 Notebook 与个人实验目录有什么区别，或准备开始 Day/Unit 时 |
+| [Day/Unit 学习包使用方法](day_package_guide.md) | 第一次使用任务卡、Notebook、练习和参考答案时 |
 | [主动学习术语表](../active_learning/shared/glossary.md) | 学习 labeled set、pool、Oracle、采集函数和 regret 时 |
 | [主动学习实验协议](../active_learning/shared/experiment_protocol.md) | 比较 Random、UCB、EI 或不同代理模型时 |
 | [主动学习泄漏检查表](../active_learning/shared/leakage_checklist.md) | 写 query 代码或审核候选标签权限时 |

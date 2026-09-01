@@ -113,12 +113,12 @@ model_summary = (
 
 ## 7. 保存证据时记录来源
 
-课程 notebook 为了演示会把 CSV 保存到课程目录下的 `tutorial_outputs/`。这些是随附教学运行产物，不是学习者自己的 `experiments/` 证据。
+课程 notebook 为了演示会把 CSV 保存到课程目录下的 `tutorial_outputs/`。这些是随附教学运行产物，不是学习者自己的 `learning_outputs/` 证据。
 
 学习者正式完成 Day 13 时，应在：
 
 ```text
-experiments/day13_fair_comparison/results/
+learning_outputs/day13_fair_comparison/results/
 ```
 
 保存本人运行的逐折与汇总表，同时记录数据、seed、版本和执行日期。`fit_seconds`
@@ -126,6 +126,6 @@ experiments/day13_fair_comparison/results/
 
 ## 8. 结论模板
 
-> 在固定人工教学数据、相同随机 5 折、相同输入信息和预先声明的五个基线配置下，模型按平均折内验证 RMSE 排序如表所示。逐折波动和 Dummy 对照共同构成证据；该比较只验证程序，不代表 ESOL 或粘合剂任务的模型排名。
+> 在固定人工教学数据、相同随机 5 折、相同输入信息和预先声明的五个基线配置下，模型按平均折内验证 RMSE 排序如表所示。逐折波动和 Dummy 对照共同构成证据；该比较只验证程序，不代表 ESOL 或下游任务任务的模型排名。
 
 实际第一名与数值只能在执行后引用。

@@ -71,7 +71,7 @@ DeepChem 缺少某些可选深度学习后端的 warning 不一定阻止 ECFP＋
 
 1. 在当前一次固定 ESOL scaffold validation 和五个固定候选中，随机森林的 validation RMSE 最低；不能外推到所有分子任务。
 2. 不限深树训练表现很强，但 train/valid 差距明显，表现出过拟合信号，不能只按训练 R² 选它。
-3. 当前结果只来自公开 ESOL 水溶解度练习，不能作为粘合剂强度证据。
+3. 当前结果只来自公开 ESOL 水溶解度练习，不能作为下游任务目标证据。
 4. 旧实验已暴露原 test；重新运行不会消除开发者已经获得的信息，因此不能重新称为严格未见。
 
 </details>
@@ -90,7 +90,7 @@ while not (repo_root / ".git").exists():
         raise RuntimeError("not inside repository")
     repo_root = repo_root.parent
 
-experiment = repo_root / "experiments" / "esol" / "day01_baseline"
+experiment = repo_root / "curriculum" / "core" / "day07_integrated_baseline" / "reference_baseline"
 notebook = json.loads(
     (experiment / "esol_baseline.ipynb").read_text(encoding="utf-8")
 )

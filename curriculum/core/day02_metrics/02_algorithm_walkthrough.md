@@ -175,7 +175,7 @@ assert bad_scores["r2"] < 0
 只有你亲自开始 Day 2 时，再创建：
 
 ```text
-experiments/day02_metrics/
+learning_outputs/day02_metrics/
 ├── README.md
 ├── day02_metrics.ipynb
 ├── notes.md

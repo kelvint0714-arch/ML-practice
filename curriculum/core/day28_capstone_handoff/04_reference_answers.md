@@ -1,53 +1,28 @@
 # Day 28 参考答案
 
-> 以下为交接模板答案，不是项目完成证明。
+## A
 
-## A. 判断题
+任务、数据、划分协议、模型、指标、结果、限制和复现信息。
 
-1. 错。列存在只通过结构检查；
-2. 错。3–5 行用于接口验收；
-3. 对；
-4. 错。Git 历史、fork、缓存和 clone 可能保留内容；
-5. 错。先建立可信表格基线，再按门槛评估 GNN。
+## B
 
-## B. 结构检查示例
+test 已参与模型选择，最小值带有选择偏差。应在训练区内部 CV 选择参数，冻结后只评价一次 test。
 
-```python
-def inspect_template(path, sheet, header_row, required_columns):
-    raw = pd.read_excel(path, sheet_name=None, header=None)
-    if sheet not in raw:
-        raise KeyError(f"missing sheet: {sheet}")
-    data = pd.read_excel(path, sheet_name=sheet, header=header_row)
-    missing = [c for c in required_columns if c not in data.columns]
-    target_count = (
-        int(data["实测性能值"].notna().sum())
-        if "实测性能值" in data.columns else None
-    )
-    return {
-        "sheets": list(raw),
-        "column_count": len(data.columns),
-        "missing_required": missing,
-        "row_count": len(data),
-        "non_null_target_count": target_count,
-    }
-```
+## C
 
-## C. 门槛项目示例
+明确列出两个模型的输入集合，并增加使用相同表格输入的对照或消融。不能只用最终分数声称结构更优。
 
-体系、行定义、首要目标、单位、测试标准、重复关系、批次关系、缺失机制、异常规则、原始版本、建模权限、公开权限。每项都应有负责人和可定位证据。
+## D
 
-## D. 权限场景
+> 在当前数据、固定划分和相同表格输入下，MLP 的验证 RMSE 低于所比较的传统基线；差异是否稳定以及能否迁移到其他分布仍需重复评价。
 
-可以在批准的组内受控空间按合同开展分析；不能上传公开仓库、发给未授权人员或将原始配方用于合同外目的。应确认派生特征、模型参数、汇总图表和论文发表各自的权限。
+## E
 
-## E. 阶段摘要示例
+- 缺 split：不知道数字来自训练、验证还是测试；
+- 缺 seed：无法判断随机性和复现条件；
+- 缺 input_set：无法判断比较是否使用相同信息。
 
-> 已完成：公开 ESOL 上的传统模型、MLP、无泄漏 stacking、分歧与池模拟教程，以及粘合剂 draft schema。未完成：尚无获准建模的真实粘合剂数据，未产生真实性能模型或实验候选。当前阻塞为体系、目标、行定义、测试标准、分组与权限待化学组确认。下一步先冻结 v1.0，用获准的少量真实行验收接口，再审计首批数据并建立传统模型基线。
+## F
 
-## F. GNN 门槛
-
-需要可靠结构表示、图构建规则、足够且可合法使用的数据、稳定无泄漏划分、可信表格基线和合理算力。粘合剂配方可能由多组分、比例、固化过程、基材和界面共同决定，单一 SMILES/分子图无法完整表达一行样本。
-
-## G. 风险发现
-
-先查模板说明和版本；再核对行 ID、来源与批准人；确认是否为说明行；核对单位/标准/批次；查数据权限记录；只有确认为真实获准记录后才进入受控数据审计。即使是真实 3 行，也仍不可据此训练可靠模型。
+- 波动大：增加预注册的重复种子或分组折，并报告分布；
+- 新分组未知：使用 GroupKFold、留组验证或独立外部数据。

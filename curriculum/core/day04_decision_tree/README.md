@@ -24,7 +24,7 @@
 4. [独立练习](03_exercises.md)
 5. [折叠参考答案](04_reference_answers.md)
 
-课程 Tutorial 的预存输出只证明示例可运行。你的预判、实际运行表和结论应在学习当天保存到 `experiments/day04_decision_tree/`，不能直接复制课程结果冒充个人证据。
+课程 Tutorial 的预存输出只证明示例可运行。你的预判、实际运行表和结论应在学习当天保存到 `learning_outputs/day04_decision_tree/`，不能直接复制课程结果冒充个人证据。
 
 ## 今日产出
 
@@ -176,7 +176,7 @@ print(results)
 - 忘记固定 `random_state`；
 - 把 `max_depth=None` 解释成深度为零；
 - 根据一次验证结果声称找到了全局最佳模型；
-- 把人工小数据结果直接写成 ESOL 或粘合剂项目结论。
+- 把人工小数据结果直接写成 ESOL 或下游任务结论。
 
 ## 完成标准
 

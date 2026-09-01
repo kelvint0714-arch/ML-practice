@@ -12,21 +12,11 @@
 
 `Day` 和 `Unit` 都表示学习模块，不要求在一个自然日内完成。一个模块学两三天完全正常，也不要为了赶日期跳过前置内容。仓库里已经存在的 Notebook 和结果是学习材料，不代表你本人已经完成，所以本页不会自动勾选。
 
-Day 2–35 的每个任务卡都链接到中文概念、算法推演、练习、参考答案和教学 Notebook。开始当天个人实验前，先阅读[完整 Day 学习包使用方法](shared/day_package_guide.md)，再运行：
-
-```bash
-python scripts/start_day.py 当天数字
-```
-
-主动学习专题使用独立个人副本：
-
-```bash
-python scripts/start_unit.py 单元数字
-```
+Day 2–35 的每个任务卡都链接到中文概念、算法推演、练习、参考答案和教学 Notebook。开始前先阅读[完整学习包使用方法](shared/day_package_guide.md)。自己的笔记和输出可保存在本地 `learning_outputs/`，不需要复制整套课程文件。
 
 > **你现在只做一件事：**从下面的 **1.1** 开始。
 >
-> **8 月 30 日前的建议目标：**尽量学到 Day 14，能够完成一套可信的传统机器学习比较；质量优先，不需要提前赶 MLP 或 GNN。
+> **第一个建议里程碑：**学到 Day 14，能够完成一套可信的传统机器学习比较；质量优先，不需要提前赶 MLP 或 GNN。
 
 ## 第一阶段：先学算法，代码只做伴随练习（Day 1–7）
 
@@ -58,7 +48,7 @@ Day 1 特意拆成 6 个小步骤。先阅读 [Day 1 总说明](core/day01_begin
 - [ ] **Day 11｜Pipeline 与数据泄漏：**完成 [Day 11 任务卡](core/day11_pipeline_leakage/README.md)，建立无泄漏预处理流程。
 - [ ] **Day 12｜不偷看测试集的调参：**完成 [Day 12 任务卡](core/day12_tuning_without_test/README.md)，只在训练集内部 K 折选择 `alpha`，冻结后只检查一次外部 validation。
 - [ ] **Day 13｜传统模型公平比较：**完成 [Day 13 任务卡](core/day13_fair_comparison/README.md)，保存逐折 `fold_metrics.csv` 和汇总 `model_summary.csv`。
-- [ ] **Day 14｜传统机器学习阶段报告：**完成 [Day 14 任务卡](core/day14_ml_stage_report/README.md)，从 Day 13 真实产物形成第一份可以向导师解释的阶段报告。
+- [ ] **Day 14｜传统机器学习阶段报告：**完成 [Day 14 任务卡](core/day14_ml_stage_report/README.md)，从 Day 13 真实产物形成第一份可以向评审者解释的阶段报告。
 
 ## 第三阶段：神经网络入门（Day 15–21）
 
@@ -70,21 +60,21 @@ Day 1 特意拆成 6 个小步骤。先阅读 [Day 1 总说明](core/day01_begin
 - [ ] **Day 20｜正则化与早停：**完成 [Day 20 任务卡](core/day20_regularization_early_stopping/README.md)，比较训练曲线和早停结果。
 - [ ] **Day 21｜MLP 与传统模型公平比较：**完成 [Day 21 任务卡](core/day21_mlp_vs_ml/README.md)，在相同输入和验证协议下比较模型。
 
-## 第四阶段：结合算法并连接粘合剂课题（Day 22–28）
+## 第四阶段：混合模型、主动学习与课程总结（Day 22–28）
 
 - [ ] **Day 22｜混合模型与泄漏风险：**完成 [Day 22 任务卡](core/day22_hybrid_risk/README.md)，画出三种传统 ML 与神经网络结合方案。
 - [ ] **Day 23｜OOF Stacking：**完成 [Day 23 任务卡](core/day23_oof_stacking/README.md)，实现无泄漏混合模型。
 - [ ] **Day 24｜混合模型消融：**完成 [Day 24 任务卡](core/day24_hybrid_ablation/README.md)，公平比较单模型和混合模型。
 - [ ] **Day 25｜预测不确定性：**完成 [Day 25 任务卡](core/day25_uncertainty/README.md)，得到预测均值与标准差。
-- [ ] **Day 26｜主动学习模拟：**完成 [Day 26 任务卡](core/day26_active_learning/README.md)，跑通单轮无标签泄漏的候选排序与随机对照；多轮学习曲线作为后续正式实验扩展。
-- [ ] **Day 27｜从论文提取数据字段：**完成 [Day 27 任务卡](core/day27_paper_to_schema/README.md)，整理三篇论文的输入、输出和实验条件。
-- [ ] **Day 28｜粘合剂接入与总报告：**完成 [Day 28 任务卡](core/day28_capstone_handoff/README.md)，形成化学组数据接入清单和算法阶段总报告。
+- [ ] **Day 26｜主动学习模拟：**完成 [Day 26 任务卡](core/day26_active_learning/README.md)，跑通单轮无标签泄漏的候选排序与随机对照。
+- [ ] **Day 27｜从论文到数据字典：**完成 [Day 27 任务卡](core/day27_paper_to_schema/README.md)，把论文中的任务、输入、目标和评价协议映射成可审计字段。
+- [ ] **Day 28｜模型卡与课程总报告：**完成 [Day 28 任务卡](core/day28_capstone_handoff/README.md)，形成模型卡、结果表和下一步学习计划。
 
-完成 Day 28，代表核心路线结束。它不等于已经可以发表论文，而是代表你具备了接收真实粘合剂数据、建立基线和设计可信对照实验的基础。
+完成 Day 28 代表核心路线结束：你已经具备定义任务、建立基线、执行可信评价并沟通模型限制的基础。
 
 ## 主动学习专题：按 Unit 系统深化（Unit 1–9）
 
-专题入口与开始条件见 [主动学习路线](active_learning/README.md)。Day 26 只完成单轮入门；本专题继续学习完整采集函数、多轮基准、批量约束、神经/GNN 代理、物理先验和真实实验接口。Unit 1–6 不要求 GNN，Unit 7 的 GNN 扩展需先完成 Day 29–35。
+专题入口与开始条件见 [主动学习路线](active_learning/README.md)。Day 26 只完成单轮入门；本专题继续学习完整采集函数、多轮基准、批量约束、神经/GNN 代理、物理先验和闭环接口。Unit 1–6 不要求 GNN，Unit 7 的 GNN 扩展需先完成 Day 29–35。
 
 - [ ] **Unit 01｜主动学习闭环与问题定义：**完成 [Unit 01 任务卡](active_learning/unit01_foundations/README.md)。
 - [ ] **Unit 02｜代理模型与不确定性：**完成 [Unit 02 任务卡](active_learning/unit02_surrogates_uncertainty/README.md)。
@@ -101,7 +91,7 @@ Day 1 特意拆成 6 个小步骤。先阅读 [Day 1 总说明](core/day01_begin
 
 ## 可选阶段：GNN（Day 29–35）
 
-先阅读 [GNN 路线与项目启动条件](optional_gnn/README.md)。核心路线完成后，Day 29–34 可以只在公开图上学习；是否用于真实粘合剂项目由 Day 35 评审，不能因为课程代码能运行就默认 Go。若当前学习优先级更高，停在 Day 28 继续巩固也完全正确。
+先阅读 [GNN 路线与启动条件](optional_gnn/README.md)。核心路线完成后，Day 29–34 在公开图数据上学习；Day 35 检查一个数据集是否具备使用 GNN 的输入、标签、划分和基线条件。若当前学习优先级更高，停在 Day 28 继续巩固也完全正确。
 
 - [ ] **Day 29｜图、节点、边和邻接关系：**完成 [Day 29 任务卡](optional_gnn/day29_graph_basics/README.md)。
 - [ ] **Day 30｜PyTorch Geometric `Data`：**完成 [Day 30 任务卡](optional_gnn/day30_pyg_data/README.md)。
@@ -109,7 +99,7 @@ Day 1 特意拆成 6 个小步骤。先阅读 [Day 1 总说明](core/day01_begin
 - [ ] **Day 32｜GraphSAGE：**完成 [Day 32 任务卡](optional_gnn/day32_graphsage/README.md)。
 - [ ] **Day 33｜GAT：**完成 [Day 33 任务卡](optional_gnn/day33_gat/README.md)。
 - [ ] **Day 34｜GIN 与图分类：**完成 [Day 34 任务卡](optional_gnn/day34_gin_graph_classification/README.md)。
-- [ ] **Day 35｜分子图与粘合剂启用评审：**完成 [Day 35 任务卡](optional_gnn/day35_molecular_graph_gate/README.md)。
+- [ ] **Day 35｜GNN 数据就绪评审：**完成 [Day 35 任务卡](optional_gnn/day35_molecular_graph_gate/README.md)。
 
 ## 每个学习单元的完成规则
 
@@ -117,11 +107,11 @@ Day 1 特意拆成 6 个小步骤。先阅读 [Day 1 总说明](core/day01_begin
 - `[x]`：必做任务、产物、完成清单和自测全部通过；
 - 卡住时把完整报错和不理解的代码记下来，再向 Codex 提问；
 - 不要复制参考答案冒充自己的理解；
-- 公开 ESOL 实验不能写成真实粘合剂预测结果。
+- 公开教学数据的结果不能直接外推到新的真实任务。
 
 ## 学习记录模板
 
-完成一个 Day 后，把下面内容复制到该日实验目录的 `notes.md`。Day 1 可以先写在自己的笔记里，熟悉 Git 后再提交。
+完成一个 Day 后，把下面内容记录到本地 `learning_outputs/` 或自己的笔记工具中。
 
 ```markdown
 # Day N 学习记录

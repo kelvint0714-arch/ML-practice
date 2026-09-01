@@ -10,7 +10,7 @@
 4. [练习](03_exercises.md)
 5. [参考答案](04_reference_answers.md)
 
-`tutorial.ipynb` 是课程附带材料，不等于学习者实验已经完成；个人运行证据应在开始学习后另存到 `experiments/`。
+`tutorial.ipynb` 是课程附带材料，不等于学习者实验已经完成；个人运行证据应在开始学习后另存到 `learning_outputs/`。
 
 ## 今天为什么学
 

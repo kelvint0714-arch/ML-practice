@@ -12,7 +12,7 @@
 4. [练习题](03_exercises.md)
 5. [参考答案](04_reference_answers.md)
 
-`tutorial.ipynb` 只在人工训练区域内部选择参数，并进行一次外部验证；它不提供 ESOL、测试集或粘合剂最佳参数。本人记录应另存到 `experiments/day12_tuning_without_test/`。
+`tutorial.ipynb` 只在人工训练区域内部选择参数，并进行一次外部验证；它不提供 ESOL、测试集或下游任务最佳参数。本人记录应另存到 `learning_outputs/day12_tuning_without_test/`。
 
 ## 今天为什么学
 

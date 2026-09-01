@@ -1,52 +1,27 @@
 # Day 27 练习
 
-> 所有练习都是 schema 设计，不代表真实数据。
+先独立完成，再查看答案。
 
-## A. 分类题
+## A. 字段角色
 
-把下列字段分为身份、配方、工艺/接头、标签、质量/权限：
+把 sample_id、temperature、target_value、batch_id、measurement_unit 和 feature_1 分为标识、输入、目标、条件、分组或元数据。
 
-- 样品编号；
-- 固化温度；
-- 搭接剪切强度；
-- 性能单位；
-- 环氧/胺比；
-- 基材；
-- 实验批次；
-- 可否上传 GitHub。
+## B. 字段定义
 
-## B. 通用与专用
+为 feature_1 和 target_value 写出 dtype、unit、missing_rule 和 visibility。
 
-判断哪些是通用字段类别，哪些更可能是体系专用：
+## C. 合并判断
 
-- component_identity；
-- test_standard；
-- epoxy_equivalent_weight；
-- wood_moisture_content；
-- replicate_count；
-- NCO_content。
+来源 A 和 B 的目标名称相同，但样本定义、标注流程和单位未知。能否直接合并？写出至少五项检查。
 
-## C. 不可拼表
+## D. 泄漏判断
 
-论文 A 报告金属搭接剪切强度 MPa，论文 B 报告木材拉伸剪切强度 N/mm²。即使单位可换算，为什么仍不能直接合并？至少列出四项检查。
+为什么“任务完成后的质量等级”或“由目标值分箱得到的类别”不能作为 query 前输入？
 
-## D. YAML 改错
+## E. 未知信息
 
-找出风险：
+单位、许可和缺失含义都未说明时，安全的数据字典应怎样写？
 
-```yaml
-status: ready_for_training
-adhesive_family: epoxy
-target_unit: MPa
-may_upload_to_github: true
-```
+## F. Python
 
-已知化学组尚未确认体系、单位和权限。请改为安全模板。
-
-## E. DOI 边界
-
-用两句话说明 DOI 能证明什么、不能证明什么。
-
-## F. 评审问题
-
-写出发给化学组的 10 个问题，覆盖体系、行定义、标签、配方、工艺、接头、重复、批次、缺失和权限。
+实现一个函数：只有所有合并检查都为 True 时返回 True，并拒绝空检查表。

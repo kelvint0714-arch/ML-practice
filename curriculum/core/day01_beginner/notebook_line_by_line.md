@@ -7,7 +7,7 @@
 - [上半部分：环境、加载数据、数据检查、准备 X/y](notebook_line_by_line_part1.md)
 - [下半部分：指标、模型、训练、排名、保存与验收](notebook_line_by_line_part2.md)
 
-阅读时请同时打开原始 [`esol_baseline.ipynb`](../../../experiments/esol/day01_baseline/esol_baseline.ipynb)。教程中的 `C9:L06` 表示“原 Notebook 的代码 Cell 9、本单元第 6 个物理代码行”，不是整个文件的第 906 行。
+阅读时请同时打开原始 [`esol_baseline.ipynb`](../../../curriculum/core/day07_integrated_baseline/reference_baseline/esol_baseline.ipynb)。教程中的 `C9:L06` 表示“原 Notebook 的代码 Cell 9、本单元第 6 个物理代码行”，不是整个文件的第 906 行。
 
 ## 三种学习标签
 

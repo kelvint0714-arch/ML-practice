@@ -144,5 +144,4 @@ print(type(variable))
 print(np.asarray(variable).shape)
 ```
 
-不要直接改课程源 Notebook；使用 `python scripts/start_unit.py 单元编号`
-建立个人副本。
+若希望保留课程源 Notebook 的预存输出，先在本机复制一份；个人笔记与结果放在 `learning_outputs/`。

@@ -14,7 +14,7 @@ def find_repo_root(start=None):
     for candidate in (current, *current.parents):
         if (candidate / ".git").exists():
             return candidate
-    raise RuntimeError("请从 ML-practice 仓库内部运行")
+    raise RuntimeError("请从 ML-Learning 仓库内部运行")
 
 repo_root = find_repo_root()
 data_dir = repo_root / ".cache" / "deepchem"
@@ -183,7 +183,7 @@ print(test_policy)
 真正学习时再创建：
 
 ```text
-experiments/day08_split_protocol/
+learning_outputs/day08_split_protocol/
 ├── README.md
 ├── day08_split_protocol.ipynb
 ├── notes.md
@@ -197,6 +197,6 @@ experiments/day08_split_protocol/
 
 ## 10. 课程教程不是个人证据
 
-[tutorial.ipynb](tutorial.ipynb) 中的预存输出证明供应示例曾顺序执行，不代表你已经检查过自己的环境。复制到个人实验目录、从空内核运行并解释后，才形成个人学习证据。
+[tutorial.ipynb](tutorial.ipynb) 中的预存输出证明供应示例曾顺序执行，不代表你已经检查过自己的环境。复制到个人练习目录、从空内核运行并解释后，才形成个人学习证据。
 
 下一步：[Day 8 练习](03_exercises.md)。

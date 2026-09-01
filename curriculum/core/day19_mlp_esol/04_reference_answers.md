@@ -61,7 +61,7 @@ def evaluate(model, X_train, y_train, X_valid, y_valid):
 
 一种准确写法：
 
-> 在固定的 ESOL scaffold 训练/验证划分上，我们用 1024 维 ECFP 训练了一个 MLP 来预测水溶解度 logS；实际指标只能说明该公开练习流程能运行，尚未使用真实粘合剂数据，也不能支持粘合剂性能结论。
+> 在固定的 ESOL scaffold 训练/验证划分上，我们用 1024 维 ECFP 训练了一个 MLP 来预测水溶解度 logS；实际指标只能说明该公开练习流程能运行，尚未使用真实下游任务数据，也不能支持下游任务性能结论。
 
 ## F. 动手扩展
 

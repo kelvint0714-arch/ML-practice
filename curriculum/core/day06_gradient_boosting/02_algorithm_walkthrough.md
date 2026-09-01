@@ -202,7 +202,7 @@ learning_rate 缩放单阶段贡献；
 真正学习时再由教程副本创建：
 
 ```text
-experiments/day06_gradient_boosting/
+learning_outputs/day06_gradient_boosting/
 ├── README.md
 ├── day06_gradient_boosting.ipynb
 ├── notes.md

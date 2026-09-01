@@ -212,6 +212,6 @@ graph.edge_attr
 - PyG 已经正确表示真实分子；
 - GNN 已经学到任何规则；
 - 玩具标签来自实验；
-- GNN 适合当前粘合剂任务。
+- GNN 适合当前下游任务任务。
 
 下一步：[把同一张图逐字段装入 `Data`](02_algorithm_walkthrough.md)。

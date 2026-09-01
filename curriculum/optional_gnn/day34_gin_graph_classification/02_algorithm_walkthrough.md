@@ -13,7 +13,7 @@
 
 ## 2. 自动定位仓库和缓存
 
-课程 Notebook 可能从课程目录或个人实验目录运行，所以不能写死本机绝对路径：
+课程 Notebook 可能从课程目录或个人练习目录运行，所以不能写死本机绝对路径：
 
 ```python
 from pathlib import Path

@@ -12,7 +12,7 @@
 4. [练习题](03_exercises.md)
 5. [参考答案](04_reference_answers.md)
 
-`tutorial.ipynb` 通过确定性人工数据对照错误与正确统计量，只是课程演示。学习者亲自运行后的证据应另存到 `experiments/day11_pipeline_leakage/`。
+`tutorial.ipynb` 通过确定性人工数据对照错误与正确统计量，只是课程演示。学习者亲自运行后的证据应另存到 `learning_outputs/day11_pipeline_leakage/`。
 
 ## 今天为什么学
 

@@ -89,7 +89,7 @@ rmse = mean_squared_error(y_true, y_pred)
 print("accuracy:", rmse)
 ```
 
-## G. 实验记录
+## G. 运行记录
 
 用自己的话填写，不允许从答案页复制：
 

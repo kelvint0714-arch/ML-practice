@@ -37,7 +37,7 @@ assert X_valid.shape == (3, 1)
 assert y_valid.shape == (3,)
 ```
 
-每行代表一个人工样本，唯一一列是输入特征。它不是 ESOL 或粘合剂数据。
+每行代表一个人工样本，唯一一列是输入特征。它不是 ESOL 或下游任务数据。
 
 ## 3. 只训练 `alpha=1.0`
 
@@ -168,7 +168,7 @@ assert np.isfinite(results.select_dtypes("number").to_numpy()).all()
 [tutorial.ipynb](tutorial.ipynb) 是仓库提供的可运行教学伴侣，不代表你已经完成实验。亲自学习时再创建：
 
 ```text
-experiments/day03_ridge/
+learning_outputs/day03_ridge/
 ├── README.md
 ├── day03_ridge.ipynb
 ├── notes.md

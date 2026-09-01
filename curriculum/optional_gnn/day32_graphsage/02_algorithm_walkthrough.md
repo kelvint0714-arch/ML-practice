@@ -172,6 +172,6 @@ summary = (
 
 不合适：
 
-> GraphSAGE 已证明优于 GCN，因此应该用于粘合剂。
+> GraphSAGE 已证明优于 GCN，因此应该用于下游任务。
 
 下一步：[进入教学 Notebook](tutorial.ipynb)。

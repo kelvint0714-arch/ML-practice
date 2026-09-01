@@ -8,7 +8,7 @@
 4. [练习](03_exercises.md)
 5. [参考答案](04_reference_answers.md)
 
-请严格按上面顺序学习。Notebook 使用公开 MUTAG 小数据，只是图分类教学，不是粘合剂实验。
+请严格按上面顺序学习。Notebook 使用公开 MUTAG 小数据，只是图分类教学，不是下游任务实验。
 
 ## 今天为什么学
 
@@ -90,7 +90,7 @@ class SmallGIN(torch.nn.Module):
 - 把节点数当 batch 中图的数量；
 - 随机划分时没有固定种子；
 - 用分类指标解释回归任务，或反过来；
-- 认为 GIN 在 MUTAG 上有效就能预测粘合剂。
+- 认为 GIN 在 MUTAG 上有效就能预测下游任务。
 
 ## 完成标准
 
@@ -109,5 +109,5 @@ class SmallGIN(torch.nn.Module):
 
 - 上一天：[Day 33 GAT](../day33_gat/README.md)
 - 完成验收后：[返回一步一步学习目录](../../PROGRESS.md)
-- 下一天：[Day 35 分子图与粘合剂启用评审](../day35_molecular_graph_gate/README.md)
+- 下一天：[Day 35 分子图与下游任务启用评审](../day35_molecular_graph_gate/README.md)
 - 总路线：[可选 GNN 课程](../README.md)

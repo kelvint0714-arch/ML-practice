@@ -10,7 +10,7 @@
 4. [练习题](03_exercises.md)
 5. [参考答案](04_reference_answers.md)
 
-`tutorial.ipynb` 固定人工数据与划分，只演示模型随机性。它不是学习者实验记录；本人运行后的逐 seed 证据应另存到 `experiments/day10_seed_stability/`。
+`tutorial.ipynb` 固定人工数据与划分，只演示模型随机性。它不是学习者运行记录；本人运行后的逐 seed 证据应另存到 `learning_outputs/day10_seed_stability/`。
 
 ## 今天为什么学
 
@@ -157,7 +157,7 @@ print(summary)
 - 不保存原始逐种子结果；
 - 使用 test 计算每个种子成绩；
 - 认为固定种子可以解决所有复现问题；
-- 根据 ESOL 波动推断真实粘合剂实验误差。
+- 根据 ESOL 波动推断真实下游任务实验误差。
 
 ## 完成标准
 

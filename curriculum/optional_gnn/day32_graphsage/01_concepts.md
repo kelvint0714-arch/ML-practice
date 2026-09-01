@@ -144,7 +144,7 @@ result.groupby("model")["valid_accuracy"].agg(["mean", "std"])
 
 - 一次或三次 validation 结果不能证明一个算法普遍更好；
 - GraphSAGE 名字中有 “sample”，不表示本次已经做了邻居采样；
-- KarateClub 结果不能迁移为分子或粘合剂结论；
+- KarateClub 结果不能迁移为分子或下游任务结论；
 - validation 比较不能代替最终 test；
 - 参数更多不必然更好，参数更少也不必然更差。
 

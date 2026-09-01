@@ -12,7 +12,7 @@
 4. [练习题](03_exercises.md)
 5. [参考答案](04_reference_answers.md)
 
-`tutorial.ipynb` 使用固定随机权重演示前向数据流；随机输出没有性能意义，也不代表学习者已经训练模型。本人记录再写入 `experiments/day16_mlp_forward/`。
+`tutorial.ipynb` 使用固定随机权重演示前向数据流；随机输出没有性能意义，也不代表学习者已经训练模型。本人记录再写入 `learning_outputs/day16_mlp_forward/`。
 
 ## 今天为什么学
 

@@ -147,7 +147,7 @@ Notebook 对每个候选：
 
 - 当前最好候选对所有划分都最好；
 - 已找到 ESOL 最优模型；
-- 结果能直接迁移到粘合剂；
+- 结果能直接迁移到下游任务；
 - 原 test 仍是严格未见；
 - GNN 一定更好或更差。
 
@@ -157,6 +157,6 @@ Notebook 对每个候选：
 
 真正的 Day 7 核心动作仍是从空内核运行：
 
-[ESOL 参考基线 Notebook](../../../experiments/esol/day01_baseline/esol_baseline.ipynb)。
+[ESOL 参考基线 Notebook](../../../curriculum/core/day07_integrated_baseline/reference_baseline/esol_baseline.ipynb)。
 
 下一步：[按 10 个代码单元完成审计与重跑](02_algorithm_walkthrough.md)。

@@ -37,7 +37,7 @@ loss = cross_entropy(logits, batch.x)
 
 1. 为了让结果更好，可以看 test accuracy 后再更换池化方式；
 2. 固定 60 个 epoch 后报告 validation，不等于最终测试结论；
-3. MUTAG 上 GIN 有效就证明它能预测粘合剂强度。
+3. MUTAG 上 GIN 有效就证明它能预测下游任务目标。
 
 ## 练习 6：补断言
 

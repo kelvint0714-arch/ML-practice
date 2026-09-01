@@ -12,5 +12,5 @@ __pycache__/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
-data/adhesive/raw/
-data/adhesive/private/
+learning_outputs/*
+!learning_outputs/README.md

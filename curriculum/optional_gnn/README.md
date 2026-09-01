@@ -1,8 +1,8 @@
-# Day 28 之后：GNN 启动条件
+# Day 29–35：可选 GNN 路线
 
-GNN 是长期学习方向，但不是当前粘合剂项目的默认下一步。Day 29–34 可以在公开图上学习算法；图神经网络只有在“图的含义”和“结构数据”都明确时，才能用于真实粘合剂项目。
+这条路线用于学习图表示和图神经网络，不是核心课程的强制前置。建议先完成 Day 15–21，理解张量、训练循环和公平比较。
 
-Day 29–35 的讲义、算法推演、Notebook、练习和参考答案已经完整提供。文件齐全只代表以后可以连续学习，不代表本人已经完成，也不代表粘合剂项目已经适合使用 GNN。学习包的区分和复制方法见[完整 Day 学习包使用方法](../shared/day_package_guide.md)，依赖保存在根目录的 [`requirements-gnn.txt`](../../requirements-gnn.txt)。
+## 环境
 
 ```bash
 conda create -n gnn python=3.10.20 -y
@@ -11,44 +11,38 @@ python -m pip install -r requirements-gnn.txt
 python -m ipykernel install --user --name gnn --display-name "Python 3 (gnn)"
 ```
 
-## 课程入口
+## 路线
 
-完成核心路线并具备基本 PyTorch/神经网络概念后，可按顺序用玩具图、KarateClub 和 MUTAG 学习 Day 29–34。Day 35 再读取实际粘合剂模板进行项目启用评审；当前评审为 No-Go 不妨碍学习公开图算法。
-
-| 天数 | 主题 | 任务卡 |
+| Day | 主题 | 任务卡 |
 |---:|---|---|
-| Day 29 | 图、节点、边和邻接关系 | [开始 Day 29](day29_graph_basics/README.md) |
-| Day 30 | PyTorch Geometric `Data` | [进入 Day 30](day30_pyg_data/README.md) |
-| Day 31 | GCN | [进入 Day 31](day31_gcn/README.md) |
-| Day 32 | GraphSAGE | [进入 Day 32](day32_graphsage/README.md) |
-| Day 33 | GAT | [进入 Day 33](day33_gat/README.md) |
-| Day 34 | GIN 与图分类 | [进入 Day 34](day34_gin_graph_classification/README.md) |
-| Day 35 | 分子图与粘合剂启用评审 | [进入 Day 35](day35_molecular_graph_gate/README.md) |
+| 29 | 图、节点、边和邻接关系 | [Day 29](day29_graph_basics/README.md) |
+| 30 | PyTorch Geometric `Data` | [Day 30](day30_pyg_data/README.md) |
+| 31 | GCN | [Day 31](day31_gcn/README.md) |
+| 32 | GraphSAGE | [Day 32](day32_graphsage/README.md) |
+| 33 | GAT | [Day 33](day33_gat/README.md) |
+| 34 | GIN 与图分类 | [Day 34](day34_gin_graph_classification/README.md) |
+| 35 | GNN 数据就绪评审 | [Day 35](day35_molecular_graph_gate/README.md) |
 
-当前主线仍是 [Day 1–28 核心课程](../core/README.md)。
+Day 29–34 使用玩具图、KarateClub 和 MUTAG 学习算法。Day 35 不训练新模型，而是检查一个新数据集是否真的适合 GNN。
 
-## 粘合剂项目应用的五项启动检查
+## GNN 数据就绪条件
 
-| 检查项 | 通过标准 | 未通过时做什么 |
-|---|---|---|
-| 结构来源 | 每个样本有经化学组确认的 SMILES、SDF 或其他结构文件 | 继续使用表格特征，不自行猜结构 |
-| 样本定义 | 明确一张图代表树脂、固化剂、完整分子还是其他对象 | 请化学组和导师确认建模对象 |
-| 配方关系 | 明确多组分如何组合，比例和工艺如何进入模型 | 先做表格或多分支模型设计 |
-| 基线冻结 | Ridge、RF、Boosting、MLP 已按同一协议得到结果 | 先完成 Day 21 |
-| 数据规模 | 样本量和结构多样性足以支持更复杂模型 | 小样本时先保留简单模型 |
+| 检查项 | 最低要求 |
+|---|---|
+| 图对象 | 清楚一张图代表什么 |
+| 节点与边 | 特征和关系具有明确含义 |
+| 标签 | 目标、单位和评价方式一致 |
+| 划分 | 重复、近重复或同组对象不会跨集合泄漏 |
+| 样本量 | 足以支持模型复杂度和稳定评价 |
+| 简单基线 | Dummy、传统特征模型或 MLP 已按相同协议比较 |
+| 输入公平 | 清楚记录每个模型实际获得的信息 |
 
-## 条件通过后的建议顺序
+条件不满足时，No-Go 是合理结论。更复杂的模型不是默认更好的模型。
 
-1. 在公开 MoleculeNet 数据上理解原子、键、节点特征和边；
-2. 复现一个简单 GCN 或 GIN 分子性质基线；
-3. 使用与 ECFP 模型相同的划分和指标；
-4. 比较 ECFP＋传统模型、ECFP＋MLP 与 GNN；
-5. 再研究“结构分支＋配方/工艺表格分支”的多模态融合；
-6. 使用消融实验分别检查结构、配方和工艺的贡献。
+## 公平比较
 
-## 暂时不能得出的结论
+如果 GNN 获得了图关系等额外信息，必须明确说明；不能把信息更丰富的模型与缺少关键输入的弱基线直接称为公平比较。
 
-- 论文中 GNN 表现好，不代表本项目必须使用 GNN；
-- 有一个字符串不等于拥有可靠 SMILES；
-- 单个组分的分子图不能自动表示多组分粘合剂配方；
-- 没有公平的表格基线，不能证明 GNN 带来改进。
+至少保留 Dummy、简单特征模型、MLP（适用时）、GNN、消融和多随机种子结果。
+
+返回 [核心课程](../core/README.md) 或 [唯一学习清单](../PROGRESS.md)。

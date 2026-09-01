@@ -223,7 +223,7 @@ PyG 的结构检查是额外防线，不能替代对任务语义的人工检查�
 ## 12. 实际学习时的目录蓝图
 
 ```text
-experiments/day30_pyg_data/
+learning_outputs/day30_pyg_data/
 ├── README.md
 ├── day30_pyg_data.ipynb
 ├── notes.md

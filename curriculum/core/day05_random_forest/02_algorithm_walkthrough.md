@@ -209,7 +209,7 @@ tree_counts = [10, 50, 100, 300]
 [tutorial.ipynb](tutorial.ipynb) 是课程材料。真正学习时再创建：
 
 ```text
-experiments/day05_random_forest/
+learning_outputs/day05_random_forest/
 ├── README.md
 ├── day05_random_forest.ipynb
 ├── notes.md

@@ -127,7 +127,7 @@ def compare_tree_and_forest(X_train, y_train, X_valid, y_valid):
 <details>
 <summary>G. 假想结果解释</summary>
 
-单树的训练 RMSE 更低，说明它对训练数据拟合更强。随机森林在这一次固定 validation 上 RMSE 更低，因此当前验证表现较好。不能据此声称随机森林对所有数据、所有划分或真实粘合剂任务永远更好，也不能把 validation 数字称为最终 test 性能。
+单树的训练 RMSE 更低，说明它对训练数据拟合更强。随机森林在这一次固定 validation 上 RMSE 更低，因此当前验证表现较好。不能据此声称随机森林对所有数据、所有划分或真实下游任务任务永远更好，也不能把 validation 数字称为最终 test 性能。
 
 </details>
 

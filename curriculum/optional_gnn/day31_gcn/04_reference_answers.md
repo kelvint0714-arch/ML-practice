@@ -77,7 +77,7 @@ def count_trainable_parameters(model):
 
 参考写法：
 
-> 在 PyG KarateClub 教学图上训练了两层 GCN，并仅用 validation 节点观察开发过程，test 标签保持封存。该结果用于理解节点消息传递与掩码，不包含分子或粘合剂数据，不能作为材料性能结论。
+> 在 PyG KarateClub 教学图上训练了两层 GCN，并仅用 validation 节点观察开发过程，test 标签保持封存。该结果用于理解节点消息传递与掩码，不包含分子或下游任务数据，不能作为材料性能结论。
 
 答案不必逐字相同，但必须保留数据来源、验证用途与外推边界。
 

@@ -95,6 +95,6 @@ with torch.no_grad():
 - 使用的数据；
 - 做了什么；
 - validation 的作用；
-- 为什么不能外推到粘合剂。
+- 为什么不能外推到下游任务。
 
 完成后：[查看参考答案](04_reference_answers.md)。

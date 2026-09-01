@@ -160,12 +160,12 @@ print(export_text(small_tree, feature_names=["x"]))
 边界：离群点是人为设置；不能把最小 validation RMSE 宣布为正式最优参数。
 ```
 
-## 10. 教程与个人实验分开
+## 10. 教程与个人练习分开
 
 [tutorial.ipynb](tutorial.ipynb) 是供应的教程，不是你的实验结果。实际完成 Day 4 时再创建：
 
 ```text
-experiments/day04_decision_tree/
+learning_outputs/day04_decision_tree/
 ├── README.md
 ├── day04_decision_tree.ipynb
 ├── notes.md

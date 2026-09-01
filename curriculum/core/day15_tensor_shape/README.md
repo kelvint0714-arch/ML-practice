@@ -12,7 +12,7 @@
 4. [练习题](03_exercises.md)
 5. [参考答案](04_reference_answers.md)
 
-`tutorial.ipynb` 只使用 NumPy 演示 shape、矩阵乘法和广播，不训练模型。亲自运行后的理解与错误记录再写入 `experiments/day15_tensor_shape/`。
+`tutorial.ipynb` 只使用 NumPy 演示 shape、矩阵乘法和广播，不训练模型。亲自运行后的理解与错误记录再写入 `learning_outputs/day15_tensor_shape/`。
 
 ## 今天为什么学
 

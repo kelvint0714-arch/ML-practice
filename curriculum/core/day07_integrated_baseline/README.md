@@ -31,7 +31,7 @@
 4. [独立练习](03_exercises.md)
 5. [折叠参考答案](04_reference_answers.md)
 
-本日 Tutorial 只审计已有文件，不重复训练。真正的运行对象仍是 [ESOL 参考基线 Notebook](../../../experiments/esol/day01_baseline/esol_baseline.ipynb)；只有你本人 Restart + Run All 成功并记录状态后，才算个人学习证据。不要复制同一基线到另一个实验目录并冒充第二次独立实验。
+本日 Tutorial 只审计已有文件，不重复训练。真正的运行对象仍是 [ESOL 参考基线 Notebook](../../../curriculum/core/day07_integrated_baseline/reference_baseline/esol_baseline.ipynb)；只有你本人 Restart + Run All 成功并记录状态后，才算个人学习证据。不要复制同一基线到另一个实验目录并冒充第二次独立实验。
 
 ## 今日产出
 
@@ -87,7 +87,7 @@ DeepChem 提示缺少某些可选深度学习框架，不一定影响当前 ECFP
 
 Notebook 保存了一次已经运行过的结果。你重新运行是在验证这套实现是否可以复现，不是在证明随机森林对所有数据都最好。
 
-当前 ESOL 结果也不能改名为粘合剂预测结果。
+当前 ESOL 结果也不能改名为下游任务预测结果。
 
 这份已保存的基线包含 Dummy、Ridge、两棵决策树和随机森林，不包含 Day 6 的梯度提升。Day 6 使用人工数据学习算法直觉；梯度提升会在后面的公平比较中再加入，因此今天不需要在 Notebook 中强行找到它。
 
@@ -98,7 +98,7 @@ Notebook 保存了一次已经运行过的结果。你重新运行是在验证�
 打开：
 
 - [Day 1 Notebook 对照地图](../day01_beginner/05_esol_notebook_map.md)；
-- [真实 ESOL Notebook](../../../experiments/esol/day01_baseline/esol_baseline.ipynb)。
+- [真实 ESOL Notebook](../../../curriculum/core/day07_integrated_baseline/reference_baseline/esol_baseline.ipynb)。
 
 把10个代码单元分类：
 
@@ -153,12 +153,12 @@ predict 在哪里调用
 
 ### 第五步：解释结果
 
-阅读 [实验记录](../../../experiments/esol/day01_baseline/notes.md)，用自己的话回答：
+阅读参考基线保存的指标表和运行配置，用自己的话回答：
 
 - 当前验证 RMSE 最低的是哪个固定候选；
 - 为什么不限深决策树表现出过拟合；
 - 为什么一次固定验证集不能证明算法普遍最好；
-- 为什么这些数字不是粘合剂项目结果。
+- 为什么这些数字不是下游任务结果。
 
 ## 核心代码：只认骨架
 
@@ -194,7 +194,7 @@ score = metric(y_valid, prediction)
 - 修改多个模型参数后仍称为原始基线；
 - 使用 test 反复比较模型；
 - 把“仓库可复现”误认为“自己已经掌握”；
-- 把 ESOL 结果写成真实粘合剂结论。
+- 把 ESOL 结果写成真实下游任务结论。
 
 ## 完成标准
 
@@ -216,7 +216,7 @@ score = metric(y_valid, prediction)
 5. 为什么某一格能运行不代表整套流程可复现？
 6. 当前使用什么数据选择候选模型？
 7. 为什么随机森林当前较好不等于它普遍最好？
-8. 为什么 ESOL 结果不能作为粘合剂结果提交？
+8. 为什么 ESOL 结果不能作为下游任务结果提交？
 
 ## 导航
 

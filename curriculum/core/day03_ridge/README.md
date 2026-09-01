@@ -22,7 +22,7 @@ Ridge 是你学习的第一个真正会根据输入 `X` 改变预测值的算法
 4. [独立练习](03_exercises.md)
 5. [折叠参考答案](04_reference_answers.md)
 
-`tutorial.ipynb` 是供应的人工数据教学示例，不是你的模型实验。个人运行、副本、笔记和 `alpha_sensitivity.csv` 应在实际学习时保存到 `experiments/day03_ridge/`。
+`tutorial.ipynb` 是供应的人工数据教学示例，不是你的模型实验。个人运行、副本、笔记和 `alpha_sensitivity.csv` 应在实际学习时保存到 `learning_outputs/day03_ridge/`。
 
 ## 今日产出
 
@@ -31,7 +31,7 @@ Ridge 是你学习的第一个真正会根据输入 `X` 改变预测值的算法
 1. 一张“输入×权重＋截距＝预测”的手算示意；
 2. 一张不同 `alpha` 下训练 RMSE、验证 RMSE 和系数的结果表。
 
-本页中的数据是为了理解算法而制作的人工小数据，不是真实粘合剂数据。
+本页中的数据是为了理解算法而制作的人工小数据，不是真实下游任务数据。
 
 ## 核心概念
 
@@ -206,7 +206,7 @@ print(results)
 - 认为 `alpha` 越大一定越好；
 - 只看训练 RMSE；
 - 同时改变数据和 `alpha`，导致无法公平比较；
-- 把人工小数据结果写成 ESOL 或粘合剂研究结论；
+- 把人工小数据结果写成 ESOL 或下游任务研究结论；
 - 今天提前加入 StandardScaler、Pipeline 或正式调参；
 - 看见一条近似直线就认为所有真实化学关系都是线性的。
 

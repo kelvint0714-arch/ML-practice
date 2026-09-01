@@ -10,7 +10,7 @@
 4. [练习](03_exercises.md)
 5. [参考答案](04_reference_answers.md)
 
-`tutorial.ipynb` 是课程附带的 OOF 演示。保存的教程输出不代表学习者已完成实验，个人证据应另存到 `experiments/`。
+`tutorial.ipynb` 是课程附带的 OOF 演示。保存的教程输出不代表学习者已完成实验，个人证据应另存到 `learning_outputs/`。
 
 ## 今天为什么学
 
@@ -110,7 +110,7 @@ def murcko_group(smiles):
 groups = np.array([murcko_group(s) for s in train_ids])
 config_path = (
     REPO_ROOT
-    / "experiments/esol/day01_baseline/results/run_config.json"
+    / "curriculum/core/day07_integrated_baseline/reference_baseline/results/run_config.json"
 )
 if not config_path.exists():
     raise FileNotFoundError("缺少 Day 07 冻结配置")
@@ -172,12 +172,12 @@ for name, pred in {"mean": mean_pred, "stack": stack_pred}.items():
 - 字典的 `.items()` 同时取出方案名称和预测数组。
 - `catch_warnings(record=True)` 让收敛警告成为可见记录；不要全局忽略。
 
-## 粘合剂数据需要额外处理
+## 下游任务数据需要额外处理
 
 本日 ESOL 已使用 SMILES 衍生 scaffold group，而不是普通 KFold。
 当真实数据包含同一配方的重复试样时，
 scaffold 不能替代真实实验分组。
-此时应根据化学组提供的配方号、批次号或实验批次，
+此时应根据领域团队提供的配方号、批次号或实验批次，
 考虑 GroupKFold。
 
 分组规则必须在看结果之前固定。
@@ -204,7 +204,7 @@ scaffold 不能替代真实实验分组。
 - [ ] 没有使用 `cv="prefit"`；
 - [ ] 预处理包含在基础模型 Pipeline 中；
 - [ ] 已与最强单模型和简单平均比较；
-- [ ] 真实粘合剂接入前没有伪造分组字段；
+- [ ] 真实下游任务接入前没有伪造分组字段；
 - [ ] 结果未被写成已完成实验。
 
 若 stacking 更好，只报告当前协议下的改善和稳定性；
@@ -217,7 +217,7 @@ scaffold 不能替代真实实验分组。
 2. 第二层为什么不能使用基础模型训练内预测？
 3. 外部验证集与内部 K 折有什么区别？
 4. `passthrough=False` 时第二层看到哪些特征？
-5. 为什么真实粘合剂可能需要 GroupKFold？
+5. 为什么真实下游任务可能需要 GroupKFold？
 
 ## 上一天 / 下一天
 

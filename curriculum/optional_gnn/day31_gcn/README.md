@@ -4,7 +4,7 @@
 
 今天在 PyTorch Geometric 的 `KarateClub` 教学图上完成一个两层 GCN。重点不是追求分数，而是第一次把“图数据 → 消息传递 → 节点类别分数 → 只在训练节点上计算 loss”完整走通。
 
-> 边界：KarateClub 是公开的社交网络教学数据，不是分子图，更不是粘合剂实验数据。今天得到的结果只能证明代码和概念能够运行。
+> 边界：KarateClub 是公开的社交网络教学数据，不是分子图，更不是下游任务实验数据。今天得到的结果只能证明代码和概念能够运行。
 
 ## 前置条件
 
@@ -40,7 +40,7 @@ python -c "import torch, torch_geometric; print(torch.__version__, torch_geometr
 
 ## 今日产出
 
-以下内容应由你在个人实验副本中完成：
+以下内容应由你在个人练习副本中完成：
 
 1. `x → hidden → logits` 的 shape 记录；
 2. train/validation/test 掩码互斥检查；
@@ -48,7 +48,7 @@ python -c "import torch, torch_geometric; print(torch.__version__, torch_geometr
 4. 120 个 epoch 的 train loss 与 validation accuracy 曲线；
 5. 一段“为什么 test 仍要封存”的中文说明。
 
-课程 Notebook 的预存输出是教师教学示例，不代表你的个人实验成果。
+课程 Notebook 的预存输出是教师教学示例，不代表你的个人练习成果。
 
 ## 核心概念
 

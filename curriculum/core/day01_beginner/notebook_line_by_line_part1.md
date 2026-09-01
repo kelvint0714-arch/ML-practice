@@ -4,7 +4,7 @@
 
 对应 Notebook：
 
-`experiments/esol/day01_baseline/esol_baseline.ipynb`
+`curriculum/core/day07_integrated_baseline/reference_baseline/esol_baseline.ipynb`
 
 本文假设读者刚开始学习 Python。它只讲四个代码单元：
 
@@ -35,7 +35,7 @@
 ```text
 导入 Python 工具
         ↓
-找到 ML-practice 仓库和缓存目录
+找到 ML-Learning 仓库和缓存目录
         ↓
 加载 ESOL 分子数据
         ↓
@@ -111,7 +111,7 @@ logS = log10(S)
 | `RUN_ID` | `str` | `esol_ecfp_scaffold_seed42` |
 | `REPO_ROOT` | `Path` | Git 仓库根目录 |
 | `DATA_DIR` | `Path` | `.cache/deepchem` |
-| `RESULTS_DIR` | `Path` | `experiments/esol/day01_baseline/results` |
+| `RESULTS_DIR` | `Path` | `curriculum/core/day07_integrated_baseline/reference_baseline/results` |
 | `SOURCE_COMMIT` | `str` | 运行时 commit 哈希 |
 | `BRANCH` | `str` | 运行时分支 |
 | `GIT_DIRTY` | `bool` | 是否检测到未提交状态，另有 caveat |
@@ -157,7 +157,7 @@ logS = log10(S)
 | `C1:L39` | `return "unavailable"` | Git 读取失败时返回非空字符串，而不是继续抛错。 |
 | `C1:L41` | `REPO_ROOT = find_repo_root()` | 调用函数，得到仓库根目录 `Path`。 |
 | `C1:L42` | `DATA_DIR = REPO_ROOT / ".cache" / "deepchem"` | 建立 DeepChem 缓存路径对象；此时尚未创建目录。 |
-| `C1:L43` | `RESULTS_DIR = REPO_ROOT / "experiments" / "esol" / "day01_baseline" / "results"` | 建立结果目录路径对象。 |
+| `C1:L43` | `RESULTS_DIR = REPO_ROOT / "curriculum" / "core" / "day07_integrated_baseline" / "reference_baseline" / "results"` | 建立结果目录路径对象。 |
 | `C1:L44` | `DATA_DIR.mkdir(parents=True, exist_ok=True)` | 创建缓存目录；缺失父目录也创建；已存在不报错。 |
 | `C1:L45` | `RESULTS_DIR.mkdir(parents=True, exist_ok=True)` | 用同样规则创建结果目录。 |
 | `C1:L47` | `SOURCE_COMMIT = git_output("rev-parse", "HEAD")` | 运行 `git rev-parse HEAD`，得到 commit 哈希字符串。 |
@@ -172,7 +172,7 @@ logS = log10(S)
 | `C1:L56` | `"scipy": scipy.__version__,` | 记录 SciPy 版本。 |
 | `C1:L57` | `"scikit-learn": sklearn.__version__,` | 记录 scikit-learn 版本。 |
 | `C1:L58` | `}` | 关闭从 L50 开始的字典；没有独立计算含义。 |
-| `C1:L60` | `print("Repository:", REPO_ROOT.name)` | 打印仓库路径最后一部分，例如 `ML-practice`。 |
+| `C1:L60` | `print("Repository:", REPO_ROOT.name)` | 打印仓库路径最后一部分，例如 `ML-Learning`。 |
 | `C1:L61` | `print("Branch:", BRANCH)` | 打印最后执行本单元时记录的分支。 |
 | `C1:L62` | `print("Source commit:", SOURCE_COMMIT)` | 打印最后执行本单元时记录的 commit。 |
 | `C1:L63` | `print(json.dumps(VERSIONS, indent=2, ensure_ascii=False))` | 把版本字典格式化成两空格缩进的 JSON 后打印。 |

@@ -12,7 +12,7 @@
 4. [练习题](03_exercises.md)
 5. [参考答案](04_reference_answers.md)
 
-`tutorial.ipynb` 会把实际教程运行产物写入本课程目录的 `tutorial_outputs/`，用于 Day 14 审计；这些文件不是学习者 `experiments/` 证据，也不是 ESOL 或粘合剂模型排名。
+`tutorial.ipynb` 会把实际教程运行产物写入本课程目录的 `tutorial_outputs/`，用于 Day 14 审计；这些文件不是学习者 `learning_outputs/` 证据，也不是 ESOL 或下游任务模型排名。
 
 ## 今天为什么学
 
@@ -157,7 +157,7 @@ model_summary = (
     .sort_values("rmse_mean")
 )
 
-results_dir = Path("experiments/day13_fair_comparison/results")
+results_dir = Path("learning_outputs/day13_fair_comparison/results")
 results_dir.mkdir(parents=True, exist_ok=True)
 
 artifact_columns = ["model", "fold", "split", "mae", "rmse", "r2"]

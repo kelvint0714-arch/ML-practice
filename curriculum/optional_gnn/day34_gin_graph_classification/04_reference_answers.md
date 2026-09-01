@@ -38,7 +38,7 @@ loss = cross_entropy(logits, batch.y.view(-1))
 
 1. 错。根据 test 选择 pooling 是测试集泄漏；
 2. 对。它只是固定教学协议下的 validation 结果；
-3. 错。MUTAG 与粘合剂的样本、图定义、目标和数据来源都不同。
+3. 错。MUTAG 与下游任务的样本、图定义、目标和数据来源都不同。
 
 ## 练习 6
 
@@ -58,6 +58,6 @@ assert logits.shape[1] == dataset.num_classes
 
 - 不能证明 GIN 普遍优于多数类或其他图模型；
 - 不能证明结果在另一随机划分上稳定；
-- 不能证明模型能预测真实粘合剂性能；
-- 不能证明 MUTAG 的节点/边语义适合粘合剂配方；
+- 不能证明模型能预测真实下游任务性能；
+- 不能证明 MUTAG 的节点/边语义适合候选方案；
 - 不能把 validation 当作未见测试集性能。

@@ -70,10 +70,10 @@ X_valid_scaled = scaler.transform(X_valid)
 
 推荐写法：
 
-> 在固定的 ESOL scaffold train/validation 划分、相同 ECFP 输入和统一指标下，模型 A 的验证 RMSE 低于模型 B。该结果是公开数据上的算法练习，尚不能说明模型 A 在真实粘合剂数据上更优。
+> 在固定的 ESOL scaffold train/validation 划分、相同 ECFP 输入和统一指标下，模型 A 的验证 RMSE 低于模型 B。该结果是公开数据上的算法练习，尚不能说明模型 A 在真实下游任务数据上更优。
 
 不推荐写法：
 
-> 我们已经证明模型 A 最适合粘合剂预测。
+> 我们已经证明模型 A 最适合下游任务预测。
 
 后一句超出了当前数据和实验能够支持的范围。

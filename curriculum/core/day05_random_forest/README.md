@@ -26,7 +26,7 @@
 4. [独立练习](03_exercises.md)
 5. [折叠参考答案](04_reference_answers.md)
 
-`tutorial.ipynb` 属于课程材料，不是个人实验。实际学习时在 `experiments/day05_random_forest/` 保存自己运行的模型对照、笔记和结果文件。
+`tutorial.ipynb` 属于课程材料，不是个人练习。实际学习时在 `learning_outputs/day05_random_forest/` 保存自己运行的模型对照、笔记和结果文件。
 
 ## 今日产出
 
@@ -209,7 +209,7 @@ print(results)
 - 只报告表现更好的模型，隐藏对照；
 - 把特征重要性直接说成化学因果关系；
 - 使用最终测试集挑选树数量；
-- 把人工小数据结果当成真实材料结论。
+- 把人工小数据结果当成真实下游任务结论。
 
 ## 完成标准
 

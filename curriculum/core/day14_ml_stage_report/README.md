@@ -12,12 +12,12 @@
 4. [练习题](03_exercises.md)
 5. [参考答案](04_reference_answers.md)
 
-`tutorial.ipynb` 审计 Day 13 已实际运行的课程教程 CSV，并生成明确标注为人工数据的报告预览。它不能代替学习者基于本人 `experiments/` 证据撰写的阶段报告。
+`tutorial.ipynb` 审计 Day 13 已实际运行的课程教程 CSV，并生成明确标注为人工数据的报告预览。它不能代替学习者基于本人 `learning_outputs/` 证据撰写的阶段报告。
 
 ## 今天为什么学
 
 跑出很多数字不等于完成研究。
-导师真正需要看到的是：问题是什么、数据怎样处理、比较是否公平、结果支持什么结论、还缺什么证据。
+评审者真正需要看到的是：问题是什么、数据怎样处理、比较是否公平、结果支持什么结论、还缺什么证据。
 
 今天不增加新模型，而是审计 Day 1–Day 13 的记录，形成一份可复查的传统机器学习阶段报告。
 
@@ -33,7 +33,7 @@
 完成后应当产生：
 
 1. 一张统一模型结果表；
-2. 一份 `experiments/day14_ml_stage_report/report.md` 阶段报告；
+2. 一份 `learning_outputs/day14_ml_stage_report/report.md` 阶段报告；
 3. 一页“可以得出 / 不能得出”的结论边界；
 4. 下一阶段学习 MLP 的明确入口；
 5. 一份缺失证据清单。
@@ -65,8 +65,8 @@
 
 ### 3. 当前项目边界
 
-ESOL 的目标是分子水溶解度，不是粘合剂强度。
-公开数据练习能够证明算法流程是否跑通，不能证明已经完成真实粘合剂预测。
+ESOL 的目标是分子水溶解度，不是下游任务目标。
+公开数据练习能够证明算法流程是否跑通，不能证明已经完成真实下游任务预测。
 
 ## 分步骤任务
 
@@ -91,10 +91,10 @@ import pandas as pd
 
 # 从仓库根目录运行这段代码。
 fold_metrics_path = Path(
-    "experiments/day13_fair_comparison/results/fold_metrics.csv"
+    "learning_outputs/day13_fair_comparison/results/fold_metrics.csv"
 )
-results_dir = Path("experiments/day14_ml_stage_report/results")
-report_path = Path("experiments/day14_ml_stage_report/report.md")
+results_dir = Path("learning_outputs/day14_ml_stage_report/results")
+report_path = Path("learning_outputs/day14_ml_stage_report/report.md")
 results_dir.mkdir(parents=True, exist_ok=True)
 
 if not fold_metrics_path.exists():
@@ -176,15 +176,15 @@ Day 1 的固定验证结果与 Day 13 的交叉验证结果采用不同协议，
 | 把不同标签尺度的 RMSE 合并 | 数字不可比较 | 分开报告并写明单位 |
 | 只粘贴最好分数 | 丢失稳定性证据 | 保留每折和汇总 |
 | 没运行却写“已完成” | 研究记录失真 | 标记待完成 |
-| 把 ESOL 写成粘合剂数据 | 误导导师 | 明确公开练习边界 |
+| 把 ESOL 写成下游任务数据 | 误导评审者 | 明确公开练习边界 |
 | 报告没有源文件位置 | 无法复查 | 保存来源与配置 |
 
 ## 完成标准
 
-- [ ] `experiments/day14_ml_stage_report/report.md` 中的每个数字都能追溯到真实文件；
+- [ ] `learning_outputs/day14_ml_stage_report/report.md` 中的每个数字都能追溯到真实文件；
 - [ ] 我区分了单次分数和均值±标准差；
 - [ ] 我写明数据、目标、单位和划分；
-- [ ] 我没有把 ESOL 结果称为粘合剂结果；
+- [ ] 我没有把 ESOL 结果称为下游任务结果；
 - [ ] 我列出了尚未完成和仍不确定的内容；
 - [ ] 下一阶段为什么学习 MLP 已经写清楚。
 

@@ -4,7 +4,7 @@
 
 今天把 Day 31 的 `GCNConv` 替换为 `SAGEConv`，并在完全相同的数据、掩码、隐藏宽度、优化器、训练轮数和随机种子下比较 GCN 与 GraphSAGE。
 
-> 边界：这是 KarateClub 教学图上的 validation 开发比较。它不能证明某个模型适合分子或粘合剂，也不能代替最终 test 评价。
+> 边界：这是 KarateClub 教学图上的 validation 开发比较。它不能证明某个模型适合分子或下游任务，也不能代替最终 test 评价。
 
 ## 前置条件
 

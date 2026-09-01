@@ -12,7 +12,7 @@
 4. [练习题](03_exercises.md)
 5. [参考答案](04_reference_answers.md)
 
-`tutorial.ipynb` 在一元线性人工数据上演示梯度下降与学习率，不是完整 MLP、ESOL 或粘合剂实验。本人运行记录再写入 `experiments/day17_loss_optimizer/`。
+`tutorial.ipynb` 在一元线性人工数据上演示梯度下降与学习率，不是完整 MLP、ESOL 或下游任务实验。本人运行记录再写入 `learning_outputs/day17_loss_optimizer/`。
 
 ## 今天为什么学
 

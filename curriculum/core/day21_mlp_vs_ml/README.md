@@ -10,18 +10,18 @@
 4. [练习](03_exercises.md)
 5. [参考答案](04_reference_answers.md)
 
-`tutorial.ipynb` 是课程附带的同协议演示，不是学习者已经完成的实验，也不提供粘合剂项目结论。
+`tutorial.ipynb` 是课程附带的同协议演示，不是学习者已经完成的实验，也不提供下游任务结论。
 
 ## 今天为什么学
 
-导师提到“传统机器学习算法和神经网络结合”之前，
+评审者提到“传统机器学习算法和神经网络结合”之前，
 首先要知道传统模型和 MLP 各自单独能做到什么。
 
 如果模型使用不同数据划分、不同评价指标或不同测试次数，
 最后的分数不能公平比较。
 
 今天先用 ESOL 练习数据完成同协议比较。
-ESOL 的结果只证明流程能运行，不代表粘合剂实验结论。
+ESOL 的结果只证明流程能运行，不代表下游任务实验结论。
 
 ## 前置条件
 
@@ -56,7 +56,7 @@ ESOL 的结果只证明流程能运行，不代表粘合剂实验结论。
 
 MLP 使用插补和标准化 Pipeline。传统模型不在今天重新改配方，
 而是直接读取 Day 07 保存的
-[`run_config.json`](../../../experiments/esol/day01_baseline/results/run_config.json)：
+[`run_config.json`](../../../curriculum/core/day07_integrated_baseline/reference_baseline/results/run_config.json)：
 Dummy、Ridge、受限决策树和随机森林参数必须与冻结记录一致。
 这使今天比较的是已登记方案，而不是看结果后临时“改善”某一方。
 
@@ -83,7 +83,7 @@ Dummy、Ridge、受限决策树和随机森林参数必须与冻结记录一致�
 9. 不根据验证结果临时增加大量候选。
 10. 写出最强传统基线和 MLP 之间的差值。
 11. 说明差值是否小到可能由随机性造成。
-12. 保存协议与结果，但不要写成粘合剂结论。
+12. 保存协议与结果，但不要写成下游任务结论。
 
 ## 核心代码骨架
 
@@ -103,7 +103,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.tree import DecisionTreeRegressor
 
 config_path = Path(
-    "experiments/esol/day01_baseline/results/run_config.json"
+    "curriculum/core/day07_integrated_baseline/reference_baseline/results/run_config.json"
 )
 if not config_path.exists():
     raise FileNotFoundError(
@@ -155,12 +155,12 @@ print(comparison)
 - `sort_values("rmse")` 按 RMSE 从小到大排列。
 - 多行 Pipeline 保证预处理只从训练数据学习。
 
-## 与真实粘合剂项目的边界
+## 与真实下游任务项目的边界
 
 今天使用的是练习数据和已准备好的特征。
-真实粘合剂数据需要化学组确认：
+真实下游任务数据需要领域团队确认：
 
-- 粘合剂化学体系；
+- 下游任务化学体系；
 - 一行代表配方、试样还是重复实验；
 - 预测性能、单位与测试标准；
 - 配方、固化、基材和测试条件；
@@ -178,7 +178,7 @@ print(comparison)
 | 先对全数据标准化 | 验证信息泄漏 | 在 Pipeline 内拟合 |
 | MLP 调很多次而 Ridge 只调一次 | 搜索预算不同 | 预先限定预算 |
 | 只报告最好分数 | 隐藏不稳定性 | 保留完整结果 |
-| 用 ESOL 结果声称粘合剂有效 | 任务和标签不同 | 只说明流程学习 |
+| 用 ESOL 结果声称下游任务有效 | 任务和标签不同 | 只说明流程学习 |
 
 ## 完成标准
 
@@ -195,7 +195,7 @@ print(comparison)
 1. 为什么树模型不缩放也可以被视为公平比较？
 2. 如果 MLP 试了 100 组参数，Ridge 只试 1 组，会有什么问题？
 3. 为什么验证 RMSE 只差一点时不能急着宣布赢家？
-4. ESOL 上的最好模型能直接用于粘合剂吗？
+4. ESOL 上的最好模型能直接用于下游任务吗？
 5. 今天确定的是模型结论，还是比较协议？
 
 ## 上一天 / 下一天

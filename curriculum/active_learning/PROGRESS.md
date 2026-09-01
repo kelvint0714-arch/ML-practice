@@ -7,7 +7,7 @@
 
 1. 先满足 [开始条件](README.md#开始条件)；
 2. 按任务卡规定顺序阅读、手算、运行、练习；
-3. 使用 `python scripts/start_unit.py 单元编号` 建立个人副本；
+3. 从空内核运行教学 Notebook，并把笔记保存到本地 `learning_outputs/`；
 4. 能解释输入、动作、输出和标签权限后，回到唯一进度表勾选；
 5. 教材已存在不等于本人已完成。
 
@@ -17,13 +17,13 @@
 2. **Unit 02｜代理模型与不确定性：**完成 [任务卡](unit02_surrogates_uncertainty/README.md)，比较 GP 与 RF 集成，并说明分歧不等于 95% 区间。
 3. **Unit 03｜采集函数：**完成 [任务卡](unit03_acquisition_functions/README.md)，独立计算 UCB、PI 和 EI，处理最大化/最小化方向。
 
-## 第二阶段：从单轮到可信实验
+## 第二阶段：从单轮到可信评价
 
 4. **Unit 04｜多轮循环：**完成 [任务卡](unit04_multiround_loop/README.md)，保存每轮 query、标签返回和 best-so-far。
 5. **Unit 05｜公平基准：**完成 [任务卡](unit05_benchmark_protocol/README.md)，分别完成材料发现和全局模型学习基准。
 6. **Unit 06｜批量、多样性与约束：**完成 [任务卡](unit06_batch_diversity_constraints/README.md)，先过滤不可行候选，再形成不冗余批次。
 
-## 第三阶段：研究模型与真实闭环
+## 第三阶段：进阶代理模型与闭环接口
 
 7. **Unit 07｜神经网络、GNN、PBNN 与 DKL：**完成 [任务卡](unit07_neural_graph_surrogates/README.md)，指出每种算法位于表示、代理、不确定性还是采集模块。
 8. **Unit 08｜物理先验与实验闭环：**完成 [任务卡](unit08_physics_closed_loop/README.md)，比较无先验、合理先验与错误先验，并实现人工批准状态。
@@ -36,5 +36,5 @@
 - 采集函数为什么不能读取候选真实性能？
 - 怎样公平比较两个策略？
 - 为什么要报告学习曲线、regret、多随机种子和随机基线？
-- 离线候选池怎样替换成真实化学实验 Oracle？
+- 离线候选池怎样替换成具有明确权限和成本的真实 Oracle？
 - 当前证据能说明什么，不能说明什么？

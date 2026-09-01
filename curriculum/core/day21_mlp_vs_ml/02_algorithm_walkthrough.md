@@ -11,7 +11,7 @@
 主指标：valid RMSE
 辅助指标：MAE、R²
 测试策略：不生成 test 预测
-传统配置来源：experiments/esol/day01_baseline/results/run_config.json
+传统配置来源：curriculum/core/day07_integrated_baseline/reference_baseline/results/run_config.json
 候选：Dummy、Ridge、受限决策树、随机森林、冻结 MLP
 ```
 
@@ -20,7 +20,7 @@
 配置缺失时应停止并解释，不能静默退回默认参数：
 
 ```python
-config_path = REPO_ROOT / "experiments/esol/day01_baseline/results/run_config.json"
+config_path = REPO_ROOT / "curriculum/core/day07_integrated_baseline/reference_baseline/results/run_config.json"
 if not config_path.exists():
     raise FileNotFoundError("缺少 Day 07 冻结配置")
 params = json.loads(config_path.read_text())["model_params"]
@@ -105,4 +105,4 @@ delta = mlp_row["rmse"] - best_traditional["rmse"]
 - 一个模型多次试验只报告最好一次；
 - 缩放在全数据上预先完成；
 - 结果表遗漏 Dummy 或最强简单基线；
-- 从当前排名直接推断粘合剂结论。
+- 从当前排名直接推断下游任务结论。

@@ -35,8 +35,8 @@ def select_top_disagreement(prediction_matrix, candidate_ids, batch_size):
 
 ## F. 交接表示例字段
 
-`candidate_id, formulation_and_process, predicted_property, predicted_unit, disagreement_score, model_version, feasibility_status, prohibition_reason`。真实字段名和单位必须由化学组确认。
+`candidate_id, formulation_and_process, predicted_property, predicted_unit, disagreement_score, model_version, feasibility_status, prohibition_reason`。真实字段名和单位必须由领域团队确认。
 
 ## G. 结论边界
 
-ESOL 的候选和标签都是已有公开练习数据，流程没有真正合成或测试新配方；粘合剂体系、可行性约束、测量成本和噪声也不同。因此只能说接口与模拟协议得到练习。
+ESOL 的候选和标签都是已有公开练习数据，流程没有真正合成或测试新配方；下游任务体系、可行性约束、测量成本和噪声也不同。因此只能说接口与模拟协议得到练习。

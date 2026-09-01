@@ -22,7 +22,7 @@
 4. [独立练习](03_exercises.md)
 5. [折叠参考答案](04_reference_answers.md)
 
-`tutorial.ipynb` 只加载 split 做结构检查，不训练模型、不产生 test 预测。个人检查表、政策和笔记应在实际学习时保存到 `experiments/day08_split_protocol/`；课程预存输出不代表你已经完成。
+`tutorial.ipynb` 只加载 split 做结构检查，不训练模型、不产生 test 预测。个人检查表、政策和笔记应在实际学习时保存到 `learning_outputs/day08_split_protocol/`；课程预存输出不代表你已经完成。
 
 ## 今日产出
 
