@@ -34,6 +34,7 @@ docs/paper-review
 
 ```bash
 python scripts/check_repository.py
+python -m unittest discover -s tests -v
 ```
 
 然后确认：

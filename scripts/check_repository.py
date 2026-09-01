@@ -37,6 +37,7 @@ REQUIRED_ROOT_FILES = (
     ".editorconfig",
     ".gitattributes",
     ".gitignore",
+    "CONTRIBUTING.md",
     "README.md",
     "requirements-gnn.txt",
     "requirements-learning.txt",
@@ -50,7 +51,36 @@ REQUIRED_TOP_LEVEL = (
     "docs",
     "experiments",
     "scripts",
+    "tests",
 )
+REQUIRED_PUBLIC_GUIDES = {
+    "README.md": (
+        "## 这套课程适合谁",
+        "## 学完能做到什么",
+        "## 10 分钟开始学习",
+        "curriculum/LEARNING_PATHS.md",
+        "scripts/learn.py doctor",
+    ),
+    "curriculum/LEARNING_PATHS.md": (
+        "## 先做 30 秒选择",
+        "## 每个学习单元怎样算完成",
+        "## 路线 D：材料主动学习",
+    ),
+    "docs/getting_started.md": (
+        "## 第二步：建立核心课程环境",
+        "## 第三步：查看下一项任务",
+        "scripts/learn.py doctor",
+    ),
+    "docs/teaching_guide.md": (
+        "## 统一验收量表",
+        "## 课程维护原则",
+    ),
+    "CONTRIBUTING.md": (
+        "## 教学内容的最低结构",
+        "## Notebook 规范",
+        "## 本地检查",
+    ),
+}
 REQUIRED_PHRASES = (
     "## 今天为什么学",
     "## 前置条件",
@@ -190,6 +220,22 @@ def check_repository_layout(errors: list[str]) -> None:
     for name in REQUIRED_TOP_LEVEL:
         if not (REPO_ROOT / name).is_dir():
             errors.append(f"Missing required top-level directory: {name}/")
+
+
+def check_public_guides(errors: list[str]) -> None:
+    """Keep the learner and contributor entry points complete."""
+
+    for relative_path, required_phrases in REQUIRED_PUBLIC_GUIDES.items():
+        path = REPO_ROOT / relative_path
+        if not path.is_file():
+            errors.append(f"Missing public guide: {relative_path}")
+            continue
+        text = path.read_text(encoding="utf-8")
+        for phrase in required_phrases:
+            if phrase not in text:
+                errors.append(
+                    f"{relative_path}: missing learner-facing marker {phrase!r}."
+                )
 
 
 def collect_day_directories(
@@ -1739,6 +1785,7 @@ def check_adhesive_workbook(errors: list[str]) -> None:
 def main() -> int:
     errors: list[str] = []
     check_repository_layout(errors)
+    check_public_guides(errors)
     core_days = collect_day_directories(CORE_ROOT, range(1, 29), errors)
     gnn_days = collect_day_directories(OPTIONAL_GNN_ROOT, range(29, 36), errors)
     day_dirs = core_days + gnn_days
